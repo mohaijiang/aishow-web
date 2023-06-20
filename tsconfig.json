@@ -3,6 +3,10 @@
     "target": "ES2020",
     "useDefineForClassFields": true,
     "module": "ESNext",
+    "baseUrl": "./",// 解析非相对模块的基础地址，默认是当前目录
+    "paths": {
+      "@/*": ["src/*"]
+    },
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
 
