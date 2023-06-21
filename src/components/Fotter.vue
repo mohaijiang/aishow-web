@@ -1,5 +1,5 @@
 <template>
-  fotter
+  <div> fotter</div>
 </template>
 <script setup lang="ts">
 </script>

@@ -8,9 +8,9 @@
       <!-- / Layout Header's Conditionally Fixed Wrapper -->
 
       <!-- Layout Content -->
-      <a-layout class="layout-default-page pt-[64px] dark:!bg-[#000000]">
+      <a-layout class="layout-default-page pt-[64px] !bg-[#000000]">
         <!-- Page Content -->
-        <a-layout-content class="layout-default-content px-60 dark:text-white text-[#151210]">
+        <a-layout-content class="layout-default-content px-60 text-white">
           <keep-alive>
             <router-view v-if="$route.meta.keepAlive" />
           </keep-alive>
