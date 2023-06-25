@@ -3,7 +3,7 @@
     <div class="grid grid-cols-3 gap-8">
       <div class="col-span-2">
         <div class="text-[26px] font-bold">majicMIX realistic</div>
-        <div>
+        <div class="my-4">
           <img src="@/assets/images/one.jpeg" class="w-[30px] h-[30px] rounded-full" />
           Jun 13, 2023
         </div>
@@ -103,9 +103,6 @@ const detailDesc = "Detail\n听我一句劝，不要开脸部修复！\nPlease d
   opacity: 0.5;
 }
 
-.ant-carousel :deep(.slick-slide h3) {
-  color: #fff;
-}
 pre{
   white-space:pre-wrap;
   white-space:-moz-pre-wrap;
