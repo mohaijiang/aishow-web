@@ -1,7 +1,7 @@
 <template>
   <div class="mb-4 card-img">
-    <div class="top-div flex p-2">
-      <img src="@/assets/images/icon.jpeg" class="h-[28px] rounded-full" />
+    <div class="top-div flex p-2 justify-between items-center">
+      <img src="@/assets/images/icon.jpeg" class="h-[40px] rounded-full" />
       <div>
         <div>Boxnoon</div>
         <div class="text-css">an hour ago - Cross - post</div>
@@ -19,33 +19,29 @@
             <img src="@/assets/icons/more.svg" class="h-[28px]" />
           </div>
         </div>
-        <div class="absolute bottom-0 rounded-bl-[4px] rounded-br-[4px] w-full">
-          <div class="flex justify-end p-2">
-            <div class="rounded-img w-[38px]  rounded-full">
-              <img :src="getImageURL(cardInfo.imageName)" class="w-[38px] h-[38px] rounded-full" />
+        <div class="absolute bottom-[6px] left-[6px] w-full">
+          <div class="flex justify-between w-[96%]">
+            <div class="card-btm p-2">
+              <div class="flex items-center">
+                <img src="@/assets/icons/add-icon.svg" class="h-[18px] cursor-pointer" @click="showIcon = !showIcon" />
+                <img src="@/assets/icons/smile-b.svg" class="h-[18px] ml-[8px]" />
+
+                <span class="ml-[8px] flex items-center" v-if="showIcon">
+                  <img src="@/assets/icons/like-y.svg" class="h-[16px]" />
+                  <span class="ant-rate-text">0</span>
+                  <img src="@/assets/icons/like-n.svg" class="h-[16px]" />
+                  <span class="ant-rate-text">0</span>
+                  <img src="@/assets/icons/love-icon.svg" class="h-[18px]" />
+                  <span class="ant-rate-text">0</span>
+                  <img src="@/assets/icons/smile-icon.svg" class="h-[18px]" />
+                  <span class="ant-rate-text">0</span>
+                  <img src="@/assets/icons/cry-icon.svg" class="h-[18px]" />
+                  <span class="ant-rate-text">0</span>
+                </span>
+              </div>
             </div>
-          </div>
-          <div class="card-btm p-2">
-            <div class="text-[14px] font-medium">majicMIX realistic</div>
             <div>
-              <span class="btm-tips">
-                <a-rate value="5" tooltips="desc" />
-                <span class="ant-rate-text">842</span>
-              </span>
-            </div>
-            <div class="flex" v-if="false">
-              <span class="btm-tips">
-                <img src="@/assets/icons/collect.svg" class="h-[14px]" />
-                <span class="ant-rate-text">12K</span>
-              </span>
-              <span class="btm-tips">
-                <img src="@/assets/icons/info.svg" class="h-[14px]" />
-                <span class="ant-rate-text">270</span>
-              </span>
-              <span class="btm-tips">
-                <img src="@/assets/icons/down.svg" class="h-[14px]" />
-                <span class="ant-rate-text">166K</span>
-              </span>
+              <img src="@/assets/icons/tips.svg" class="h-[26px] cursor-pointer" />
             </div>
           </div>
         </div>
@@ -55,6 +51,7 @@
 </template>
 <script setup lang="ts">
 import useAssets from "@/stores/useAssets";
+import { ref } from "vue";
 
 defineProps({
   cardInfo:{
@@ -63,6 +60,7 @@ defineProps({
   }
 })
 const { getImageURL } = useAssets();
+const showIcon = ref(false);
 </script>
 <style lang="less" scoped>
 .top-div{
@@ -93,9 +91,11 @@ const { getImageURL } = useAssets();
   margin: 5px 5px 0 0;
 }
 .card-btm{
-  background: linear-gradient(45deg, rgba(37, 38, 43, 0.8) 0%, rgba(37, 38, 43, 0) 100%);
+  border-radius: 4px;
+  background: rgba(16, 17, 19, 0.8);
   backdrop-filter: blur(13px) saturate(160%);
   box-shadow: rgba(0, 0, 0, 0.16) 0px -2px 6px 1px;
+  padding: 4px;
 }
 .rounded-img{
   box-shadow: rgba(0, 0, 0, 0.5) 0px 1px 3px, rgba(0, 0, 0, 0.5) 0px 8px 15px -5px;
