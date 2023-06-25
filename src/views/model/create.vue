@@ -43,7 +43,7 @@
       </a-form-item>
       <a-form-item label="Set a price" name="name">
         <div>The image is used to show the effect of the model generation example</div>
-        <a-input v-model:value="formData.name" placeholder="Amount" allow-clear autocomplete="off" />AIST
+        <a-input class="!w-[95%]" v-model:value="formData.name" placeholder="Amount" allow-clear autocomplete="off" />AIST
       </a-form-item>
       <a-form-item label="Name" name="name">
         <a-input v-model:value="formData.name" placeholder="Please enter Name" allow-clear autocomplete="off" />
