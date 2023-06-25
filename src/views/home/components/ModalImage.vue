@@ -12,7 +12,24 @@
       </span>
     </div>
     <div class="relative">
-      <img :src="getImageURL(cardInfo.imageName)" class="w-full rounded-[4px]" />
+      <a-carousel arrows>
+        <template #prevArrow>
+          <div class="custom-slick-arrow" style="left: 10px; z-index: 1">
+            <left-circle-outlined />
+          </div>
+        </template>
+        <template #nextArrow>
+          <div class="custom-slick-arrow" style="right: 10px">
+            <right-circle-outlined />
+          </div>
+        </template>
+        <div>
+          <img :src="getImageURL(cardInfo.imageName)" class="w-full rounded-[4px]" />
+        </div>
+        <!-- <div>
+          <img :src="getImageURL(cardInfo.imageName)" class="w-full rounded-[4px]" />
+        </div> -->
+      </a-carousel>
       <div class="absolute top-0 w-full h-full">
         <div class="flex justify-end p-2">
           <div>
@@ -51,6 +68,7 @@
 </template>
 <script setup lang="ts">
 import useAssets from "@/stores/useAssets";
+import { LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons-vue';
 import { ref } from "vue";
 
 defineProps({
@@ -97,16 +115,40 @@ const showIcon = ref(false);
   box-shadow: rgba(0, 0, 0, 0.16) 0px -2px 6px 1px;
   padding: 4px;
 }
-.rounded-img{
-  box-shadow: rgba(0, 0, 0, 0.5) 0px 1px 3px, rgba(0, 0, 0, 0.5) 0px 8px 15px -5px;
-  transition: opacity 0.25s ease 0s;
-  position: relative;
+.ant-carousel :deep(.slick-arrow.custom-slick-arrow) {
+  width: 40px;
+  height: 35px;
+  font-size: 35px;
+  color: #fff;
+  background-color: rgba(31, 45, 61, 0.11);
+  opacity: 0.3;
+  z-index: 1;
 }
-.rounded-img::before {
-  content: "";
-  position: absolute;
-  inset: 0px;
-  border-radius: 32px;
-  box-shadow: rgba(255, 255, 255, 0.8) 0px 0px 0px 1px inset;
+.ant-carousel :deep(.custom-slick-arrow:before) {
+  display: none;
+}
+.ant-carousel :deep(.slick-dots-bottom){
+  bottom: 0px;
+}
+.ant-carousel :deep(.slick-dots){
+  display:table !important;
+  width:100%;
+  margin: 0;
+}
+.ant-carousel  :deep(.slick-dots li){
+  margin: 0;
+  display: table-cell;
+  border-right: 2px solid transparent;
+  border-left: 2px solid transparent;
+}
+.ant-carousel  :deep(.slick-dots li:nth-last-child(1)){
+  border-left: 2px solid transparent;
+}
+.ant-carousel  :deep(.slick-dots li:first-child){
+  border-right: 2px solid transparent;
+}
+.ant-carousel :deep(.slick-dots li.slick-active){
+  // width: auto;
+  display: table-cell;
 }
 </style>
