@@ -31,7 +31,10 @@
       </a-form-item>
       <a-form-item label="About your model" name="name">
         <div>What your model does</div>
-        <Wangeditor></Wangeditor>
+        <Wangeditor
+          v-model:value="formData.name"
+          placeholder="model"
+        />
       </a-form-item>
     </a-form>
     <div class="mt-8 text-center">
