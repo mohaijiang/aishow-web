@@ -8,9 +8,9 @@
       <!-- / Layout Header's Conditionally Fixed Wrapper -->
 
       <!-- Layout Content -->
-      <a-layout class="layout-default-page pt-[64px] dark:!bg-[#000000]">
+      <a-layout class="layout-default-page pt-[64px] !bg-[#000000]">
         <!-- Page Content -->
-        <a-layout-content class="layout-default-content px-60 dark:text-white text-[#151210]">
+        <a-layout-content class="layout-default-content px-[50px]">
           <keep-alive>
             <router-view v-if="$route.meta.keepAlive" />
           </keep-alive>
@@ -31,6 +31,13 @@ import { RouterView, useRoute } from "vue-router";
 import Header from './components/Header.vue'
 import Fotter from './components/Fotter.vue'
 import { computed } from "vue";
+import { ConfigProvider } from 'ant-design-vue';
+
+ConfigProvider.config({
+  theme: {
+    primaryColor: '#E2B578',
+  },
+});
 const routes = useRoute();
 
 const layoutClass = computed(() => {
@@ -41,7 +48,8 @@ const layoutClass = computed(() => {
 <style scoped>
 
 .ant-layout {
-  background: #F6F6F6;
+  background: #000000;
+  color: #FFFFFF;
 }
 
 .layout-default-page {
@@ -55,5 +63,11 @@ const layoutClass = computed(() => {
   margin: 24px auto;
   border-radius: 12px;
   border: 1px solid transparent;
+}
+.border-b{
+  border-bottom: 1px solid #FFFFFF;
+}
+.border-t{
+  border-top: 1px solid #FFFFFF;
 }
 </style>
