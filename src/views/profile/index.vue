@@ -4,7 +4,7 @@
       <img src="@/assets/images/icon.jpeg" class="h-[90px] rounded-full" />
       <div class="text-[20px] font-bold">Alita</div>
     </div>
-    <a-button type="primary" class="mr-10 w-[120px] absolute top-0 right-0">MINT  NFT</a-button>
+    <a-button type="primary" class="mr-10 w-[120px] absolute top-0 right-0" @click="goCreateNFT">MINT  NFT</a-button>
   </div>
   <a-tabs v-model:activeKey="activeKey" centered>
     <a-tab-pane key="1" tab="Posts">
@@ -28,6 +28,9 @@ const cardList = reactive<any>([
   { imageName: 'three1.jpeg' }, { imageName: 'three.jpeg' },
 ]);
 const activeKey = ref('1');
+const goCreateNFT = ()=>{
+  router.push('/nftCreate')
+}
 </script>
 <style lang="less" scoped>
 .ant-tabs,

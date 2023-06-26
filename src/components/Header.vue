@@ -23,7 +23,7 @@
       </div>
       <div>
         <a-button v-if="!walletAddress" class="ml-8" type="primary" @click="connectWallet">Connect Wallet</a-button>
-        <a-button v-else ghost>{{walletAddress}}</a-button>
+        <a-button v-else ghost @click="goProfile">{{walletAddress}}</a-button>
       </div>
     </div>
   </div>
@@ -59,6 +59,9 @@ const goWriteAnArticle = ()=>{
 }
 const goHome = ()=>{
   router.push('/')
+}
+const goProfile = ()=>{
+  router.push('/profile')
 }
 </script>
 <style lang="less" scoped>
