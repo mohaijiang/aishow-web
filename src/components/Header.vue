@@ -2,7 +2,7 @@
   <div class="top-0 px-[32px] bg-[#000000] z-10 fixed h-[64px] w-full border-b">
     <div class="flex justify-between items-center h-full">
       <div class="text-[30px] font-bold">
-        <span class="text-red-600 cursor-pointer" @click="goHome">AI</span><span class="cursor-pointer" @click="goHome">SHOW</span>
+        <span class="text-red-600 cursor-pointer" @click="goHome">AI</span><span class="cursor-pointer mr-[10px]" @click="goHome">SHOW</span>
         <a-dropdown :trigger="['click']">
           <a class="ant-dropdown-link" @click.prevent>
             <img src="@/assets/icons/add.svg" class="h-[20px]" />
