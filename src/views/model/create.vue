@@ -66,6 +66,9 @@
 import { computed, reactive, ref, setBlockTracking } from 'vue';
 import type { UploadChangeParam } from 'ant-design-vue';
 import Wangeditor from '@/components/Wangeditor.vue';
+import {CreateModelVO, ImageVO, PolkadotAiChanClient} from "@/components/polkadot/ai-model"
+import {ApiPromise, WsProvider} from "@polkadot/api";
+import {web3Accounts, web3Enable} from "@polkadot/extension-dapp";
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -86,10 +89,36 @@ const cancelUploadModal = () =>{
   router.push('/')
 }
 const handleSubmit = async () => {
-  // await formRef.value.validate();
-  router.push('/detail')
+    // await formRef.value.validate();
+
+    // console.log("submit")
+    // // 以下需要配置为全局
+    // const allInjected = await web3Enable('my cool dapp');
+    // console.log(allInjected)
+    // const allAccounts = await web3Accounts();
+    // const account = allAccounts[0].address
+    // const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
+    // const api = await ApiPromise.create({provider: wsProvider});
+    // // 以上需要配置为全局
+    //
+    // const client = new PolkadotAiChanClient(api,account)
+    // const model: CreateModelVO =  {
+    //     hash: "",
+    //     name: "string",
+    //     link: "string",
+    //     images: [{
+    //       image: "",
+    //       imageLink: "",
+    //     }],
+    //     downloadPrice: 1000,
+    //     comment: ""
+    // }
+    // await client.createModel(model,(status ) => {
+    //     console.log(status)
+    // })
+    router.push('/detail')
 }
-const handleChange = (info: UploadChangeParam) => { 
+const handleChange = (info: UploadChangeParam) => {
   console.log("info:",info);
 }
 const handleDrop = (e: DragEvent) => {
