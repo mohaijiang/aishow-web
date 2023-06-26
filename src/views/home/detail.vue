@@ -28,7 +28,7 @@
       </div>
       <div>
         <div class="text-[26px] font-bold text-[#1971c2]">Price:100 AIST</div>
-        <a-button class="w-full" type="primary">Download（2.22G）</a-button>
+        <a-button class="w-full" type="primary">Download（<span>{{count}}</span>）</a-button>
         <div>
           <pre>{{ detailDesc }}<label class="text-[#1971c2]">View more</label></pre>
         </div>
@@ -64,9 +64,11 @@
 import { LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons-vue';
 import CarouselImage from './components/CarouselImage.vue';
 import ModalImage from "./components/ModalImage.vue";
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 import { useRouter } from "vue-router";
 const router = useRouter()
+// 下载次数
+const count = ref(0)
 
 const cardList = reactive<any>([
   [{ imageName: 'one1.jpeg' }, { imageName: 'one.jpeg' }],
