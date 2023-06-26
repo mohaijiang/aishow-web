@@ -17,11 +17,9 @@
           <router-view v-if="!$route.meta.keepAlive" />
         </a-layout-content>
         <!-- / Page Content -->
+        <Fotter />
       </a-layout>
       <!-- / Layout Content -->
-
-      
-      <Fotter />
     </a-layout>
     <!-- / Dashboard Layout -->
   </div>
