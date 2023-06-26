@@ -6,7 +6,7 @@
     </div>
     <a-button type="primary" class="mr-10 w-[120px] absolute top-0 right-0" @click="goCreateNFT">MINT  NFT</a-button>
   </div>
-  <a-tabs v-model:activeKey="activeKey" centered>
+  <a-tabs v-model:activeKey="activeKey" centered @change="handleTabChange">
     <a-tab-pane key="1" tab="Posts">
       <ImageList :cardList="cardList"></ImageList>
     </a-tab-pane>
@@ -19,8 +19,10 @@
   </a-tabs>
 </template>
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import ImageList from "../home/components/ImageList.vue";
+import { useRouter } from 'vue-router';
+const router = useRouter()
 
 const cardList = reactive<any>([
   { imageName: 'one1.jpeg' }, { imageName: 'one.jpeg' },
@@ -31,6 +33,12 @@ const activeKey = ref('1');
 const goCreateNFT = ()=>{
   router.push('/nftCreate')
 }
+const handleTabChange = (val:string)=>{
+  console.log('handleTabChange',val)
+}
+onMounted(()=>{
+  handleTabChange(activeKey.value)
+})
 </script>
 <style lang="less" scoped>
 .ant-tabs,

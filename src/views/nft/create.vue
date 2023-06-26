@@ -59,7 +59,7 @@ const formRules = computed(() => {
   };
 });
 const cancelNft = ()=>{
-  router.push('/')
+  router.back()
 }
 const handleSubmit = async () => {
   // await formRef.value.validate();
