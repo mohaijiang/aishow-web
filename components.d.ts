@@ -24,6 +24,8 @@ declare module 'vue' {
     ARate: typeof import('ant-design-vue/es')['Rate']
     ASelect: typeof import('ant-design-vue/es')['Select']
     ASelectOption: typeof import('ant-design-vue/es')['SelectOption']
+    ATextarea: typeof import('ant-design-vue/es')['Textarea']
+    AUpload: typeof import('ant-design-vue/es')['Upload']
     AUploadDragger: typeof import('ant-design-vue/es')['UploadDragger']
     Fotter: typeof import('./src/components/Fotter.vue')['default']
     Header: typeof import('./src/components/Header.vue')['default']
