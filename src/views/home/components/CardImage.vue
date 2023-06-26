@@ -1,11 +1,11 @@
 <template>
-  <div class="mb-4 relative card-img">
+  <div class="mb-4 relative card-img  cursor-pointer">
     <img :src="getImageURL(cardInfo.imageName)" class="w-full rounded-[4px]" />
     <div class="absolute top-0 w-full h-full">
       <div class="flex justify-between p-2">
         <div class="left-tips"> Checkpoint </div>
         <div>
-          <img src="@/assets/icons/more.svg" class="h-[28px]" />
+          <img v-if="false" src="@/assets/icons/more.svg" class="h-[28px]" />
         </div>
       </div>
       <div class="absolute bottom-0 rounded-bl-[4px] rounded-br-[4px] w-full">
