@@ -11,7 +11,7 @@
         <span class="ant-rate-text">5.0</span>
       </span>
     </div>
-    <div class="relative">
+    <div class="relative cursor-pointer">
       <a-carousel arrows>
         <template #prevArrow>
           <div class="custom-slick-arrow" style="left: 10px; z-index: 1">
@@ -33,7 +33,7 @@
       <div class="absolute top-0 w-full h-full">
         <div class="flex justify-end p-2">
           <div>
-            <img src="@/assets/icons/more.svg" class="h-[28px]" />
+            <img v-if="false" src="@/assets/icons/more.svg" class="h-[28px]" />
           </div>
         </div>
         <div class="absolute bottom-[6px] left-[6px] w-full">
