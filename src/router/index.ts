@@ -48,6 +48,10 @@ let router = createRouter({
       component: () => import('@/views/profile/index.vue'),
     },
   ],
+  // 每次切换路由页面滚动到顶部
+  scrollBehavior () {
+    return { top: 0 }
+  }
 });
 
 export default router;
