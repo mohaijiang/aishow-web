@@ -38,22 +38,22 @@
     <div class="model-bg grid grid-cols-4 gap-4">
       
       <div>
-        <div v-for="(item,key) in modalList" :key="key">
+        <div v-for="(item,key) in modalList" :key="key" @click="goPostDetail(item)">
           <ModalImage :cardInfo="item" v-if="key % 4 === 0"></ModalImage>
         </div>
       </div>
       <div>
-        <div v-for="(item,key) in modalList" :key="key">
+        <div v-for="(item,key) in modalList" :key="key" @click="goPostDetail(item)">
           <ModalImage :cardInfo="item" v-if="key % 4 === 1"></ModalImage>
         </div>
       </div>
       <div>
-        <div v-for="(item,key) in modalList" :key="key">
+        <div v-for="(item,key) in modalList" :key="key" @click="goPostDetail(item)">
           <ModalImage :cardInfo="item" v-if="key % 4 === 2"></ModalImage>
         </div>
       </div>
       <div>
-        <div v-for="(item,key) in modalList" :key="key">
+        <div v-for="(item,key) in modalList" :key="key" @click="goPostDetail(item)">
           <ModalImage :cardInfo="item" v-if="key % 4 === 3"></ModalImage>
         </div>
       </div>
@@ -65,6 +65,8 @@ import { LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons-vue';
 import CarouselImage from './components/CarouselImage.vue';
 import ModalImage from "./components/ModalImage.vue";
 import { reactive } from 'vue';
+import { useRouter } from "vue-router";
+const router = useRouter()
 
 const cardList = reactive<any>([
   [{ imageName: 'one1.jpeg' }, { imageName: 'one.jpeg' }],
@@ -77,6 +79,11 @@ const modalList = reactive<any>([
   { imageName: 'three1.jpeg' }, { imageName: 'three.jpeg' },
 ]);
 const detailDesc = "Detail\n听我一句劝，不要开脸部修复！\nPlease don't use Face Restoration!\n如果要修复脸部，请使用after detailer.\n\nIf your face comes out badly, use after detailer instead.\n\nhttps://github.com/Bing-su/adetailer\n\n我习惯开启Dynamic Thresholding来更好控制cfg值，1~20都可以尝试一下。\n\nUse Dynmaic Thresholding to control CFG. You can try from 1~20.\n\nhttps://github.com/mcmonkeyprojects/sd-dynamic-thresholding\n\n很抱歉在之前的例图中我使用了分层的lora让大家困惑，也让大家复刻我的例图变得困难。所以新一版的例图我没有使用任何lora。想了解lora分层的可以参考…"
+const goPostDetail = (item:any)=>{
+  console.log('goPostDetail',item)
+  // 需带上图片标识进入详情页
+  router.push('/postDetail')
+}
 </script>
 <style lang="less" scoped>
 /* For demo */

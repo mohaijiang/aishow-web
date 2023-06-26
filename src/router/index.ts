@@ -42,6 +42,11 @@ let router = createRouter({
       name: "postDetail",
       component: () => import('@/views/post/detail.vue'),
     },
+    {
+      path: "/profile",
+      name: "profile",
+      component: () => import('@/views/profile/index.vue'),
+    },
   ],
 });
 

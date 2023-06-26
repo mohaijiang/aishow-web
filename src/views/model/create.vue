@@ -54,16 +54,18 @@
       </a-form-item>
     </a-form>
     <div class="mt-8 text-center">
-      <a-button type="primary" class="mr-10 w-[120px]">Cancel</a-button>
+      <a-button type="primary" class="mr-10 w-[120px]" @click="cancelUploadModal">Cancel</a-button>
       <a-button type="primary" @click="handleSubmit" class="w-[120px]">Submit</a-button>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue';
+import { computed, reactive, ref, setBlockTracking } from 'vue';
 import type { UploadChangeParam } from 'ant-design-vue';
 import Wangeditor from '@/components/Wangeditor.vue';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const fileList = ref([]);
 const formRef = ref();
 const formData = reactive({
@@ -77,8 +79,12 @@ const formRules = computed(() => {
     name: [requiredRule('Please enter name!')],
   };
 });
+const cancelUploadModal = () =>{
+  router.push('/')
+}
 const handleSubmit = async () => {
-  await formRef.value.validate();
+  // await formRef.value.validate();
+  router.push('/detail')
 }
 const handleChange = (info: UploadChangeParam) => { 
   console.log("info:",info);
