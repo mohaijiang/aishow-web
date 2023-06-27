@@ -28,8 +28,8 @@
       </div>
       <div>
         <div class="text-[26px] font-bold text-[#1971c2]">Price:100 AIST</div>
-        <a-button class="w-full" type="primary">Download（<span>{{count}}</span>）</a-button>
-        <div>
+        <a-button class="w-full mb-[20px]" type="primary" @click="downloadImage">Download（<span>{{count}}</span>）</a-button>
+        <div class="overflow-y-scroll">
           <pre>{{ detailDesc }}<label class="text-[#1971c2]">View more</label></pre>
         </div>
       </div>
@@ -85,6 +85,9 @@ const goPostDetail = (item:any)=>{
   console.log('goPostDetail',item)
   // 需带上图片标识进入详情页
   router.push('/postDetail')
+}
+const downloadImage = ()=>{
+  console.log('downloadImage')
 }
 </script>
 <style lang="less" scoped>

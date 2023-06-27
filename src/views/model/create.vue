@@ -30,6 +30,7 @@
           action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
           @change="handleChange"
           @drop="handleDrop"
+          :maxCount="5"
         >
           <p class="ant-upload-drag-icon">
             <img src="@/assets/icons/picture.svg" class="w-[60px]" />
