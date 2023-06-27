@@ -47,6 +47,8 @@ export interface AiShowChain {
     createPost(createPostVO: CreatePostVO, callback: Callback): Promise<void>
     // 购买模型
     buyModel(modelHash: string, callback: Callback): Promise<void>
+    // 模型详情
+    modelDetail(modelHash: string): Promise<CreateModelVO>
     // 模型列表
     modelList(): Promise<CreateModelVO[]>
     // postList
@@ -176,7 +178,6 @@ export class PolkadotAiChanClient implements AiShowChain{
         });
     }
 
-
     async modelList() {
        const model: CreateModelVO = {
            hash: "hash",
@@ -212,5 +213,32 @@ export class PolkadotAiChanClient implements AiShowChain{
 
         }
         return [nft]
+    }
+
+    async modelDetail(modelHash: string) {
+
+        const result = await this.api.query.aiModel.aiModels(modelHash)
+        if(result === undefined){
+            throw new Error("storage value not found")
+        }
+        const imageNames = result.value.images.toHuman()
+        const imageLinks = result.value.imageLinks.toHuman()
+        const images = []
+        for(let i = 0 ; i< imageNames.length; i++){
+            images.push({
+                image: imageNames[i],
+                imageLink: imageLinks[i]
+            })
+        }
+        const model: CreateModelVO = {
+            hash: result.value.hash_.toHuman(),
+            name: result.value.name.toHuman(),
+            link: result.value.link.toHuman(),
+            images: images,
+            downloadPrice: result.value.downloadPrice.toNumber(),
+            comment: result.value.comment.toHuman(),
+        }
+
+        return model
     }
 }
