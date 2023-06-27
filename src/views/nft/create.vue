@@ -3,21 +3,9 @@
     <div class="text-[30px] font-bold my-6">Mint your NFT</div>
     <a-form :model="formData" layout="vertical" ref="formRef" :rules="formRules">
       <a-form-item label="Choose the image from your Post"  name="name">
-        <a-upload
-          v-model:file-list="fileList"
-          name="avatar"
-          list-type="picture-card"
-          class="avatar-uploader"
-          :show-upload-list="false"
-          action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-          :before-upload="beforeUpload"
-          @change="handleChange"
-        >
-          <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
-          <div v-else>
-            <img src="@/assets/icons/add-icon.svg" class="h-[20px] cursor-pointer" />
-          </div>
-        </a-upload>
+        <div @click="imgVisible=true" class="bg-[#25262b] rounded-[2px] w-[140px] h-[140px] cursor-pointer flex justify-center items-center">
+          <img src="@/assets/icons/add-icon.svg" class="h-[20px] cursor-pointer" />
+        </div>
       </a-form-item>
       <a-form-item label="Name" name="name">
         <a-input v-model:value="formData.name" placeholder="Please enter Name" allow-clear autocomplete="off" />
@@ -35,17 +23,43 @@
       <a-button type="primary" @click="handleSubmit" class="w-[120px]">Mint</a-button>
     </div>
   </div>
+  <a-modal v-model:visible="imgVisible" >
+    <template #footer>
+      <a-button type="primary" @click="imgVisible=false">Cancel</a-button>
+      <a-button type="primary" class="!ml-8">Confirm</a-button>
+    </template>
+    <div class="text-[20px] font-bold">Please select your image from your POST</div>
+    <div>我是标题</div>
+    <div class="mb-8">2023-06-20 15:34:56</div>
+    <a-radio-group v-model:value="imgValue" name="radioGroup">
+      <div class="grid grid-cols-3 gap-4">
+        <div class="relative" v-for="(item, key) in imgList" :key="key">
+          <div>
+            <img :src="getImageURL(item.imageName)" class="w-full" />
+            <div class="absolute bottom-[5px] w-full text-center">
+              <a-radio :value="key+1"></a-radio>
+            </div>
+          </div>
+        </div>
+      </div>
+    </a-radio-group>
+    
+  </a-modal>
 </template>
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue';
-import type { UploadChangeParam } from 'ant-design-vue';
-import { PlusOutlined } from '@ant-design/icons-vue';
-import { message } from 'ant-design-vue';
+import useAssets from "@/stores/useAssets";
 import { useRouter } from 'vue-router'
 const router = useRouter()
+const { getImageURL } = useAssets();
 
-const fileList = ref([]);
-const imageUrl = ref<string>('');
+const imgValue = ref('1');
+const imgVisible = ref(false);
+const imgList = reactive<any>([
+  { imageName: 'one1.jpeg' }, { imageName: 'one.jpeg' },
+  { imageName: 'two1.png' }, { imageName: 'two.jpeg' },
+  { imageName: 'three1.jpeg' }, { imageName: 'three.jpeg' },
+]);
 const formRef = ref();
 const formData = reactive({
   name: '',
@@ -65,20 +79,18 @@ const handleSubmit = async () => {
   // await formRef.value.validate();
   router.push('/nftDetail')
 }
-const handleChange = (info: UploadChangeParam) => { 
-  console.log("info:",info);
-}
-const beforeUpload = (file: { type: string; size: number; }) => {
-  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-  if (!isJpgOrPng) {
-    message.error('You can only upload JPG file!');
-  }
-  const isLt2M = file.size / 1024 / 1024 < 2;
-  if (!isLt2M) {
-    message.error('Image must smaller than 2MB!');
-  }
-  return isJpgOrPng && isLt2M;
-};
 </script>
 <style lang="less" scoped>
+:deep(.ant-radio), :deep(.ant-radio-inner){
+  border-radius: 2px;
+  height: 20px;
+  width: 20px;
+}
+:deep(.ant-radio-checked .ant-radio-inner){
+  border-color: transparent;
+}
+:deep(.ant-radio-inner::after),:deep(.ant-radio-checked::after){
+  border-radius: 4px;
+  transform: scale(0.8);
+}
 </style>
