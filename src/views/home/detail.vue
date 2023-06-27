@@ -29,8 +29,8 @@
       <div>
         <div class="text-[26px] font-bold text-[#1971c2]">Price:100 AIST</div>
         <a-button class="w-full mb-[20px]" type="primary" @click="downloadImage">Download（<span>{{count}}</span>）</a-button>
-        <div class="overflow-y-scroll">
-          <pre>{{ detailDesc }}<label class="text-[#1971c2]">View more</label></pre>
+        <div class="overflow-y-auto">
+          <pre>{{ detailDesc }}<!-- <label class="text-[#1971c2]">View more</label> --></pre>
         </div>
       </div>
     </div>
