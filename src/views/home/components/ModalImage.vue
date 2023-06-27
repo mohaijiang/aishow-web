@@ -24,7 +24,7 @@
           </div>
         </template>
         <div>
-          <img :src="getImageURL(cardInfo.imageName)" class="w-full rounded-[4px]" />
+          <img c class="w-full rounded-[4px]" />
         </div>
         <!-- <div>
           <img :src="getImageURL(cardInfo.imageName)" class="w-full rounded-[4px]" />
