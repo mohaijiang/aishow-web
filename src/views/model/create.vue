@@ -72,7 +72,8 @@ import {CreateModelVO, ImageVO, PolkadotAiChanClient} from "@/components/polkado
 import {ApiPromise, WsProvider} from "@polkadot/api";
 import {web3Accounts, web3Enable} from "@polkadot/extension-dapp";
 import { useRouter } from 'vue-router';
-import { uploadFile } from '@/utils/deoss'
+import { uploadFile, uploadFileToCloud, downLoadFile } from '@/utils/deoss'
+import { downloadRequest } from '@/utils/index'
 const defaultToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50IjoiY1hna0tNMkRYYXZHM20yOHNjR3E2N0U5VnJpZmFwV0ZZaUhTVUx2cjNBaXV2dlZxdiIsImV4cCI6MTY5MDM1NTU1OCwibmJmIjoxNjg3NzYzNDk4fQ.1BWfkaHUV-q3prCaRY9Nyqipmq-a5-p9ywEqMQc39yQ'
 
 
@@ -124,12 +125,13 @@ const handleSubmit = async () => {
     // })
     router.push('/detail')
 }
-const handleChange = (info: any) => {
+const handleChange = async(info: any) => {
+  info.file.status = 'done'
   console.log("info:",info);
-  const blob = new Blob([info], { type: info.type });
-  console.log("blob:",blob);
-  // return
-  uploadFile(blob,defaultToken,info.file.name)
+  const getImageUrl = await uploadFileToCloud(info,info.file.name)
+  console.log('getImageUrl',getImageUrl)
+  // downloadRequest(getImageUrl.link,info.file.name)
+  // uploadFile(blob,defaultToken,info.file.name)
 }
 const handleDrop = (e: DragEvent) => {
   console.log("e:",e);

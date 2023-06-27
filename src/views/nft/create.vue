@@ -10,9 +10,9 @@
       <a-form-item label="Name" name="name">
         <a-input v-model:value="formData.name" placeholder="Please enter Name" allow-clear autocomplete="off" />
       </a-form-item>
-      <a-form-item label="Tags" name="name">
+      <!-- <a-form-item label="Tags" name="name">
         <a-input v-model:value="formData.name" placeholder="Please enter Name" allow-clear autocomplete="off" />
-      </a-form-item>
+      </a-form-item> -->
       <a-form-item label="Description" name="name">
         <div>The description will be included on the item's detail page underneath its image.</div>
         <a-textarea v-model:value="formData.name" placeholder="" allow-clear :auto-size="{ minRows: 5, maxRows: 15 }" />

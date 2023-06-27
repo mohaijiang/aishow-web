@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import type { UploadChangeParam } from 'ant-design-vue';
 
 export interface AuthData {
     account: string,
@@ -64,8 +65,8 @@ export function downLoadFile(fileId: string): Promise<any> {
         });
 }
 
-export function uploadFileToCloud(data: any,fileName:string): Promise<any> {
-
+export async function uploadFileToCloud(info: any,fileName:string): Promise<any> {
+    const data:any = await convertToBlob(info)
     const url = deShareUrl.concat(fileName);
     const config = {
         headers: {
@@ -83,3 +84,20 @@ export function uploadFileToCloud(data: any,fileName:string): Promise<any> {
             throw new Error(error.message);
         });
 }
+
+function convertToBlob(info: UploadChangeParam): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+      const { file } = info;
+      const reader = new FileReader();
+  
+      reader.onload = () => {
+        const blob = new Blob([reader.result as ArrayBuffer]);
+        resolve(blob);
+      };
+      reader.onerror = () => {
+        reject(new Error('Failed to convert File to Blob'));
+      };
+  
+      reader.readAsArrayBuffer(file.originFileObj as File);
+    });
+  }

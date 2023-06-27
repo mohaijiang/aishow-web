@@ -22,6 +22,14 @@ export default defineConfig({
   server: {
     host: '0.0.0.0', //ip地址
     port: 5174, //端口号
-    open: true //启动后是否自动打开浏览器
+    open: true, //启动后是否自动打开浏览器j
+    // proxy:{
+    //   "/share": {
+    //     target:
+    //       "https://d.cess.cloud/",
+    //     changeOrigin: true, //是否跨域
+    //     rewrite: (path) => path.replace(/^\/share/, ""),
+    //   },
+    // }
   }
 })

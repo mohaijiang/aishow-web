@@ -49,6 +49,7 @@ import { computed, reactive, ref } from 'vue';
 import type { UploadChangeParam } from 'ant-design-vue';
 import Wangeditor from '@/components/Wangeditor.vue';
 import { useRouter } from 'vue-router';
+import { v4 as uuidv4 } from 'uuid';
 const router = useRouter()
 
 const fileList = ref([]);
@@ -69,6 +70,8 @@ const cancelPost = ()=>{
 }
 const handleSubmit = async () => {
   // await formRef.value.validate();
+  let uuid = uuidv4()
+  console.log('uuid',uuid)
   router.push('/postDetail')
 }
 const handleChange = (info: UploadChangeParam) => { 
