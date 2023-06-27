@@ -51,8 +51,11 @@ export interface AiShowChain {
     modelDetail(modelHash: string): Promise<CreateModelVO>
     // 模型列表
     modelList(): Promise<CreateModelVO[]>
+    // 用户模型列表
+    userModelList(address: string): Promise<CreateModelVO[]>
+
     // postList
-    postList(): Promise<CreatePostVO[]>
+    postList(modelHash: string): Promise<CreatePostVO[]>
     // nft list
     nftList(): Promise<NFT[]>
 }
@@ -179,33 +182,62 @@ export class PolkadotAiChanClient implements AiShowChain{
     }
 
     async modelList() {
-       const model: CreateModelVO = {
-           hash: "hash",
-           name: "name",
-           link: "link",
-           images: [{
-               image: "image",
-               imageLink: "imageLink",
-           }],
-           downloadPrice: 1000,
-           comment: "some commnent",
-       }
 
-       return [model]
-    }
+        const modelHashCodec = await this.api.query.aiModel.aiModelHash()
 
-    async postList() {
-        const post: CreatePostVO = {
-            modelHash: "hash",
-            name: "name",
-            images: [{
-                image: "image",
-                imageLink: "imageLink",
-            }],
-            comment: "some commnent",
+        if(modelHashCodec === undefined){
+            throw new Error('storage value not found')
         }
 
-        return [post]
+        // @ts-ignore
+        const modelHashList: string[] = modelHashCodec.toHuman()
+
+        let result: CreateModelVO[] = []
+
+        for(let hash of modelHashList){
+            const model: CreateModelVO = await this.modelDetail(hash)
+            result.push(model)
+        }
+
+        return result
+    }
+
+    async userModelList(address: string): Promise<CreateModelVO[]> {
+        const modelHashCodec = await this.api.query.aiModel.userModels(address)
+
+        if(modelHashCodec === undefined){
+            throw new Error('storage value not found')
+        }
+
+        // @ts-ignore
+        const modelHashList: string[] = modelHashCodec.toHuman()
+
+        let result: CreateModelVO[] = []
+
+        for(let hash of modelHashList){
+            const model: CreateModelVO = await this.modelDetail(hash)
+            result.push(model)
+        }
+
+        return result
+    }
+
+    async postList(modelHash: string) {
+        const postsCodec = await this.api.query.aiModel.modelPost(modelHash)
+        if(postsCodec === undefined){
+            throw new Error('storage value not found')
+        }
+
+        if(!(postsCodec.value instanceof Array)){
+            throw new Error('storage type error')
+        }
+
+        const result = []
+        for(let postCodec of postsCodec.value){
+            result.push(this.toCreatePostVO(postCodec))
+        }
+
+        return  result
     }
 
     async nftList() {
@@ -221,6 +253,8 @@ export class PolkadotAiChanClient implements AiShowChain{
         if(result === undefined){
             throw new Error("storage value not found")
         }
+
+        // @ts-ignore
         const imageNames = result.value.images.toHuman()
         const imageLinks = result.value.imageLinks.toHuman()
         const images = []
@@ -240,5 +274,24 @@ export class PolkadotAiChanClient implements AiShowChain{
         }
 
         return model
+    }
+
+    toCreatePostVO = (item: any) => {
+        const imageNames = item.images.toHuman()
+        const imageLinks = item.imageLinks.toHuman()
+        const images = []
+        for(let i = 0 ; i< imageNames.length; i++){
+            images.push({
+                image: imageNames[i],
+                imageLink: imageLinks[i]
+            })
+        }
+        const post: CreatePostVO = {
+            modelHash: item.modelHash.toHuman(),
+            name: item.name.toHuman(),
+            images: images,
+            comment: item.comment.toHuman(),
+        }
+        return post
     }
 }
