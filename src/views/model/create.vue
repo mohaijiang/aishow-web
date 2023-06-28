@@ -62,6 +62,7 @@
     <div class="mt-8 text-center">
       <a-button type="primary" class="mr-10 w-[120px]" @click="cancelUploadModal">Cancel</a-button>
       <a-button type="primary" @click="handleSubmit" class="w-[120px]">Submit</a-button>
+      <a-button type="primary" @click="test" class="w-[120px]">test</a-button>
     </div>
   </div>
 </template>
@@ -127,7 +128,7 @@ const handleSubmit = async () => {
 const handleChange = async(info: any) => {
   console.log("info:",info);
   if (info.event !== undefined) {
-    
+
   }
 }
 const handleDrop = (e: DragEvent) => {
@@ -165,6 +166,54 @@ const uploadFileList = async()=>{
     hash:getFileUrl.id,
     link:getFileUrl.link
   }
+}
+
+const test = async () => {
+    const allInjected = await web3Enable('my cool dapp');
+    const allAccounts = await web3Accounts();
+    const account = allAccounts[0].address
+    const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
+    const api = await ApiPromise.create({provider: wsProvider});
+    const client = new PolkadotAiChanClient(api,account)
+
+    const result = await client.createModel({
+        name: "a2",
+        // 模型hash， 文件上传后返回的hash值
+        hash: "a2",
+        // 模型下载链接
+        link: "string",
+        // 图片列表
+        images: [{
+           image: "image",
+           imageLink: "imageLink",
+        }],
+        // 下载价格
+        downloadPrice: 1000,
+        // markdown 备注
+        comment: "comment"
+    }, undefined)
+
+
+    // const result = await client.createPost({
+    //     modelHash: "a2",
+    //     uuid: "uuid",
+    //     name: "some name",
+    //     images: [{
+    //        image: "image",
+    //        imageLink: "imageLink",
+    //     }],
+    //     comment: "comment",
+    // },undefined)
+
+    // const result = await client.nftCreateCollection("a2")
+    // const result = await client.nftMint("a2","uuid")
+
+    // const result = await client.postList("a2")
+
+    // const result = await client.userNFT("5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY")
+
+    console.log("modelDetail: ", result)
+
 }
 </script>
 <style lang="less" scoped>
