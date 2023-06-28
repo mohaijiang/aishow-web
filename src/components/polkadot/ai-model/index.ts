@@ -46,7 +46,13 @@ export interface NFT {
     itemLink: string,
 }
 
-export type Callback = ((status: any )=> void )| undefined
+export interface CallbackResult {
+    status: string,
+    id: string,
+    error: any
+}
+
+export type Callback = ((result: CallbackResult)=> void )| undefined
 
 export interface AiShowChain {
 
@@ -140,7 +146,7 @@ export class PolkadotAiChanClient implements AiShowChain{
             if (result.status.isInBlock) {
                 if(result.dispatchError){
                     if(callback) {
-                        callback(result.dispatchError.toHuman())
+                        callback({status: "error",id: "",error: result.dispatchError.toHuman()})
                     }
                     this.substrateListener(result)
                     unsub()
@@ -148,12 +154,12 @@ export class PolkadotAiChanClient implements AiShowChain{
                 }
                 console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
                 if(callback) {
-                    callback("inBlock")
+                    callback({status: "inBlock", id: createModelVO.hash,error: ""})
                 }
             } else if (result.status.isFinalized) {
                 console.log(`Transaction finalized at blockHash ${result.status.asFinalized}`);
                 if(callback) {
-                    callback("finalized")
+                    callback({status: "finalized",id: createModelVO.hash,error: ""})
                 }
                 unsub();
             }
@@ -170,23 +176,23 @@ export class PolkadotAiChanClient implements AiShowChain{
             createPostVO.images.map(t => t.imageLink),
             createPostVO.comment
         ).signAndSend(this.sender, {signer: injector.signer}, (result) => {
-            if(result.dispatchError){
-                if(callback) {
-                    callback(result.dispatchError.toHuman())
-                }
-                unsub()
-                return
-            }
             if (result.status.isInBlock) {
+                if(result.dispatchError){
+                    if(callback) {
+                        callback({status: "error",id: "",error: result.dispatchError.toHuman()})
+                    }
+                    this.substrateListener(result)
+                    unsub()
+                    return
+                }
                 console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
-                this.substrateListener(result)
                 if(callback) {
-                    callback("inBlock")
+                    callback({status: "inBlock", id: createPostVO.uuid,error: ""})
                 }
             } else if (result.status.isFinalized) {
                 console.log(`Transaction finalized at blockHash ${result.status.asFinalized}`);
                 if(callback) {
-                    callback("finalized")
+                    callback({status: "finalized",id: createPostVO.uuid,error: ""})
                 }
                 unsub();
             }
@@ -198,26 +204,23 @@ export class PolkadotAiChanClient implements AiShowChain{
         const unsub =  await this.api.tx.aiModel.buyModel(
             modelHash
         ).signAndSend(this.sender, {signer: injector.signer}, (result) => {
-            console.log(result.status)
-
             if (result.status.isInBlock) {
                 if(result.dispatchError){
                     if(callback) {
-                        callback(result.dispatchError.toHuman())
+                        callback({status: "error",id: "",error: result.dispatchError.toHuman()})
                     }
+                    this.substrateListener(result)
                     unsub()
                     return
                 }
-
                 console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
                 if(callback) {
-                    callback("inBlock")
+                    callback({status: "inBlock", id: modelHash,error: ""})
                 }
-                this.substrateListener(result)
             } else if (result.status.isFinalized) {
                 console.log(`Transaction finalized at blockHash ${result.status.asFinalized}`);
                 if(callback) {
-                    callback("finalized")
+                    callback({status: "finalized",id: modelHash,error: ""})
                 }
                 unsub();
             }
