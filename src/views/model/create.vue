@@ -20,7 +20,7 @@
             Attach up to 1 files. Accepted file types: .ckpt, .pt, .safetensors, .bin, .zip, .yaml, .yml, .onnx
           </p>
         </a-upload-dragger>
-        <a-button :disabled="false" type="primary" class="w-full mt-4">Start Upload</a-button>
+        <a-button :disabled="fileList.length ? false : true" type="primary" class="w-full mt-4" @click="uploadFileList">Start Upload</a-button>
       </a-form-item>
       <a-form-item label="Upload modele image" name="picName">
         <div>The image is used to show the effect of the model generation example</div>
@@ -42,19 +42,19 @@
             Attach up to 5 files
           </p>
         </a-upload-dragger>
-        <a-button :disabled="true" type="primary" class="w-full mt-4">Start Upload</a-button>
+        <a-button :disabled="imageList.length ? false : true" type="primary" class="w-full mt-4" @click="uploadImageList">Start Upload</a-button>
       </a-form-item>
-      <a-form-item label="Set a price" name="name">
+      <a-form-item label="Set a price" name="price">
         <div>The image is used to show the effect of the model generation example</div>
-        <a-input class="!w-[95%]" v-model:value="formData.name" placeholder="Amount" allow-clear autocomplete="off" />AIST
+        <a-input class="!w-[95%]" v-model:value="formData.price" placeholder="Amount" allow-clear autocomplete="off" />AIST
       </a-form-item>
       <a-form-item label="Name" name="name">
         <a-input v-model:value="formData.name" placeholder="Please enter Name" allow-clear autocomplete="off" />
       </a-form-item>
-      <a-form-item label="About your model" name="name">
+      <a-form-item label="About your model" name="description">
         <div>What your model does</div>
         <Wangeditor
-          v-model:value="formData.name"
+          v-model:value="formData.description"
           placeholder="model"
         />
       </a-form-item>
@@ -74,30 +74,33 @@ import {ApiPromise, WsProvider} from "@polkadot/api";
 import {web3Accounts, web3Enable} from "@polkadot/extension-dapp";
 import { useRouter } from 'vue-router';
 import { uploadFile, uploadFileToCloud, downLoadFile } from '@/utils/deoss'
-import { downloadFile } from '@/utils/index'
 const defaultToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50IjoiY1hna0tNMkRYYXZHM20yOHNjR3E2N0U5VnJpZmFwV0ZZaUhTVUx2cjNBaXV2dlZxdiIsImV4cCI6MTY5MDM1NTU1OCwibmJmIjoxNjg3NzYzNDk4fQ.1BWfkaHUV-q3prCaRY9Nyqipmq-a5-p9ywEqMQc39yQ'
 
 
 const router = useRouter();
-const fileList = ref([]);
-const imageList = ref([]);
+const fileList = ref<any>([]);
+const imageList = ref<any>([]);
 const formRef = ref();
 const formData = reactive({
+  price:'',
   name: '',
+  description:''
 });
 const formRules = computed(() => {
 
   const requiredRule = (message: string) => ({ required: true, trigger: 'change', message });
 
   return {
+    price: [requiredRule('Please enter price!')],
     name: [requiredRule('Please enter name!')],
+    description: [requiredRule('Please enter description!')],
   };
 });
 const cancelUploadModal = () =>{
   router.push('/')
 }
 const handleSubmit = async () => {
-    // await formRef.value.validate();
+    await formRef.value.validate();
 
     // console.log("submit")
     // // 以下需要配置为全局
@@ -127,23 +130,36 @@ const handleSubmit = async () => {
     router.push('/detail')
 }
 const handleChange = async(info: any) => {
-  // info.file.status = 'done'
   console.log("info:",info);
   if (info.event !== undefined) {
-    const getImageUrl = await uploadFileToCloud(info,info.file.name)
-    console.log('getImageUrl',getImageUrl)
-    downloadFile(getImageUrl.link.replace('d.cess.cloud','/api'),info.file.name)
-    // uploadFile(blob,defaultToken,info.file.name)
+    
   }
 }
 const handleDrop = (e: DragEvent) => {
   console.log("e:",e);
 }
-const handleFileChange = (info: UploadChangeParam)=>{
+// 点击上传图片回调
+const uploadImageList = async()=>{
+  console.log('点击上传图片回调',imageList.value.length,imageList.value)
+  for(let i=0;i<imageList.value.length;i++){
+    const getImageUrl = await uploadFileToCloud(imageList.value[i],imageList.value[i].name)
+    console.log('getImageUrl',getImageUrl)
+  }
+}
+const handleFileChange = async(info: UploadChangeParam)=>{
   console.log('handleFileChange',info)
+  if (info.event !== undefined) {
+
+  }
 }
 const handleFileDrop = (e: DragEvent) => {
   console.log("handleFileDrop",e);
+}
+// 点击上传文件回调
+const uploadFileList = async()=>{
+  console.log('点击上传文件回调',fileList.value)
+  const getFileUrl = await uploadFileToCloud(fileList.value[0],fileList.value[0].name)
+  console.log('getFileUrl',getFileUrl)
 }
 </script>
 <style lang="less" scoped>

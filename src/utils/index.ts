@@ -1,3 +1,4 @@
+// downloadFile(getImageUrl.link.replace('d.cess.cloud','/api'),info.file.name)
 export const downloadFile = (url:string,name:string) => {
   const desiredFileName = name; // 你希望的文件名
   fetch(url)

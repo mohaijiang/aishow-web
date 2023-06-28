@@ -85,9 +85,9 @@ export async function uploadFileToCloud(info: any, fileName: string): Promise<an
     });
 }
 
-function convertToBlob(info: UploadChangeParam): Promise<Blob> {
+function convertToBlob(info: any): Promise<Blob> {
   return new Promise((resolve, reject) => {
-    const { file } = info;
+    const file= info;
     const reader = new FileReader();
 
     reader.onload = () => {
