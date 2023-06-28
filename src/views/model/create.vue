@@ -32,6 +32,7 @@
           @drop="handleDrop"
           :maxCount="5"
           accept=".jpg,.jpeg,.png,.svg,.gif,.tiff,.bmp,.webp"
+          action="/api"
         >
           <p class="ant-upload-drag-icon">
             <img src="@/assets/icons/picture.svg" class="w-[60px]" />
@@ -73,7 +74,7 @@ import {ApiPromise, WsProvider} from "@polkadot/api";
 import {web3Accounts, web3Enable} from "@polkadot/extension-dapp";
 import { useRouter } from 'vue-router';
 import { uploadFile, uploadFileToCloud, downLoadFile } from '@/utils/deoss'
-import { downloadRequest } from '@/utils/index'
+import { downloadFile } from '@/utils/index'
 const defaultToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50IjoiY1hna0tNMkRYYXZHM20yOHNjR3E2N0U5VnJpZmFwV0ZZaUhTVUx2cjNBaXV2dlZxdiIsImV4cCI6MTY5MDM1NTU1OCwibmJmIjoxNjg3NzYzNDk4fQ.1BWfkaHUV-q3prCaRY9Nyqipmq-a5-p9ywEqMQc39yQ'
 
 
@@ -131,9 +132,9 @@ const handleChange = async(info: any) => {
   if (info.event !== undefined) {
     const getImageUrl = await uploadFileToCloud(info,info.file.name)
     console.log('getImageUrl',getImageUrl)
+    downloadFile(getImageUrl.link.replace('d.cess.cloud','/api'),info.file.name)
+    // uploadFile(blob,defaultToken,info.file.name)
   }
-  // downloadRequest(getImageUrl.link,info.file.name)
-  // uploadFile(blob,defaultToken,info.file.name)
 }
 const handleDrop = (e: DragEvent) => {
   console.log("e:",e);
@@ -146,4 +147,7 @@ const handleFileDrop = (e: DragEvent) => {
 }
 </script>
 <style lang="less" scoped>
+&:deep(.ant-upload-list-item-error .ant-upload-list-item-name){
+  color:#fff
+}
 </style>
