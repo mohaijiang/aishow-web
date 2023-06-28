@@ -147,7 +147,4 @@ const handleFileDrop = (e: DragEvent) => {
 }
 </script>
 <style lang="less" scoped>
-&:deep(.ant-upload-list-item-error .ant-upload-list-item-name){
-  color:#fff
-}
 </style>
