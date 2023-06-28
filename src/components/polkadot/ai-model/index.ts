@@ -18,13 +18,17 @@ export interface CreateModelVO {
 }
 
 export interface ImageVO {
+    // 图片名（图片hash)
     image: string
+    // 图片地址
     imageLink: string
 }
 
 export interface CreatePostVO {
     // 模型hash
     modelHash: string
+    // uuid
+    uuid: string
     // 主题名
     name: string
     // 图片列表
@@ -35,6 +39,9 @@ export interface CreatePostVO {
 
 export interface NFT {
 
+    collectionId: number,
+    itemId: number,
+    post: CreatePostVO
 }
 
 export type Callback = ((status: any )=> void )| undefined
@@ -58,6 +65,12 @@ export interface AiShowChain {
     postList(modelHash: string): Promise<CreatePostVO[]>
     // nft list
     nftList(): Promise<NFT[]>
+    // nft 创建collection
+    nftCreateCollection(modelHash: string): Promise<number>
+    //nft mint
+    nftMint(modelHash: string, uuid: string): Promise<void>
+    // userNFT
+    userNFT(address: string): Promise<NFT[]>
 }
 
 
@@ -87,6 +100,30 @@ export class PolkadotAiChanClient implements AiShowChain{
         this.sender = sender
     }
 
+    substrateListener = ({ status, events }) => {
+        if (status.isInBlock || status.isFinalized) {
+            events
+                // find/filter for failed events
+                .filter(({ event }) =>
+                    this.api.events.system.ExtrinsicFailed.is(event)
+                )
+                // we know that data for system.ExtrinsicFailed is
+                // (DispatchError, DispatchInfo)
+                .forEach(({ event: { data: [error, info] } }) => {
+                    if (error.isModule) {
+                        // for module errors, we have the section indexed, lookup
+                        const decoded = this.api.registry.findMetaError(error.asModule);
+                        const { docs, method, section } = decoded;
+
+                        console.log(`${section}.${method}: ${docs.join(' ')}`);
+                    } else {
+                        // Other, CannotLookup, BadOrigin, no extra info
+                        console.log(error.toString());
+                    }
+                });
+        }
+    }
+
     async createModel( createModelVO: CreateModelVO,callback: Callback ) {
         const injector = await web3FromAddress(this.sender)
         const unsub = await this.api.tx.aiModel.createAiModel(
@@ -103,6 +140,7 @@ export class PolkadotAiChanClient implements AiShowChain{
                     if(callback) {
                         callback(result.dispatchError.toHuman())
                     }
+                    this.substrateListener(result)
                     unsub()
                     return
                 }
@@ -138,6 +176,7 @@ export class PolkadotAiChanClient implements AiShowChain{
             }
             if (result.status.isInBlock) {
                 console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
+                this.substrateListener(result)
                 if(callback) {
                     callback("inBlock")
                 }
@@ -171,6 +210,7 @@ export class PolkadotAiChanClient implements AiShowChain{
                 if(callback) {
                     callback("inBlock")
                 }
+                this.substrateListener(result)
             } else if (result.status.isFinalized) {
                 console.log(`Transaction finalized at blockHash ${result.status.asFinalized}`);
                 if(callback) {
@@ -240,11 +280,35 @@ export class PolkadotAiChanClient implements AiShowChain{
         return  result
     }
 
-    async nftList() {
-        const nft : NFT =  {
+    async nftList(): Promise<NFT[]> {
 
+        const result: NFT[] = []
+        // 先查询所有collection
+        const nftItem = await this.api.query.nfts.itemMetadataOf.entries()
+
+        for(let item of nftItem ){
+            // @ts-ignore
+            let storageKey = item[0].toHuman()
+            // @ts-ignore
+            const collectionId = storageKey[0]
+            // @ts-ignore
+            const itemId = storageKey[1]
+            const collectionCodec = await this.api.query.nfts.collectionMetadataOf(collectionId)
+            // @ts-ignore
+            const modelHash = collectionCodec.toHuman().data
+            // @ts-ignore
+            const uuid = item[1].toHuman().data
+            const post = await this.getCreatePostVO(modelHash,uuid)
+            result.push({
+                collectionId: collectionId,
+                itemId: itemId,
+                post: post
+            })
         }
-        return [nft]
+
+
+
+        return result
     }
 
     async modelDetail(modelHash: string) {
@@ -293,5 +357,133 @@ export class PolkadotAiChanClient implements AiShowChain{
             comment: item.comment.toHuman(),
         }
         return post
+    }
+
+    async getCreatePostVO(modelHash: string, uuid: string): Promise<CreatePostVO>{
+
+        const codec = await this.api.query.aiModel.modelPost(modelHash,uuid)
+
+        const vo = codec.toHuman()
+        const imageNames = vo.images
+        const imageLinks = vo.imageLinks
+        const images = []
+        for(let i = 0 ; i< imageNames.length; i++){
+            images.push({
+                image: imageNames[i],
+                imageLink: imageLinks[i]
+            })
+        }
+        return {
+            modelHash: modelHash,
+            name: uuid,
+            images: images,
+            comment: vo.comment,
+        }
+    }
+
+    async nftCreateCollection(modelHash: string) {
+        const injector = await web3FromAddress(this.sender)
+        const collectionIdCodec = await this.api.query.nfts.nextCollectionId()
+        let collectionId = 0
+        if(collectionIdCodec.isSome){
+            collectionId = collectionIdCodec.value.toNumber()
+        }
+
+        const txs = [
+            this.api.tx.nfts.create(
+            {Id: this.sender},
+            {
+                settings: `${collectionId}`,
+                maxSupply: null,
+                mintSettings: {
+                    defaultItemSettings: "0",
+                    endBlock: null,
+                    mintType: "Issuer",
+                    price: null,
+                    startBlock: null,
+                }
+            },
+        ),
+            this.api.tx.nfts.setCollectionMetadata(
+                collectionId,modelHash
+            )
+        ]
+
+        const unsub =  await this.api.tx.utility.batch(txs).signAndSend(this.sender, {signer: injector.signer}, (result) => {
+            console.log(result.status)
+            if (result.status.isInBlock) {
+                console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
+                this.substrateListener(result)
+            } else if (result.status.isFinalized) {
+                console.log(`Transaction finalized at blockHash ${result.status.asFinalized}`);
+                unsub();
+            }
+        });
+
+        return collectionId
+    }
+
+    async nftMint(modelHash: string, uuid: string): Promise<void> {
+        const collectionId = await this.nftGetCollectionId(modelHash)
+        // 查询item 数量
+        const collectionCodec = await this.api.query.nfts.collection(collectionId)
+        if(collectionCodec === undefined){
+            throw new Error("storage not found")
+        }
+        const collection = collectionCodec.toHuman()
+        const itemNum = parseInt(collection.items)
+        const injector = await web3FromAddress(this.sender)
+
+        const txs = [
+            this.api.tx.nfts.mint(
+                collectionId,
+                itemNum,
+                {Id: this.sender},
+                null
+            ),
+            this.api.tx.nfts.setMetadata(
+                collectionId,
+                itemNum,
+                uuid
+            )
+        ]
+
+        const unsub =  await this.api.tx.utility.batch(txs).signAndSend(this.sender, {signer: injector.signer}, (result) => {
+            console.log(result.status)
+            if (result.status.isInBlock) {
+                console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
+                this.substrateListener(result)
+            } else if (result.status.isFinalized) {
+                console.log(`Transaction finalized at blockHash ${result.status.asFinalized}`);
+                this.substrateListener(result)
+                unsub();
+            }
+        });
+    }
+
+    async nftGetCollectionId(modelHash: string): Promise<number> {
+        const result = await this.api.query.nfts.collectionMetadataOf.entries()
+
+        for(let item of result){
+            if(item.length < 2 ){
+                continue
+            }
+            // @ts-ignore
+            if(item[1].toHuman().data === modelHash && item[0]){
+                const numArr = item[0].toHuman()
+                if(numArr instanceof Array){
+                    // @ts-ignore
+                    return parseInt(numArr[0])
+                }
+            }
+        }
+        throw new Error('storage not found')
+    }
+
+    async nftSetCollectionMetadata(collectionId: number, modelHash: string): Promise<void> {
+        const injector = await web3FromAddress(this.sender)
+        const unsub =  await this.api.tx.nfts.setCollectionMetadata(
+            collectionId,modelHash
+        ).signAndSend(this.sender, {signer: injector.signer}, this.substrateListener);
     }
 }
