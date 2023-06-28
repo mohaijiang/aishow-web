@@ -162,6 +162,7 @@ export class PolkadotAiChanClient implements AiShowChain{
         const injector = await web3FromAddress(this.sender)
         const unsub = await this.api.tx.aiModel.createAiImage(
             createPostVO.modelHash,
+            createPostVO.uuid,
             createPostVO.name,
             createPostVO.images.map(t => t.image),
             createPostVO.images.map(t => t.imageLink),
@@ -263,18 +264,16 @@ export class PolkadotAiChanClient implements AiShowChain{
     }
 
     async postList(modelHash: string) {
-        const postsCodec = await this.api.query.aiModel.modelPost(modelHash)
+        const postsCodec = await this.api.query.aiModel.modelPost.entries(modelHash)
         if(postsCodec === undefined){
             throw new Error('storage value not found')
         }
 
-        if(!(postsCodec.value instanceof Array)){
-            throw new Error('storage type error')
-        }
 
         const result = []
-        for(let postCodec of postsCodec.value){
-            result.push(this.toCreatePostVO(postCodec))
+        for(let postCodec of postsCodec){
+            const keys = postCodec[0].toHuman()
+            result.push(this.toCreatePostVO(postCodec[1].toHuman()))
         }
 
         return  result
@@ -305,9 +304,6 @@ export class PolkadotAiChanClient implements AiShowChain{
                 post: post
             })
         }
-
-
-
         return result
     }
 
@@ -341,8 +337,8 @@ export class PolkadotAiChanClient implements AiShowChain{
     }
 
     toCreatePostVO = (item: any) => {
-        const imageNames = item.images.toHuman()
-        const imageLinks = item.imageLinks.toHuman()
+        const imageNames = item.images
+        const imageLinks = item.imageLinks
         const images = []
         for(let i = 0 ; i< imageNames.length; i++){
             images.push({
@@ -351,10 +347,11 @@ export class PolkadotAiChanClient implements AiShowChain{
             })
         }
         const post: CreatePostVO = {
-            modelHash: item.modelHash.toHuman(),
-            name: item.name.toHuman(),
+            modelHash: item.modelHash,
+            uuid: item.uuid,
+            name: item.name,
             images: images,
-            comment: item.comment.toHuman(),
+            comment: item.comment,
         }
         return post
     }
@@ -375,7 +372,8 @@ export class PolkadotAiChanClient implements AiShowChain{
         }
         return {
             modelHash: modelHash,
-            name: uuid,
+            uuid: vo.uuid,
+            name: vo.name,
             images: images,
             comment: vo.comment,
         }
@@ -485,5 +483,20 @@ export class PolkadotAiChanClient implements AiShowChain{
         const unsub =  await this.api.tx.nfts.setCollectionMetadata(
             collectionId,modelHash
         ).signAndSend(this.sender, {signer: injector.signer}, this.substrateListener);
+    }
+
+    async userNFT(address: string): Promise<NFT[]> {
+
+        const result:NFT[] = []
+        const collectionAccountCodec = await this.api.query.nfts.collectionAccount.entries(address)
+
+        for(let item of collectionAccountCodec){
+            const keys = item[0].toHuman()
+            const collectionId = keys[1]
+
+            debugger
+        }
+
+        return result
     }
 }
