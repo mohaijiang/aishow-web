@@ -69,18 +69,18 @@
 import { computed, reactive, ref } from 'vue';
 import type { UploadChangeParam } from 'ant-design-vue';
 import Wangeditor from '@/components/Wangeditor.vue';
-import {CreateModelVO, ImageVO, PolkadotAiChanClient} from "@/components/polkadot/ai-model"
+import {CreateModelVO, PolkadotAiChanClient} from "@/components/polkadot/ai-model"
 import {ApiPromise, WsProvider} from "@polkadot/api";
 import {web3Accounts, web3Enable} from "@polkadot/extension-dapp";
 import { useRouter } from 'vue-router';
-import { uploadFile, uploadFileToCloud, downLoadFile } from '@/utils/deoss'
-const defaultToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50IjoiY1hna0tNMkRYYXZHM20yOHNjR3E2N0U5VnJpZmFwV0ZZaUhTVUx2cjNBaXV2dlZxdiIsImV4cCI6MTY5MDM1NTU1OCwibmJmIjoxNjg3NzYzNDk4fQ.1BWfkaHUV-q3prCaRY9Nyqipmq-a5-p9ywEqMQc39yQ'
-
+import { uploadFileToCloud } from '@/utils/deoss'
 
 const router = useRouter();
 const fileList = ref<any>([]);
 const imageList = ref<any>([]);
 const formRef = ref();
+const fileInfo = ref()
+const imageInfo = ref()
 const formData = reactive({
   price:'',
   name: '',
@@ -101,33 +101,28 @@ const cancelUploadModal = () =>{
 }
 const handleSubmit = async () => {
     await formRef.value.validate();
-
-    // console.log("submit")
-    // // 以下需要配置为全局
-    // const allInjected = await web3Enable('my cool dapp');
-    // console.log(allInjected)
-    // const allAccounts = await web3Accounts();
-    // const account = allAccounts[0].address
-    // const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
-    // const api = await ApiPromise.create({provider: wsProvider});
-    // // 以上需要配置为全局
-    //
-    // const client = new PolkadotAiChanClient(api,account)
-    // const model: CreateModelVO =  {
-    //     hash: "",
-    //     name: "string",
-    //     link: "string",
-    //     images: [{
-    //       image: "",
-    //       imageLink: "",
-    //     }],
-    //     downloadPrice: 1000,
-    //     comment: ""
-    // }
-    // await client.createModel(model,(status ) => {
-    //     console.log(status)
-    // })
-    router.push('/detail')
+    // 以下需要配置为全局
+    const allInjected = await web3Enable('my cool dapp');
+    console.log(allInjected)
+    const allAccounts = await web3Accounts();
+    const account = allAccounts[0].address
+    const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
+    const api = await ApiPromise.create({provider: wsProvider});
+    // 以上需要配置为全局
+    const client = new PolkadotAiChanClient(api,account)
+    const model: CreateModelVO =  {
+        hash: fileInfo.value.hash,
+        name: formData.name,
+        link: fileInfo.value.link,
+        images: imageInfo.value,
+        downloadPrice: +formData.price,
+        comment: formData.description
+    }
+    console.log(11111111111,model)
+    await client.createModel(model,(status) => {
+        console.log(status)
+    })
+    // router.push('/detail')
 }
 const handleChange = async(info: any) => {
   console.log("info:",info);
@@ -141,10 +136,16 @@ const handleDrop = (e: DragEvent) => {
 // 点击上传图片回调
 const uploadImageList = async()=>{
   console.log('点击上传图片回调',imageList.value.length,imageList.value)
+  let images = []
   for(let i=0;i<imageList.value.length;i++){
     const getImageUrl = await uploadFileToCloud(imageList.value[i],imageList.value[i].name)
-    console.log('getImageUrl',getImageUrl)
+    images[i] = {
+      image:getImageUrl.id,
+      imageLink:getImageUrl.link
+    }
+    console.log('getImageUrl',getImageUrl,images)
   }
+  imageInfo.value = images
 }
 const handleFileChange = async(info: UploadChangeParam)=>{
   console.log('handleFileChange',info)
@@ -160,6 +161,10 @@ const uploadFileList = async()=>{
   console.log('点击上传文件回调',fileList.value)
   const getFileUrl = await uploadFileToCloud(fileList.value[0],fileList.value[0].name)
   console.log('getFileUrl',getFileUrl)
+  fileInfo.value = {
+    hash:getFileUrl.id,
+    link:getFileUrl.link
+  }
 }
 </script>
 <style lang="less" scoped>
