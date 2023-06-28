@@ -126,10 +126,12 @@ const handleSubmit = async () => {
     router.push('/detail')
 }
 const handleChange = async(info: any) => {
-  info.file.status = 'done'
+  // info.file.status = 'done'
   console.log("info:",info);
-  const getImageUrl = await uploadFileToCloud(info,info.file.name)
-  console.log('getImageUrl',getImageUrl)
+  if (info.event !== undefined) {
+    const getImageUrl = await uploadFileToCloud(info,info.file.name)
+    console.log('getImageUrl',getImageUrl)
+  }
   // downloadRequest(getImageUrl.link,info.file.name)
   // uploadFile(blob,defaultToken,info.file.name)
 }
