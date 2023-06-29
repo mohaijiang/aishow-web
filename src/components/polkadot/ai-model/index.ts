@@ -147,6 +147,7 @@ export class PolkadotAiChanClient implements AiShowChain{
             createModelVO.images.map(t => t.image),
             createModelVO.images.map(t => t.imageLink),
             createModelVO.downloadPrice,
+            createModelVO.size,
             createModelVO.comment
         ).signAndSend(this.sender, {signer: injector.signer}, (result) => {
             if (result.status.isInBlock) {
@@ -550,6 +551,15 @@ export class PolkadotAiChanClient implements AiShowChain{
     }
 
     async userModelSelect(address: string): Promise<CreateModelVO[]> {
-        return []
+
+        const codec = await this.api.query.aiModel.userPaid(address)
+        console.log(codec.toHuman())
+        const result = []
+        for(let modelHash of codec.toHuman()){
+            const model = await this.modelDetail(modelHash)
+            result.push(model)
+        }
+
+        return result
     }
 }
