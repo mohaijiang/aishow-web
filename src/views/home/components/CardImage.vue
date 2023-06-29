@@ -1,6 +1,7 @@
 <template>
   <div class="mb-4 relative card-img  cursor-pointer">
-    <img :src="getImageURL(cardInfo.imageName)" class="w-full rounded-[4px]" />
+    <img :src="'https://'+cardInfo.images[0].imageLink" class="w-full rounded-[4px]" />
+    <!-- <img :src="getImageURL('https://'+cardInfo.images[0].imageLink)" class="w-full rounded-[4px]" /> -->
     <div class="absolute top-0 w-full h-full">
       <div class="flex justify-between p-2">
         <div class="left-tips"> Checkpoint </div>
@@ -11,11 +12,11 @@
       <div class="absolute bottom-0 rounded-bl-[4px] rounded-br-[4px] w-full">
         <div class="flex justify-end p-2">
           <div class="rounded-img w-[38px]  rounded-full">
-            <img :src="getImageURL(cardInfo.imageName)" class="w-[38px] h-[38px] rounded-full" />
+            <img :src="'https://'+cardInfo.images[0].imageLink" class="w-[38px] h-[38px] rounded-full" />
           </div>
         </div>
         <div class="card-btm p-2">
-          <div class="text-[14px] font-medium">majicMIX realistic</div>
+          <div class="text-[14px] font-medium">{{ cardInfo.name }}</div>
           <div v-if="false">
             <span class="btm-tips">
               <a-rate value="5" tooltips="desc" />
