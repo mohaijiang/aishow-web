@@ -55,7 +55,7 @@
         <div>What your model does</div>
         <Wangeditor
           v-model:value="formData.description"
-          placeholder="model"
+          placeholder="About your model"
         />
       </a-form-item>
     </a-form>

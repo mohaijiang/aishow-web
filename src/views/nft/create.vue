@@ -2,7 +2,7 @@
   <div class="mx-[20%]">
     <div class="text-[30px] font-bold my-6">Mint your NFT</div>
     <a-form :model="formData" layout="vertical" ref="formRef" :rules="formRules">
-      <a-form-item label="Choose the image from your Post"  name="name">
+      <a-form-item label="Choose the image from your Post"  name="post">
         <div @click="imgVisible=true" class="bg-[#25262b] rounded-[2px] w-[140px] h-[140px] cursor-pointer flex justify-center items-center">
           <img src="@/assets/icons/add-icon.svg" class="h-[20px] cursor-pointer" />
         </div>
@@ -13,9 +13,9 @@
       <!-- <a-form-item label="Tags" name="name">
         <a-input v-model:value="formData.name" placeholder="Please enter Name" allow-clear autocomplete="off" />
       </a-form-item> -->
-      <a-form-item label="Description" name="name">
+      <a-form-item label="Description" name="description">
         <div>The description will be included on the item's detail page underneath its image.</div>
-        <a-textarea v-model:value="formData.name" placeholder="" allow-clear :auto-size="{ minRows: 5, maxRows: 15 }" />
+        <a-textarea v-model:value="formData.description" placeholder="" allow-clear :auto-size="{ minRows: 5, maxRows: 15 }" />
       </a-form-item>
     </a-form>
     <div class="mt-8 text-center">
@@ -29,7 +29,7 @@
       <a-button type="primary" class="!ml-8">Confirm</a-button>
     </template>
     <div class="text-[20px] font-bold">Please select your image from your POST</div>
-    <div>我是标题</div>
+    <div>Title</div>
     <div class="mb-8">2023-06-20 15:34:56</div>
     <a-radio-group v-model:value="imgValue" name="radioGroup">
       <div class="grid grid-cols-3 gap-4">
@@ -62,7 +62,9 @@ const imgList = reactive<any>([
 ]);
 const formRef = ref();
 const formData = reactive({
+  post: '',
   name: '',
+  description: ''
 });
 const formRules = computed(() => {
 
@@ -70,6 +72,8 @@ const formRules = computed(() => {
 
   return {
     name: [requiredRule('Please enter name!')],
+    post: [requiredRule('Please choose a post!')],
+    description: [requiredRule('Please enter description!')],
   };
 });
 const cancelNft = ()=>{

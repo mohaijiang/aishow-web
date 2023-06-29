@@ -29,11 +29,11 @@
       <a-form-item label="Name" name="name">
         <a-input v-model:value="formData.name" placeholder="Please enter Name" allow-clear autocomplete="off" />
       </a-form-item>
-      <a-form-item label="About your model" name="description">
-        <div>What your model does</div>
+      <a-form-item label="About your image" name="description">
+        <div>What your image does</div>
         <Wangeditor
           v-model:value="formData.description"
-          placeholder="model"
+          placeholder="About your image"
         />
       </a-form-item>
     </a-form>
@@ -96,11 +96,10 @@ const handleSubmit = async () => {
     comment: formData.description,
   }
   console.log('createPostParams',createPostParams)
-  return
   try {
     await client.createPost(createPostParams,(info:any) => {
       console.log('createPost info',info)
-      router.push(`/postDetail?hash=${info.id}`)
+      router.push(`/postDetail?hash=${info.id}&id=${uuid}`)
     })
   } catch (error:any) {
     message.error('Failed ',error)
@@ -114,8 +113,8 @@ const handleDrop = (e: DragEvent) => {
 }
 const uploadPost = async()=>{
   console.log('uploadPost')
+  let images = []
   try {
-    let images = []
     for(let i=0;i<fileList.value.length;i++){
       const getPostImageUrl = await uploadFileToCloud(fileList.value[i],fileList.value[i].name)
       images[i] = {
@@ -125,7 +124,9 @@ const uploadPost = async()=>{
       console.log('getPostImageUrl',getPostImageUrl,images)
     }
     postImageInfo.value = images
+    console.log(1111111111,postImageInfo.value)
   } catch (error:any) {
+    postImageInfo.value = images
     message.error('Image upload encountered an issue, please try again')
   }
 }
