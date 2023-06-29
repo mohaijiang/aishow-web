@@ -20,9 +20,9 @@
             Attach up to 5 files
           </p>
         </a-upload-dragger>
-        <a-button :disabled="true" type="primary" class="w-full mt-4">Start Upload</a-button>
+        <a-button :disabled="fileList.length ? false : true" type="primary" class="w-full mt-4" @click="uploadPost">Start Upload</a-button>
       </a-form-item>
-      <a-form-item label="Choose the model you use" name="name">
+      <a-form-item label="Choose the model you use" name="model">
         <a-select v-model:value="formData.name" placeholder="Amount" allow-clear autocomplete="off">
           <option value="model">model</option>
         </a-select>
@@ -30,10 +30,10 @@
       <a-form-item label="Name" name="name">
         <a-input v-model:value="formData.name" placeholder="Please enter Name" allow-clear autocomplete="off" />
       </a-form-item>
-      <a-form-item label="About your model" name="name">
+      <a-form-item label="About your model" name="description">
         <div>What your model does</div>
         <Wangeditor
-          v-model:value="formData.name"
+          v-model:value="formData.description"
           placeholder="model"
         />
       </a-form-item>
@@ -60,13 +60,16 @@ const fileList = ref([]);
 const formRef = ref();
 const formData = reactive({
   name: '',
+  description: ''
 });
 const formRules = computed(() => {
 
   const requiredRule = (message: string) => ({ required: true, trigger: 'change', message });
 
   return {
+    model: [requiredRule('Please choose the model!')],
     name: [requiredRule('Please enter name!')],
+    description: [requiredRule('Please enter description!')],
   };
 });
 const cancelPost = ()=>{
@@ -105,6 +108,9 @@ const handleChange = (info: UploadChangeParam) => {
 }
 const handleDrop = (e: DragEvent) => {
   console.log("e:",e);
+}
+const uploadPost = ()=>{
+  console.log('uploadPost')
 }
 </script>
 <style lang="less" scoped>

@@ -74,6 +74,7 @@ import {ApiPromise, WsProvider} from "@polkadot/api";
 import {web3Accounts, web3Enable} from "@polkadot/extension-dapp";
 import { useRouter } from 'vue-router';
 import { uploadFileToCloud } from '@/utils/deoss'
+import prettyBytes from 'pretty-bytes';
 
 const router = useRouter();
 const fileList = ref<any>([]);
@@ -170,10 +171,12 @@ const uploadFileList = async()=>{
   console.log('点击上传文件回调',fileList.value)
   try{
     const getFileUrl = await uploadFileToCloud(fileList.value[0],fileList.value[0].name)
-    console.log('getFileUrl',getFileUrl)
+    const fileSize = prettyBytes(getFileUrl.size);
+    console.log('getFileUrl',getFileUrl,'fileSize',fileSize)
     fileInfo.value = {
       hash:getFileUrl.id,
-      link:getFileUrl.link
+      link:getFileUrl.link,
+      size:fileSize
     }
   }catch(error:any){
     message.error('File upload encountered an issue, please try again')

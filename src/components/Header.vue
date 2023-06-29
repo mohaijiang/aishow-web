@@ -69,7 +69,7 @@ const goProfile = ()=>{
   router.push('/profile')
 }
 onMounted(() => {
-  const walletAddr = JSON.parse(sessionStorage.getItem("account") || '').address;
+  const walletAddr = JSON.parse(sessionStorage.getItem("account") || '');
   if (walletAddr !== undefined && walletAddr !== '') {
     walletAddress.value = walletAddr.substring(0,5)+ "..." +walletAddr.substring(walletAddr.length-4)
   }
