@@ -29,7 +29,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue' 
+import { onMounted, ref } from 'vue' 
 import { useRouter } from 'vue-router';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
@@ -68,6 +68,12 @@ const goHome = ()=>{
 const goProfile = ()=>{
   router.push('/profile')
 }
+onMounted(() => {
+  const walletAddr = JSON.parse(sessionStorage.getItem("account") || '').address;
+  if (walletAddr !== undefined && walletAddr !== '') {
+    walletAddress.value = walletAddr.substring(0,5)+ "..." +walletAddr.substring(walletAddr.length-4)
+  }
+});
 </script>
 <style lang="less" scoped>
 
