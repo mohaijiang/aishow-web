@@ -75,6 +75,8 @@ export interface AiShowChain {
     userModelList(address: string): Promise<CreateModelVO[]>
     // postList
     postList(modelHash: string): Promise<CreatePostVO[]>
+    // post 详情
+    postDetail(modelHash: string, postUUID: string): Promise<CreatePostVO>
     // nft list
     nftList(): Promise<NFT[]>
     // nft 创建collection
@@ -271,6 +273,11 @@ export class PolkadotAiChanClient implements AiShowChain{
         }
 
         return  result
+    }
+
+    async postDetail(modelHash: string, postUUID: string): Promise<CreatePostVO> {
+        const postCodec = await this.api.query.aiModel.modelPost(modelHash,postUUID)
+        return this.toCreatePostVO(postCodec.toHuman())
     }
 
     async nftList(): Promise<NFT[]> {
