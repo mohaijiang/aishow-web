@@ -143,8 +143,8 @@ const handleDrop = (e: DragEvent) => {
 // 点击上传图片回调
 const uploadImageList = async()=>{
   console.log('点击上传图片回调',imageList.value.length,imageList.value)
+  let images = []
   try {
-    let images = []
     for(let i=0;i<imageList.value.length;i++){
       const getImageUrl = await uploadFileToCloud(imageList.value[i],imageList.value[i].name)
       images[i] = {
@@ -155,6 +155,7 @@ const uploadImageList = async()=>{
     }
     imageInfo.value = images
   } catch (error:any) {
+    imageInfo.value = images
     message.error('Image upload encountered an issue, please try again')
   }
 }
