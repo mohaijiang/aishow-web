@@ -21,23 +21,44 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
 import ImageList from "../home/components/ImageList.vue";
+import { PolkadotAiChanClient} from "@/components/polkadot/ai-model"
+import { web3Accounts, web3Enable } from "@polkadot/extension-dapp";
+import {ApiPromise, WsProvider} from "@polkadot/api";
+import { message } from "ant-design-vue";
 import { useRouter } from 'vue-router';
 const router = useRouter()
 
-const cardList = reactive<any>([
-  { imageName: 'one1.jpeg' }, { imageName: 'one.jpeg' },
-  { imageName: 'two1.png' }, { imageName: 'two.jpeg' },
-  { imageName: 'three1.jpeg' }, { imageName: 'three.jpeg' },
-]);
-const activeKey = ref('1');
+const cardList = reactive<any>([]);
+const activeKey = ref('2');
 const goCreateNFT = ()=>{
   router.push('/nftCreate')
 }
 const handleTabChange = (val:string)=>{
   console.log('handleTabChange',val)
 }
+const getModelList = async () => {
+  
+  // 以下需要配置为全局
+  const allInjected = await web3Enable('my cool dapp');
+  console.log(allInjected)
+  const allAccounts = await web3Accounts();
+  const account = allAccounts[0].address
+  const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
+  const api = await ApiPromise.create({provider: wsProvider});
+  // 以上需要配置为全局
+  const client = new PolkadotAiChanClient(api,account)
+  try {
+    const res = await client.userModelList(account)
+    console.log("cardList res:", res);
+    Object.assign(cardList,res);
+  } catch (error:any) {
+    message.error('Failed ',error)
+  }
+}
+
 onMounted(()=>{
-  handleTabChange(activeKey.value)
+  handleTabChange(activeKey.value);
+  getModelList();
 })
 </script>
 <style lang="less" scoped>

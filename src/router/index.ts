@@ -18,11 +18,6 @@ let router = createRouter({
       component: () => import('@/views/model/create.vue'),
     },
     {
-      path: "/modelDetail",
-      name: "modelDetail",
-      component: () => import('@/views/model/detail.vue'),
-    },
-    {
       path: "/nftCreate",
       name: "nftCreate",
       component: () => import('@/views/nft/create.vue'),
@@ -47,9 +42,14 @@ let router = createRouter({
       name: "profile",
       component: () => import('@/views/profile/index.vue'),
     },
+    {
+      path: "/test",
+      name: "test",
+      component: ()=> import('@/views/test/index.vue')
+    },
   ],
   // 每次切换路由页面滚动到顶部
-  scrollBehavior () {
+  scrollBehavior() {
     return { top: 0 }
   }
 });
