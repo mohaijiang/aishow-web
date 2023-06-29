@@ -35,7 +35,7 @@ defineProps({
 const goDetail = (item:any)=>{
   console.log('goDetail',item)
   // 需带上图片标识进入详情页
-  router.push('/detail')
+  router.push('/detail?hash='+item.hash)
 }
 </script>
 <style lang="less" scoped>

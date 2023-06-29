@@ -41,6 +41,7 @@ const connectWallet = async() => {
   const allAccounts = await web3Accounts();
   console.log('allAccounts',allAccounts);
   const walletAddr = allAccounts[0]?.address
+  sessionStorage.setItem("walletAddress", walletAddr);
   walletAddress.value = walletAddr.substring(0,5)+ "..." +walletAddr.substring(walletAddr.length-4)
   const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
   const api = await ApiPromise.create({provider: wsProvider});
@@ -69,7 +70,8 @@ const goProfile = ()=>{
   router.push('/profile')
 }
 onMounted(() => {
-  const walletAddr = JSON.parse(sessionStorage.getItem("account") || '').address;
+  console.log("walletAddress:",sessionStorage.getItem("walletAddress") || '');
+  const walletAddr = sessionStorage.getItem("walletAddress") || '';
   if (walletAddr !== undefined && walletAddr !== '') {
     walletAddress.value = walletAddr.substring(0,5)+ "..." +walletAddr.substring(walletAddr.length-4)
   }
