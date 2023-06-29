@@ -117,7 +117,8 @@ const handleSubmit = async () => {
         link: fileInfo.value.link,
         images: imageInfo.value,
         downloadPrice: +formData.price,
-        comment: formData.description
+        comment: formData.description,
+        size: fileInfo.value.size
     }
     console.log(11111111111,model,JSON.stringify(model))
     try {
