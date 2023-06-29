@@ -13,6 +13,8 @@ export interface CreateModelVO {
     images: ImageVO[]
     // 下载价格
     downloadPrice: number
+    // 模型大小
+    size: number,
     // markdown 备注
     comment: string
 }
@@ -63,6 +65,8 @@ export interface AiShowChain {
     createPost(createPostVO: CreatePostVO, callback: Callback): Promise<void>
     // 购买模型
     buyModel(modelHash: string, callback: Callback): Promise<void>
+    // 用户模型选择
+    userModelSelect(address: string): Promise<CreateModelVO[]>
     // 模型详情
     modelDetail(modelHash: string): Promise<CreateModelVO>
     // 模型列表
@@ -536,5 +540,9 @@ export class PolkadotAiChanClient implements AiShowChain{
             itemUuid: mintedImage.image,
             itemLink: mintedImage.imageLink
         }
+    }
+
+    async userModelSelect(address: string): Promise<CreateModelVO[]> {
+        return []
     }
 }
