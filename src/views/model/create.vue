@@ -62,13 +62,12 @@
     <div class="mt-8 text-center">
       <a-button type="primary" class="mr-10 w-[120px]" @click="cancelUploadModal">Cancel</a-button>
       <a-button type="primary" @click="handleSubmit" class="w-[120px]">Submit</a-button>
-      <a-button type="primary" @click="test" class="w-[120px]">test</a-button>
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue';
-import type { UploadChangeParam } from 'ant-design-vue';
+import { message, type UploadChangeParam } from 'ant-design-vue';
 import Wangeditor from '@/components/Wangeditor.vue';
 import {CreateModelVO, PolkadotAiChanClient} from "@/components/polkadot/ai-model"
 import {ApiPromise, WsProvider} from "@polkadot/api";
@@ -119,11 +118,16 @@ const handleSubmit = async () => {
         downloadPrice: +formData.price,
         comment: formData.description
     }
-    console.log(11111111111,model)
-    await client.createModel(model,(status) => {
-        console.log(status)
-    })
-    // router.push('/detail')
+    console.log(11111111111,model,JSON.stringify(model))
+    try {
+      await client.createModel(model,(info:any) => {
+        console.log('status~~~~~~',info)
+        router.push(`/detail?hash=${info.id}`)
+      })
+    } catch (error:any) {
+      message.error('Failed ',error)
+    }
+    
 }
 const handleChange = async(info: any) => {
   console.log("info:",info);
@@ -137,16 +141,20 @@ const handleDrop = (e: DragEvent) => {
 // 点击上传图片回调
 const uploadImageList = async()=>{
   console.log('点击上传图片回调',imageList.value.length,imageList.value)
-  let images = []
-  for(let i=0;i<imageList.value.length;i++){
-    const getImageUrl = await uploadFileToCloud(imageList.value[i],imageList.value[i].name)
-    images[i] = {
-      image:getImageUrl.id,
-      imageLink:getImageUrl.link
+  try {
+    let images = []
+    for(let i=0;i<imageList.value.length;i++){
+      const getImageUrl = await uploadFileToCloud(imageList.value[i],imageList.value[i].name)
+      images[i] = {
+        image:getImageUrl.id,
+        imageLink:getImageUrl.link
+      }
+      console.log('getImageUrl',getImageUrl,images)
     }
-    console.log('getImageUrl',getImageUrl,images)
+    imageInfo.value = images
+  } catch (error:any) {
+    message.error('Image upload encountered an issue, please try again')
   }
-  imageInfo.value = images
 }
 const handleFileChange = async(info: UploadChangeParam)=>{
   console.log('handleFileChange',info)
@@ -160,60 +168,16 @@ const handleFileDrop = (e: DragEvent) => {
 // 点击上传文件回调
 const uploadFileList = async()=>{
   console.log('点击上传文件回调',fileList.value)
-  const getFileUrl = await uploadFileToCloud(fileList.value[0],fileList.value[0].name)
-  console.log('getFileUrl',getFileUrl)
-  fileInfo.value = {
-    hash:getFileUrl.id,
-    link:getFileUrl.link
+  try{
+    const getFileUrl = await uploadFileToCloud(fileList.value[0],fileList.value[0].name)
+    console.log('getFileUrl',getFileUrl)
+    fileInfo.value = {
+      hash:getFileUrl.id,
+      link:getFileUrl.link
+    }
+  }catch(error:any){
+    message.error('File upload encountered an issue, please try again')
   }
-}
-
-const test = async () => {
-    const allInjected = await web3Enable('my cool dapp');
-    const allAccounts = await web3Accounts();
-    const account = allAccounts[0].address
-    const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
-    const api = await ApiPromise.create({provider: wsProvider});
-    const client = new PolkadotAiChanClient(api,account)
-
-    const result = await client.createModel({
-        name: "a2",
-        // 模型hash， 文件上传后返回的hash值
-        hash: "a2",
-        // 模型下载链接
-        link: "string",
-        // 图片列表
-        images: [{
-           image: "image",
-           imageLink: "imageLink",
-        }],
-        // 下载价格
-        downloadPrice: 1000,
-        // markdown 备注
-        comment: "comment"
-    }, undefined)
-
-
-    // const result = await client.createPost({
-    //     modelHash: "a2",
-    //     uuid: "uuid",
-    //     name: "some name",
-    //     images: [{
-    //        image: "image",
-    //        imageLink: "imageLink",
-    //     }],
-    //     comment: "comment",
-    // },undefined)
-
-    // const result = await client.nftCreateCollection("a2")
-    // const result = await client.nftMint("a2","uuid")
-
-    // const result = await client.postList("a2")
-
-    // const result = await client.userNFT("5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY")
-
-    console.log("modelDetail: ", result)
-
 }
 </script>
 <style lang="less" scoped>
