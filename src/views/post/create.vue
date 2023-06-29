@@ -25,6 +25,8 @@
       <a-form-item label="Choose the model you use" name="name">
         <a-select v-model:value="formData.name" placeholder="Amount" allow-clear autocomplete="off">
           <option value="model">model</option>
+          <option value="mode2l">m1odel</option>
+          <option value="mod3el">mo2del</option>
         </a-select>
       </a-form-item>
       <a-form-item label="Name" name="name">

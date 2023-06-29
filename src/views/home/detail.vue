@@ -5,7 +5,7 @@
         <div class="text-[26px] font-bold">{{ cardList.name }}</div>
         <div class="my-4">
           <img v-if="false" src="@/assets/images/one.jpeg" class="w-[30px] h-[30px] rounded-full" />
-          Jun 13, 2023
+          {{ dayjs(cardList.createTime).format('MMM DD , YYYY') }}
         </div>
         <a-carousel arrows :dots="false">
           <template #prevArrow>
@@ -28,7 +28,7 @@
       </div>
       <div>
         <div class="text-[26px] font-bold text-[#1971c2]">Price:{{ cardList.downloadPrice }} AIST</div>
-        <a-button class="w-full mb-[20px]" type="primary" @click="downloadImage">Download（<span>{{count}}</span>）</a-button>
+        <a-button class="w-full mb-[20px]" type="primary" @click="downloadImage">Download（<span>{{ cardList.size }}</span>）</a-button>
         <div class="overflow-y-auto">
           <div v-html="cardList.comment"></div>
           <!-- <pre><label class="text-[#1971c2]">View more</label></pre> -->
@@ -71,10 +71,10 @@ import { PolkadotAiChanClient} from "@/components/polkadot/ai-model"
 import { web3Accounts, web3Enable } from "@polkadot/extension-dapp";
 import {ApiPromise, WsProvider} from "@polkadot/api";
 import { message } from "ant-design-vue";
+import dayjs from 'dayjs';
+
 const router = useRouter()
 const route = useRoute()
-// 下载次数
-const count = ref(0)
 
 const cardList = reactive<any>({});
 const modalList = reactive<any>([
@@ -101,6 +101,7 @@ const getModelDetail = async () => {
   // 以上需要配置为全局
   const client = new PolkadotAiChanClient(api,account)
   try {
+    console.log("hash:", route.query.hash);
     const res = await client.modelDetail(route.query.hash)
     console.log("res:", res);
     Object.assign(cardList,res);
@@ -108,29 +109,29 @@ const getModelDetail = async () => {
     message.error('Failed ',error)
   }
 }
-const getPostList = async () => {
+// const getPostList = async () => {
   
-  // 以下需要配置为全局
-  const allInjected = await web3Enable('my cool dapp');
-  console.log(allInjected)
-  const allAccounts = await web3Accounts();
-  const account = allAccounts[0].address
-  const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
-  const api = await ApiPromise.create({provider: wsProvider});
-  // 以上需要配置为全局
-  const client = new PolkadotAiChanClient(api,account)
-  try {
-    const res = await client.postList(route.query.hash)
-    console.log("modalList res:", res);
-    Object.assign(modalList,res);
-  } catch (error:any) {
-    message.error('Failed ',error)
-  }
-}
+//   // 以下需要配置为全局
+//   const allInjected = await web3Enable('my cool dapp');
+//   console.log(allInjected)
+//   const allAccounts = await web3Accounts();
+//   const account = allAccounts[0].address
+//   const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
+//   const api = await ApiPromise.create({provider: wsProvider});
+//   // 以上需要配置为全局
+//   const client = new PolkadotAiChanClient(api,account)
+//   try {
+//     const res = await client.postList(route.query.hash)
+//     console.log("modalList res:", res);
+//     Object.assign(modalList,res);
+//   } catch (error:any) {
+//     message.error('Failed ',error)
+//   }
+// }
 
 onMounted(() => {
   getModelDetail();
-  getPostList();
+  // getPostList();
 });
 </script>
 <style lang="less" scoped>
