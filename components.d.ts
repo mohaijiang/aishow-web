@@ -22,6 +22,7 @@ declare module 'vue' {
     ARadio: typeof import('ant-design-vue/es')['Radio']
     ARadioGroup: typeof import('ant-design-vue/es')['RadioGroup']
     ARate: typeof import('ant-design-vue/es')['Rate']
+    ASelect: typeof import('ant-design-vue/es')['Select']
     ATabPane: typeof import('ant-design-vue/es')['TabPane']
     ATabs: typeof import('ant-design-vue/es')['Tabs']
     ATextarea: typeof import('ant-design-vue/es')['Textarea']
