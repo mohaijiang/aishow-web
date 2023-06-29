@@ -19,6 +19,10 @@ export interface CreateModelVO {
     comment: string
 }
 
+export interface ModelVO extends CreateModelVO {
+    createTime: number
+}
+
 export interface ImageVO {
     // 图片名（图片hash)
     image: string
@@ -66,13 +70,13 @@ export interface AiShowChain {
     // 购买模型
     buyModel(modelHash: string, callback: Callback): Promise<void>
     // 用户模型选择
-    userModelSelect(address: string): Promise<CreateModelVO[]>
+    userModelSelect(address: string): Promise<ModelVO[]>
     // 模型详情
-    modelDetail(modelHash: string): Promise<CreateModelVO>
+    modelDetail(modelHash: string): Promise<ModelVO>
     // 模型列表
-    modelList(): Promise<CreateModelVO[]>
+    modelList(): Promise<ModelVO[]>
     // 用户模型列表
-    userModelList(address: string): Promise<CreateModelVO[]>
+    userModelList(address: string): Promise<ModelVO[]>
     // postList
     postList(modelHash: string): Promise<CreatePostVO[]>
     // post 详情
@@ -230,17 +234,17 @@ export class PolkadotAiChanClient implements AiShowChain{
         // @ts-ignore
         const modelHashList: string[] = modelHashCodec.toHuman()
 
-        let result: CreateModelVO[] = []
+        let result: ModelVO[] = []
 
         for(let hash of modelHashList){
-            const model: CreateModelVO = await this.modelDetail(hash)
+            const model: ModelVO = await this.modelDetail(hash)
             result.push(model)
         }
 
         return result
     }
 
-    async userModelList(address: string): Promise<CreateModelVO[]> {
+    async userModelList(address: string): Promise<ModelVO[]> {
         const modelHashCodec = await this.api.query.aiModel.userModels(address)
 
         if(modelHashCodec === undefined){
@@ -250,7 +254,7 @@ export class PolkadotAiChanClient implements AiShowChain{
         // @ts-ignore
         const modelHashList: string[] = modelHashCodec.toHuman()
 
-        let result: CreateModelVO[] = []
+        let result: ModelVO[] = []
 
         for(let hash of modelHashList){
             const model: CreateModelVO = await this.modelDetail(hash)
@@ -334,13 +338,15 @@ export class PolkadotAiChanClient implements AiShowChain{
                 imageLink: imageLinks[i]
             })
         }
-        const model: CreateModelVO = {
+        const model: ModelVO = {
             hash: result.value.hash_.toHuman(),
             name: result.value.name.toHuman(),
             link: result.value.link.toHuman(),
             images: images,
+            size: result.value.size_.toNumber(),
             downloadPrice: result.value.downloadPrice.toNumber(),
             comment: result.value.comment.toHuman(),
+            createTime: result.value.createTime.toNumber(),
         }
 
         return model
@@ -550,7 +556,7 @@ export class PolkadotAiChanClient implements AiShowChain{
         }
     }
 
-    async userModelSelect(address: string): Promise<CreateModelVO[]> {
+    async userModelSelect(address: string): Promise<ModelVO[]> {
 
         const codec = await this.api.query.aiModel.userPaid(address)
         console.log(codec.toHuman())
