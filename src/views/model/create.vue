@@ -73,7 +73,7 @@ import {CreateModelVO, PolkadotAiChanClient} from "@/components/polkadot/ai-mode
 import {ApiPromise, WsProvider} from "@polkadot/api";
 import {web3Accounts, web3Enable} from "@polkadot/extension-dapp";
 import { useRouter } from 'vue-router';
-import { uploadFileToCloud } from '@/utils/deoss'
+import { uploadFile } from '@/utils/deoss'
 import prettyBytes from 'pretty-bytes';
 
 const router = useRouter();
@@ -118,7 +118,8 @@ const handleSubmit = async () => {
         images: imageInfo.value,
         downloadPrice: +formData.price,
         comment: formData.description,
-        size: fileInfo.value.size
+        size: fileInfo.value.size,
+        filename: fileInfo.value.filename
     }
     console.log(11111111111,model,JSON.stringify(model))
     try {
@@ -146,10 +147,10 @@ const uploadImageList = async()=>{
   let images = []
   try {
     for(let i=0;i<imageList.value.length;i++){
-      const getImageUrl = await uploadFileToCloud(imageList.value[i],imageList.value[i].name)
+      const getImageUrl = await uploadFile(imageList.value[i],'',imageList.value[i].name)
       images[i] = {
-        image:getImageUrl.id,
-        imageLink:getImageUrl.link
+        image:getImageUrl,
+        imageLink:'d.cess.cloud/1233654345.png'
       }
       console.log('getImageUrl',getImageUrl,images)
     }
@@ -172,15 +173,17 @@ const handleFileDrop = (e: DragEvent) => {
 const uploadFileList = async()=>{
   console.log('点击上传文件回调',fileList.value)
   try{
-    const getFileUrl = await uploadFileToCloud(fileList.value[0],fileList.value[0].name)
+    const fileHash = await uploadFile(fileList.value[0],'',fileList.value[0].name)
+    const getFileUrl = fileList.value[0]
     const fileSize = prettyBytes(getFileUrl.size);
     console.log('getFileUrl',getFileUrl,'fileSize',fileSize)
     fileInfo.value = {
-      hash:getFileUrl.id,
-      link:getFileUrl.link,
+      hash:fileHash,
+      link:'',
       size:fileSize,
       filename:getFileUrl.name
     }
+    console.log('11111111111111111',fileInfo.value)
   }catch(error:any){
     message.error('File upload encountered an issue, please try again')
   }

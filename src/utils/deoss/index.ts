@@ -28,11 +28,12 @@ export function postAuth(data: AuthData): Promise<any> {
 }
 
 
-export function uploadFile(fileData: any, authToken: string, fileName: string): Promise<any> {
+export async function uploadFile(fileData: any, authToken: string, fileName: string): Promise<any> {
   const url = baseUrl.concat('/');
+  const data: any = await convertToBlob(fileData)
   const config = {
     headers: {
-      'Authorization': authToken,
+      'Authorization': defaultToken,
       'BucketName': defaultBucketName,
       'Content-Type': 'multipart/form-data; boundary=WebAppBoundary',
     },
@@ -40,7 +41,7 @@ export function uploadFile(fileData: any, authToken: string, fileName: string): 
 
   // 构建 FormData 对象
   const formData = new FormData();
-  formData.append('file', fileData, fileName);
+  formData.append('file', data, fileName);
 
   return axios.put(url, formData, config)
     .then((response: AxiosResponse) => response.data)

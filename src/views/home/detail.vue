@@ -28,7 +28,7 @@
       </div>
       <div>
         <div class="text-[26px] font-bold text-[#1971c2]">Price:{{ cardList.downloadPrice }} AIST</div>
-        <a-button class="w-full mb-[20px]" type="primary" @click="downloadImage">Download（<span>{{ cardList.size }}</span>）</a-button>
+        <a-button class="w-full mb-[20px]" type="primary" @click="downloadModelFile">Download（<span>{{ cardList.size }}</span>）</a-button>
         <div class="overflow-y-auto">
           <div v-html="cardList.comment"></div>
           <!-- <pre><label class="text-[#1971c2]">View more</label></pre> -->
@@ -72,7 +72,8 @@ import { web3Accounts, web3Enable } from "@polkadot/extension-dapp";
 import {ApiPromise, WsProvider} from "@polkadot/api";
 import { message } from "ant-design-vue";
 import dayjs from 'dayjs';
-import { downloadFile } from '@/utils/index'
+import { downLoadFile } from '@/utils/deoss/index'
+import { downloadRequest } from '@/utils/index'
 
 const router = useRouter()
 const route = useRoute()
@@ -89,14 +90,16 @@ const goPostDetail = (item:any)=>{
   // 需带上图片标识进入详情页
   router.push('/postDetail')
 }
-const downloadImage = async()=>{
-  console.log('downloadImage')
+const downloadModelFile = async()=>{
+  console.log('downloadModelFile')
   const { api, account } = await connectCommonPolk()
   const client = new PolkadotAiChanClient(api,account)
   try {
-    client.buyModel(modelHash.value,(info:any)=>{
+    client.buyModel(modelHash.value,async(info:any)=>{
       console.log('download model',info)
-      downloadFile(cardList.link,cardList.filename)
+      const fileBlob = await downLoadFile(cardList.hash)
+      console.log('buyModel,fileBlob',fileBlob)
+      downloadRequest(fileBlob, cardList.filename)
     })
   } catch (error:any) {
     message.error('Failed ',error)
