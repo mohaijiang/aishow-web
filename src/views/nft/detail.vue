@@ -7,7 +7,7 @@
       <div class="flex justify-between">
         <div class="font-bold">
           <div class="text-[26px]">Hideroki</div>
-          <div>Owned by <label class="text-[#1971c2]">C15A4D</label></div>
+          <!-- <div>Owned by <label class="text-[#1971c2]">C15A4D</label></div> -->
         </div>
         <a-button type="primary" class=" w-[120px]">Trasfer</a-button>
       </div>

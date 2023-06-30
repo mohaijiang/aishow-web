@@ -13,8 +13,16 @@ export interface CreateModelVO {
     images: ImageVO[]
     // 下载价格
     downloadPrice: number
+    // 模型大小
+    size: number,
     // markdown 备注
-    comment: string
+    comment: string,
+    // 文件名
+    filename: string
+}
+
+export interface ModelVO extends CreateModelVO {
+    createTime: number
 }
 
 export interface ImageVO {
@@ -47,6 +55,7 @@ export interface NFT {
 }
 
 export interface CallbackResult {
+    // inblock | error
     status: string,
     id: string,
     error: any
@@ -62,21 +71,29 @@ export interface AiShowChain {
     createPost(createPostVO: CreatePostVO, callback: Callback): Promise<void>
     // 购买模型
     buyModel(modelHash: string, callback: Callback): Promise<void>
+    // 用户模型选择
+    userModelSelect(address: string): Promise<ModelVO[]>
     // 模型详情
-    modelDetail(modelHash: string): Promise<CreateModelVO>
+    modelDetail(modelHash: string): Promise<ModelVO>
     // 模型列表
-    modelList(): Promise<CreateModelVO[]>
+    modelList(): Promise<ModelVO[]>
     // 用户模型列表
-    userModelList(address: string): Promise<CreateModelVO[]>
-
+    userModelList(address: string): Promise<ModelVO[]>
     // postList
     postList(modelHash: string): Promise<CreatePostVO[]>
+    // post 详情
+    postDetail(modelHash: string, postUUID: string): Promise<CreatePostVO>
+    // 用户post
+    userPostList(address: string): Promise<CreatePostVO[]>
     // nft list
     nftList(): Promise<NFT[]>
+
+    // 判断是否需要创建collection
+    ifNeedCreateCollection(modelHash: string): Promise<boolean>
     // nft 创建collection
-    nftCreateCollection(modelHash: string): Promise<number>
+    nftCreateCollection(modelHash: string,callback: Callback): Promise<number>
     //nft mint
-    nftMint(modelHash: string,postId: string, uuid: string): Promise<void>
+    nftMint(modelHash: string,postId: string, uuid: string,callback: Callback): Promise<void>
     // userNFT
     userNFT(address: string): Promise<NFT[]>
 }
@@ -88,7 +105,7 @@ export interface AiShowChain {
     console.log(allInjected)
     const allAccounts = await web3Accounts();
     const account = allAccounts[0].address
-    const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
+    const wsProvider = new WsProvider('ws://172.16.31.103:9944');
     const api = await ApiPromise.create({provider: wsProvider});
     // 以上需要配置为全局
 
@@ -134,16 +151,47 @@ export class PolkadotAiChanClient implements AiShowChain{
 
     async createModel( createModelVO: CreateModelVO,callback: Callback ) {
         const injector = await web3FromAddress(this.sender)
-        const unsub = await this.api.tx.aiModel.createAiModel(
-            createModelVO.hash,
-            createModelVO.name,
-            createModelVO.link,
-            createModelVO.images.map(t => t.image),
-            createModelVO.images.map(t => t.imageLink),
-            createModelVO.downloadPrice,
-            createModelVO.comment
-        ).signAndSend(this.sender, {signer: injector.signer}, (result) => {
+
+        const collectionIdCodec = await this.api.query.nfts.nextCollectionId()
+        let collectionId = 0
+        if(collectionIdCodec.isSome){
+            collectionId = collectionIdCodec.value.toNumber()
+        }
+
+        const txs = [
+            this.api.tx.aiModel.createAiModel(
+                createModelVO.hash,
+                createModelVO.name,
+                createModelVO.link,
+                createModelVO.images.map(t => t.image),
+                createModelVO.images.map(t => t.imageLink),
+                createModelVO.downloadPrice,
+                createModelVO.size,
+                createModelVO.comment
+            ),
+            this.api.tx.nfts.create(
+                {Id: this.sender},
+                {
+                    settings: `${collectionId}`,
+                    maxSupply: null,
+                    mintSettings: {
+                        defaultItemSettings: "0",
+                        endBlock: null,
+                        mintType: "Issuer",
+                        price: null,
+                        startBlock: null,
+                    }
+                },
+            ),
+            this.api.tx.nfts.setCollectionMetadata(
+                collectionId,createModelVO.hash
+            )
+        ]
+
+
+        const unsub = await this.api.tx.utility.batch(txs).signAndSend(this.sender, {signer: injector.signer}, (result) => {
             if (result.status.isInBlock) {
+                console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
                 if(result.dispatchError){
                     if(callback) {
                         callback({status: "error",id: "",error: result.dispatchError.toHuman()})
@@ -152,14 +200,8 @@ export class PolkadotAiChanClient implements AiShowChain{
                     unsub()
                     return
                 }
-                console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
                 if(callback) {
-                    callback({status: "inBlock", id: createModelVO.hash,error: ""})
-                }
-            } else if (result.status.isFinalized) {
-                console.log(`Transaction finalized at blockHash ${result.status.asFinalized}`);
-                if(callback) {
-                    callback({status: "finalized",id: createModelVO.hash,error: ""})
+                    callback({status: "inBlock", id: createModelVO.hash,error: undefined})
                 }
                 unsub();
             }
@@ -177,6 +219,7 @@ export class PolkadotAiChanClient implements AiShowChain{
             createPostVO.comment
         ).signAndSend(this.sender, {signer: injector.signer}, (result) => {
             if (result.status.isInBlock) {
+                console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
                 if(result.dispatchError){
                     if(callback) {
                         callback({status: "error",id: "",error: result.dispatchError.toHuman()})
@@ -185,18 +228,12 @@ export class PolkadotAiChanClient implements AiShowChain{
                     unsub()
                     return
                 }
-                console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
                 if(callback) {
-                    callback({status: "inBlock", id: createPostVO.uuid,error: ""})
-                }
-            } else if (result.status.isFinalized) {
-                console.log(`Transaction finalized at blockHash ${result.status.asFinalized}`);
-                if(callback) {
-                    callback({status: "finalized",id: createPostVO.uuid,error: ""})
+                    callback({status: "inBlock", id: createPostVO.uuid,error: undefined})
                 }
                 unsub();
             }
-        });
+        });;
     }
 
     async buyModel(modelHash: string, callback: Callback){
@@ -205,6 +242,7 @@ export class PolkadotAiChanClient implements AiShowChain{
             modelHash
         ).signAndSend(this.sender, {signer: injector.signer}, (result) => {
             if (result.status.isInBlock) {
+                console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
                 if(result.dispatchError){
                     if(callback) {
                         callback({status: "error",id: "",error: result.dispatchError.toHuman()})
@@ -213,14 +251,8 @@ export class PolkadotAiChanClient implements AiShowChain{
                     unsub()
                     return
                 }
-                console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
                 if(callback) {
-                    callback({status: "inBlock", id: modelHash,error: ""})
-                }
-            } else if (result.status.isFinalized) {
-                console.log(`Transaction finalized at blockHash ${result.status.asFinalized}`);
-                if(callback) {
-                    callback({status: "finalized",id: modelHash,error: ""})
+                    callback({status: "inBlock", id: modelHash,error: undefined})
                 }
                 unsub();
             }
@@ -238,17 +270,17 @@ export class PolkadotAiChanClient implements AiShowChain{
         // @ts-ignore
         const modelHashList: string[] = modelHashCodec.toHuman()
 
-        let result: CreateModelVO[] = []
+        let result: ModelVO[] = []
 
         for(let hash of modelHashList){
-            const model: CreateModelVO = await this.modelDetail(hash)
+            const model: ModelVO = await this.modelDetail(hash)
             result.push(model)
         }
 
         return result
     }
 
-    async userModelList(address: string): Promise<CreateModelVO[]> {
+    async userModelList(address: string): Promise<ModelVO[]> {
         const modelHashCodec = await this.api.query.aiModel.userModels(address)
 
         if(modelHashCodec === undefined){
@@ -258,7 +290,7 @@ export class PolkadotAiChanClient implements AiShowChain{
         // @ts-ignore
         const modelHashList: string[] = modelHashCodec.toHuman()
 
-        let result: CreateModelVO[] = []
+        let result: ModelVO[] = []
 
         for(let hash of modelHashList){
             const model: CreateModelVO = await this.modelDetail(hash)
@@ -277,11 +309,16 @@ export class PolkadotAiChanClient implements AiShowChain{
 
         const result = []
         for(let postCodec of postsCodec){
-            const keys = postCodec[0].toHuman()
+            // const keys = postCodec[0].toHuman()
             result.push(this.toCreatePostVO(postCodec[1].toHuman()))
         }
 
         return  result
+    }
+
+    async postDetail(modelHash: string, postUUID: string): Promise<CreatePostVO> {
+        const postCodec = await this.api.query.aiModel.modelPost(modelHash,postUUID)
+        return this.toCreatePostVO(postCodec.toHuman())
     }
 
     async nftList(): Promise<NFT[]> {
@@ -302,8 +339,8 @@ export class PolkadotAiChanClient implements AiShowChain{
             const modelHash = collectionCodec.toHuman().data
             // @ts-ignore
             const postAndImageUUid = item[1].toHuman().data
-            const postUuid = postAndImageUUid.split('_')[0]
-            const imageUuid = postAndImageUUid.split('_')[1]
+            const postUuid = postAndImageUUid.split('/')[0]
+            const imageUuid = postAndImageUUid.split('/')[1]
             const post = await this.getCreatePostVO(modelHash,postUuid)
             const mintedImage = post.images.find(t => t.image = imageUuid)
             if(mintedImage === undefined){
@@ -337,13 +374,15 @@ export class PolkadotAiChanClient implements AiShowChain{
                 imageLink: imageLinks[i]
             })
         }
-        const model: CreateModelVO = {
+        const model: ModelVO = {
             hash: result.value.hash_.toHuman(),
             name: result.value.name.toHuman(),
             link: result.value.link.toHuman(),
             images: images,
+            size: result.value.size_.toNumber(),
             downloadPrice: result.value.downloadPrice.toNumber(),
             comment: result.value.comment.toHuman(),
+            createTime: result.value.createTime.toNumber(),
         }
 
         return model
@@ -392,7 +431,18 @@ export class PolkadotAiChanClient implements AiShowChain{
         }
     }
 
-    async nftCreateCollection(modelHash: string) {
+
+    async ifNeedCreateCollection(modelHash: string): Promise<boolean> {
+
+        try {
+            await this.nftGetCollectionId(modelHash)
+            return false
+        }catch (e){
+            return true
+        }
+    }
+
+    async nftCreateCollection(modelHash: string,callback: Callback) {
         const injector = await web3FromAddress(this.sender)
         const collectionIdCodec = await this.api.query.nfts.nextCollectionId()
         let collectionId = 0
@@ -421,12 +471,19 @@ export class PolkadotAiChanClient implements AiShowChain{
         ]
 
         const unsub =  await this.api.tx.utility.batch(txs).signAndSend(this.sender, {signer: injector.signer}, (result) => {
-            console.log(result.status)
             if (result.status.isInBlock) {
                 console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
-                this.substrateListener(result)
-            } else if (result.status.isFinalized) {
-                console.log(`Transaction finalized at blockHash ${result.status.asFinalized}`);
+                if(result.dispatchError){
+                    if(callback) {
+                        callback({status: "error",id: "",error: result.dispatchError.toHuman()})
+                    }
+                    this.substrateListener(result)
+                    unsub()
+                    return
+                }
+                if(callback) {
+                    callback({status: "inBlock", id: `${collectionId}`,error: undefined})
+                }
                 unsub();
             }
         });
@@ -434,7 +491,7 @@ export class PolkadotAiChanClient implements AiShowChain{
         return collectionId
     }
 
-    async nftMint(modelHash: string, postId: string, uuid: string): Promise<void> {
+    async nftMint(modelHash: string, postId: string, imageUuid: string,callback: Callback): Promise<void> {
         const collectionId = await this.nftGetCollectionId(modelHash)
         // 查询item 数量
         const collectionCodec = await this.api.query.nfts.collection(collectionId)
@@ -455,21 +512,28 @@ export class PolkadotAiChanClient implements AiShowChain{
             this.api.tx.nfts.setMetadata(
                 collectionId,
                 itemNum,
-                `${postId}_${uuid}`
+                `${postId}/${imageUuid}`
             )
         ]
 
-        const unsub =  await this.api.tx.utility.batch(txs).signAndSend(this.sender, {signer: injector.signer}, (result) => {
-            console.log(result.status)
-            if (result.status.isInBlock) {
-                console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
-                this.substrateListener(result)
-            } else if (result.status.isFinalized) {
-                console.log(`Transaction finalized at blockHash ${result.status.asFinalized}`);
-                this.substrateListener(result)
-                unsub();
-            }
-        });
+        const unsub =  await this.api.tx.utility.batch(txs)
+            .signAndSend(this.sender, {signer: injector.signer}, (result) => {
+                if (result.status.isInBlock) {
+                    console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
+                    if(result.dispatchError){
+                        if(callback) {
+                            callback({status: "error",id: "",error: result.dispatchError.toHuman()})
+                        }
+                        this.substrateListener(result)
+                        unsub()
+                        return
+                    }
+                    if(callback) {
+                        callback({status: "inBlock", id: `${itemNum}`,error: undefined})
+                    }
+                    unsub();
+                }
+            });
     }
 
     async nftGetCollectionId(modelHash: string): Promise<number> {
@@ -491,13 +555,6 @@ export class PolkadotAiChanClient implements AiShowChain{
         throw new Error('storage not found')
     }
 
-    async nftSetCollectionMetadata(collectionId: number, modelHash: string): Promise<void> {
-        const injector = await web3FromAddress(this.sender)
-        const unsub =  await this.api.tx.nfts.setCollectionMetadata(
-            collectionId,modelHash
-        ).signAndSend(this.sender, {signer: injector.signer}, this.substrateListener);
-    }
-
     async userNFT(address: string): Promise<NFT[]> {
 
         const result:NFT[] = []
@@ -508,15 +565,14 @@ export class PolkadotAiChanClient implements AiShowChain{
             const collectionId = keys[1]
 
             // 查询此collectionId 下有多少NFT
-            const nfsCodec = await this.api.query.nft.account.entries(address,collectionId)
+            const nfsCodec = await this.api.query.nfts.account.entries(address,collectionId)
 
             for(let account of nfsCodec){
-                const accountKeys = item[0].toHuman()
+                const accountKeys = account[0].toHuman()
                 const itemId = accountKeys[2]
                 const nft = await this.getNFT(collectionId,itemId)
                 result.push(nft)
             }
-            debugger
         }
 
         return result
@@ -528,8 +584,8 @@ export class PolkadotAiChanClient implements AiShowChain{
         const postCodec = await this.api.query.nfts.itemMetadataOf(collectionId,itemId)
         const postAndImageUUID = postCodec.toHuman().data
 
-        const postUuid = postAndImageUUID.split('_')[0]
-        const imageUuid = postAndImageUUID.split('_')[1]
+        const postUuid = postAndImageUUID.split('/')[0]
+        const imageUuid = postAndImageUUID.split('/')[1]
         const post = await this.getCreatePostVO(modelHash,postUuid)
         const mintedImage = post.images.find(t => t.image = imageUuid)
 
@@ -544,5 +600,32 @@ export class PolkadotAiChanClient implements AiShowChain{
             itemUuid: mintedImage.image,
             itemLink: mintedImage.imageLink
         }
+    }
+
+    async userModelSelect(address: string): Promise<ModelVO[]> {
+
+        const codec = await this.api.query.aiModel.userPaid(address)
+        console.log(codec.toHuman())
+        const result = []
+        for(let modelHash of codec.toHuman()){
+            const model = await this.modelDetail(modelHash)
+            result.push(model)
+        }
+
+        return result
+    }
+
+    async userPostList(address: string): Promise<CreatePostVO[]> {
+
+        const codec = await this.api.query.aiModel.userPost(address)
+        const result = []
+
+        for(let postUUID of codec.toHuman()){
+            const postCodec = await this.api.query.aiModel.aiPosts(postUUID)
+            const post = this.toCreatePostVO(postCodec.toHuman())
+            result.push(post)
+        }
+
+        return result
     }
 }

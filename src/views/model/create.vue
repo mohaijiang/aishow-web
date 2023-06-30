@@ -55,7 +55,7 @@
         <div>What your model does</div>
         <Wangeditor
           v-model:value="formData.description"
-          placeholder="model"
+          placeholder="About your model"
         />
       </a-form-item>
     </a-form>
@@ -74,6 +74,7 @@ import {ApiPromise, WsProvider} from "@polkadot/api";
 import {web3Accounts, web3Enable} from "@polkadot/extension-dapp";
 import { useRouter } from 'vue-router';
 import { uploadFileToCloud } from '@/utils/deoss'
+import prettyBytes from 'pretty-bytes';
 
 const router = useRouter();
 const fileList = ref<any>([]);
@@ -106,7 +107,7 @@ const handleSubmit = async () => {
     console.log(allInjected)
     const allAccounts = await web3Accounts();
     const account = allAccounts[0].address
-    const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
+    const wsProvider = new WsProvider('ws://172.16.31.103:9944');
     const api = await ApiPromise.create({provider: wsProvider});
     // 以上需要配置为全局
     const client = new PolkadotAiChanClient(api,account)
@@ -116,7 +117,8 @@ const handleSubmit = async () => {
         link: fileInfo.value.link,
         images: imageInfo.value,
         downloadPrice: +formData.price,
-        comment: formData.description
+        comment: formData.description,
+        size: fileInfo.value.size
     }
     console.log(11111111111,model,JSON.stringify(model))
     try {
@@ -141,8 +143,8 @@ const handleDrop = (e: DragEvent) => {
 // 点击上传图片回调
 const uploadImageList = async()=>{
   console.log('点击上传图片回调',imageList.value.length,imageList.value)
+  let images = []
   try {
-    let images = []
     for(let i=0;i<imageList.value.length;i++){
       const getImageUrl = await uploadFileToCloud(imageList.value[i],imageList.value[i].name)
       images[i] = {
@@ -153,6 +155,7 @@ const uploadImageList = async()=>{
     }
     imageInfo.value = images
   } catch (error:any) {
+    imageInfo.value = images
     message.error('Image upload encountered an issue, please try again')
   }
 }
@@ -170,10 +173,13 @@ const uploadFileList = async()=>{
   console.log('点击上传文件回调',fileList.value)
   try{
     const getFileUrl = await uploadFileToCloud(fileList.value[0],fileList.value[0].name)
-    console.log('getFileUrl',getFileUrl)
+    const fileSize = prettyBytes(getFileUrl.size);
+    console.log('getFileUrl',getFileUrl,'fileSize',fileSize)
     fileInfo.value = {
       hash:getFileUrl.id,
-      link:getFileUrl.link
+      link:getFileUrl.link,
+      size:fileSize,
+      filename:getFileUrl.name
     }
   }catch(error:any){
     message.error('File upload encountered an issue, please try again')

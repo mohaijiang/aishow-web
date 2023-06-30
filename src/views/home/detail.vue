@@ -2,10 +2,10 @@
   <div>
     <div class="grid grid-cols-3 gap-8">
       <div class="col-span-2">
-        <div class="text-[26px] font-bold">majicMIX realistic</div>
+        <div class="text-[26px] font-bold">{{ cardList.name }}</div>
         <div class="my-4">
-          <img src="@/assets/images/one.jpeg" class="w-[30px] h-[30px] rounded-full" />
-          Jun 13, 2023
+          <img v-if="false" src="@/assets/images/one.jpeg" class="w-[30px] h-[30px] rounded-full" />
+          {{ dayjs(cardList.createTime).format('MMM DD , YYYY') }}
         </div>
         <a-carousel arrows :dots="false">
           <template #prevArrow>
@@ -18,19 +18,20 @@
               <right-circle-outlined />
             </div>
           </template>
-          <div v-for="(item,key) in cardList" :key="key">
+          <div v-for="(item,key) in cardList.images" :key="key">
             <div class="flex">
-              <CarouselImage :cardInfo="item[0]"></CarouselImage>
-              <CarouselImage :cardInfo="item[1]"></CarouselImage>
+              <CarouselImage :cardInfo="item"></CarouselImage>
+              <CarouselImage :cardInfo="item"></CarouselImage>
             </div>
           </div>
         </a-carousel>
       </div>
       <div>
-        <div class="text-[26px] font-bold text-[#1971c2]">Price:100 AIST</div>
-        <a-button class="w-full mb-[20px]" type="primary" @click="downloadImage">Download（<span>{{count}}</span>）</a-button>
+        <div class="text-[26px] font-bold text-[#1971c2]">Price:{{ cardList.downloadPrice }} AIST</div>
+        <a-button class="w-full mb-[20px]" type="primary" @click="downloadImage">Download（<span>{{ cardList.size }}</span>）</a-button>
         <div class="overflow-y-auto">
-          <pre>{{ detailDesc }}<!-- <label class="text-[#1971c2]">View more</label> --></pre>
+          <div v-html="cardList.comment"></div>
+          <!-- <pre><label class="text-[#1971c2]">View more</label></pre> -->
         </div>
       </div>
     </div>
@@ -64,31 +65,91 @@
 import { LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons-vue';
 import CarouselImage from './components/CarouselImage.vue';
 import ModalImage from "./components/ModalImage.vue";
-import { reactive, ref } from 'vue';
-import { useRouter } from "vue-router";
-const router = useRouter()
-// 下载次数
-const count = ref(0)
+import { onMounted, reactive, ref } from 'vue';
+import { useRouter, useRoute } from "vue-router";
+import { PolkadotAiChanClient} from "@/components/polkadot/ai-model"
+import { web3Accounts, web3Enable } from "@polkadot/extension-dapp";
+import {ApiPromise, WsProvider} from "@polkadot/api";
+import { message } from "ant-design-vue";
+import dayjs from 'dayjs';
+import { downloadFile } from '@/utils/index'
 
-const cardList = reactive<any>([
-  [{ imageName: 'one1.jpeg' }, { imageName: 'one.jpeg' }],
-  [{ imageName: 'two1.png' }, { imageName: 'two.jpeg' }],
-  [{ imageName: 'three1.jpeg' }, { imageName: 'three.jpeg' }],
-]);
+const router = useRouter()
+const route = useRoute()
+
+const cardList = reactive<any>({});
 const modalList = reactive<any>([
   { imageName: 'one1.jpeg' }, { imageName: 'one.jpeg' },
   { imageName: 'two1.png' }, { imageName: 'two.jpeg' },
   { imageName: 'three1.jpeg' }, { imageName: 'three.jpeg' },
 ]);
-const detailDesc = "Detail\n听我一句劝，不要开脸部修复！\nPlease don't use Face Restoration!\n如果要修复脸部，请使用after detailer.\n\nIf your face comes out badly, use after detailer instead.\n\nhttps://github.com/Bing-su/adetailer\n\n我习惯开启Dynamic Thresholding来更好控制cfg值，1~20都可以尝试一下。\n\nUse Dynmaic Thresholding to control CFG. You can try from 1~20.\n\nhttps://github.com/mcmonkeyprojects/sd-dynamic-thresholding\n\n很抱歉在之前的例图中我使用了分层的lora让大家困惑，也让大家复刻我的例图变得困难。所以新一版的例图我没有使用任何lora。想了解lora分层的可以参考…"
+const modelHash = ref()
 const goPostDetail = (item:any)=>{
   console.log('goPostDetail',item)
   // 需带上图片标识进入详情页
   router.push('/postDetail')
 }
-const downloadImage = ()=>{
+const downloadImage = async()=>{
   console.log('downloadImage')
+  const { api, account } = await connectCommonPolk()
+  const client = new PolkadotAiChanClient(api,account)
+  try {
+    client.buyModel(modelHash.value,(info:any)=>{
+      console.log('download model',info)
+      downloadFile(cardList.link,cardList.filename)
+    })
+  } catch (error:any) {
+    message.error('Failed ',error)
+  }
 }
+const getModelDetail = async () => {
+  const { api, account } = await connectCommonPolk()
+  const client = new PolkadotAiChanClient(api,account)
+  try {
+    console.log("hash:", route.query.hash);
+    const res = await client.modelDetail(route.query.hash)
+    console.log("res:", res);
+    Object.assign(cardList,res);
+    modelHash.value = res.hash
+  } catch (error:any) {
+    message.error('Failed ',error)
+  }
+}
+// const getPostList = async () => {
+  
+//   // 以下需要配置为全局
+//   const allInjected = await web3Enable('my cool dapp');
+//   console.log(allInjected)
+//   const allAccounts = await web3Accounts();
+//   const account = allAccounts[0].address
+//   const wsProvider = new WsProvider('ws://172.16.31.103:9944');
+//   const api = await ApiPromise.create({provider: wsProvider});
+//   // 以上需要配置为全局
+//   const client = new PolkadotAiChanClient(api,account)
+//   try {
+//     const res = await client.postList(route.query.hash)
+//     console.log("modalList res:", res);
+//     Object.assign(modalList,res);
+//   } catch (error:any) {
+//     message.error('Failed ',error)
+//   }
+// }
+const connectCommonPolk = async()=>{
+  const allInjected = await web3Enable('my cool dapp');
+  console.log(allInjected)
+  const allAccounts = await web3Accounts();
+  const account = allAccounts[0].address
+  const wsProvider = new WsProvider('ws://172.16.31.103:9944');
+  const api = await ApiPromise.create({provider: wsProvider});
+  return {
+    account,
+    api
+  }
+}
+onMounted(() => {
+  getModelDetail();
+  // getPostList();
+});
 </script>
 <style lang="less" scoped>
 /* For demo */
