@@ -100,8 +100,9 @@ const downloadModelFile = async()=>{
     client.buyModel(modelHash.value,async(info:any)=>{
       console.log('download model',info)
       const fileBlob = await downLoadFile(cardList.hash)
-      console.log('buyModel,fileBlob',fileBlob)
-      downloadRequest(fileBlob, cardList.filename)
+      let blob = new Blob([fileBlob]);
+      console.log('buyModel,fileBlob')
+      downloadRequest(blob, cardList.filename)
     })
   } catch (error:any) {
     message.error('Failed ',error)

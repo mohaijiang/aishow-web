@@ -22,6 +22,7 @@ declare module 'vue' {
     ARadio: typeof import('ant-design-vue/es')['Radio']
     ARadioGroup: typeof import('ant-design-vue/es')['RadioGroup']
     ARate: typeof import('ant-design-vue/es')['Rate']
+    ASelect: typeof import('ant-design-vue/es')['Select']
     ATextarea: typeof import('ant-design-vue/es')['Textarea']
     AUploadDragger: typeof import('ant-design-vue/es')['UploadDragger']
     Fotter: typeof import('./src/components/Fotter.vue')['default']

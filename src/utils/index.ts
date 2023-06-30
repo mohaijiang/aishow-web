@@ -20,8 +20,8 @@ export const downloadFile = (url:string,name:string) => {
 }
 
 // 下载 str:下载的内容  name:下载文件的名称
-export const downloadRequest = (str:string,name:string)=>{
-  const url = `data:,${str}`;
+export const downloadRequest = (str:any,name:string)=>{
+  const url = window.URL.createObjectURL(str);
   const a = document.createElement('a');
   a.href = url;
   a.download = `${name}`;
