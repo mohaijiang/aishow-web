@@ -175,12 +175,12 @@ const uploadFileList = async()=>{
   try{
     const fileHash = await uploadFile(fileList.value[0],'',fileList.value[0].name)
     const getFileUrl = fileList.value[0]
-    const fileSize = prettyBytes(getFileUrl.size);
-    console.log('getFileUrl',getFileUrl,'fileSize',fileSize)
+    // const fileSize = prettyBytes(getFileUrl.size);
+    console.log('getFileUrl',getFileUrl,'fileSize')
     fileInfo.value = {
       hash:fileHash,
       link:'',
-      size:fileSize,
+      size:fileList.value[0].size,
       filename:getFileUrl.name
     }
     console.log('11111111111111111',fileInfo.value)
