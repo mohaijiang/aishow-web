@@ -383,6 +383,7 @@ export class PolkadotAiChanClient implements AiShowChain{
             downloadPrice: result.value.downloadPrice.toNumber(),
             comment: result.value.comment.toHuman(),
             createTime: result.value.createTime.toNumber(),
+            filename: "some-filename.zip",
         }
 
         return model
