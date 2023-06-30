@@ -74,7 +74,6 @@ import {ApiPromise, WsProvider} from "@polkadot/api";
 import {web3Accounts, web3Enable} from "@polkadot/extension-dapp";
 import { useRouter } from 'vue-router';
 import { uploadFile } from '@/utils/deoss'
-import prettyBytes from 'pretty-bytes';
 
 const router = useRouter();
 const fileList = ref<any>([]);
@@ -175,7 +174,6 @@ const uploadFileList = async()=>{
   try{
     const fileHash = await uploadFile(fileList.value[0],'',fileList.value[0].name)
     const getFileUrl = fileList.value[0]
-    // const fileSize = prettyBytes(getFileUrl.size);
     console.log('getFileUrl',getFileUrl,'fileSize')
     fileInfo.value = {
       hash:fileHash,

@@ -28,7 +28,7 @@
       </div>
       <div>
         <div class="text-[26px] font-bold text-[#1971c2]">Price:{{ cardList.downloadPrice }} AIST</div>
-        <a-button class="w-full mb-[20px]" type="primary" @click="downloadModelFile">Download（<span>{{ cardList.size }}</span>）</a-button>
+        <a-button class="w-full mb-[20px]" type="primary" @click="downloadModelFile">Download（<span>{{fileSize}}</span>）</a-button>
         <div class="overflow-y-auto">
           <div v-html="cardList.comment"></div>
           <!-- <pre><label class="text-[#1971c2]">View more</label></pre> -->
@@ -74,6 +74,7 @@ import { message } from "ant-design-vue";
 import dayjs from 'dayjs';
 import { downLoadFile } from '@/utils/deoss/index'
 import { downloadRequest } from '@/utils/index'
+import prettyBytes from 'pretty-bytes';
 
 const router = useRouter()
 const route = useRoute()
@@ -85,6 +86,7 @@ const modalList = reactive<any>([
   { imageName: 'three1.jpeg' }, { imageName: 'three.jpeg' },
 ]);
 const modelHash = ref()
+const fileSize = ref()
 const goPostDetail = (item:any)=>{
   console.log('goPostDetail',item)
   // 需带上图片标识进入详情页
@@ -114,6 +116,7 @@ const getModelDetail = async () => {
     console.log("res:", res);
     Object.assign(cardList,res);
     modelHash.value = res.hash
+    fileSize.value = prettyBytes(cardList.size);
   } catch (error:any) {
     message.error('Failed ',error)
   }
