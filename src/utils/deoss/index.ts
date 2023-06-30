@@ -102,3 +102,22 @@ function convertToBlob(info: any): Promise<Blob> {
     reader.readAsArrayBuffer(file.originFileObj as File);
   });
 }
+
+export const downloadFileFN = (fileId:any)=>{
+  const url = baseUrl.concat('/', fileId);
+  return new Promise((resolve, reject) => {
+    fetch(url, {
+      method: 'GET',
+      headers: {
+        'Operation': 'download'
+      }
+    })
+    .then((response) => response.blob())
+    .then((blob) => {
+      resolve(blob);
+    })
+    .catch((error)=>{
+      reject(error)
+    })
+  })
+}

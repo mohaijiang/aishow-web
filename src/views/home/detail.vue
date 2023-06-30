@@ -72,8 +72,7 @@ import { web3Accounts, web3Enable } from "@polkadot/extension-dapp";
 import {ApiPromise, WsProvider} from "@polkadot/api";
 import { message } from "ant-design-vue";
 import dayjs from 'dayjs';
-import { downLoadFile } from '@/utils/deoss/index'
-import { downloadRequest } from '@/utils/index'
+import { downloadFileFN } from '@/utils/deoss/index'
 import prettyBytes from 'pretty-bytes';
 
 const router = useRouter()
@@ -99,10 +98,16 @@ const downloadModelFile = async()=>{
   try {
     client.buyModel(modelHash.value,async(info:any)=>{
       console.log('download model',info)
-      const fileBlob = await downLoadFile(cardList.hash)
-      let blob = new Blob([fileBlob]);
-      console.log('buyModel,fileBlob')
-      downloadRequest(blob, cardList.filename)
+      const blob:any = await downloadFileFN(cardList.hash)
+      console.log('blob~~~~~',blob)
+      let downloadElement = document.createElement("a");
+      let href = window.URL.createObjectURL(blob);
+      downloadElement.href = href;
+      downloadElement.download = cardList.filename;
+      document.body.appendChild(downloadElement);
+      downloadElement.click();
+      document.body.removeChild(downloadElement);
+      window.URL.revokeObjectURL(href);
     })
   } catch (error:any) {
     message.error('Failed ',error)
@@ -129,7 +134,7 @@ const getModelDetail = async () => {
 //   console.log(allInjected)
 //   const allAccounts = await web3Accounts();
 //   const account = allAccounts[0].address
-//   const wsProvider = new WsProvider('ws://172.16.31.103:9944');
+//   const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
 //   const api = await ApiPromise.create({provider: wsProvider});
 //   // 以上需要配置为全局
 //   const client = new PolkadotAiChanClient(api,account)
@@ -146,7 +151,7 @@ const connectCommonPolk = async()=>{
   console.log(allInjected)
   const allAccounts = await web3Accounts();
   const account = allAccounts[0].address
-  const wsProvider = new WsProvider('ws://172.16.31.103:9944');
+  const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
   const api = await ApiPromise.create({provider: wsProvider});
   return {
     account,

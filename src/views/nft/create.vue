@@ -28,9 +28,9 @@
       <a-button type="primary" @click="imgVisible=false">Cancel</a-button>
       <a-button type="primary" class="!ml-8" @click="getPostInfo">Confirm</a-button>
     </template>
-    <div class="text-[20px] font-bold">Please select your image from your POST</div>
-    <div>Title</div>
-    <div class="mb-8">2023-06-20 15:34:56</div>
+    <div class="text-[20px] font-bold mb-5">Please select your image from your POST</div>
+    <!-- <div>Title</div>
+    <div class="mb-8">2023-06-20 15:34:56</div> -->
     <a-radio-group v-model:value="imgValue" name="radioGroup">
       <div class="grid grid-cols-3 gap-4">
         <div class="relative" v-for="(item, key) in imgList" :key="key">
@@ -103,7 +103,7 @@ const connectCommonPolk = async()=>{
   console.log(allInjected)
   const allAccounts = await web3Accounts();
   const account = allAccounts[0].address
-  const wsProvider = new WsProvider('ws://172.16.31.103:9944');
+  const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
   const api = await ApiPromise.create({provider: wsProvider});
   return {
     account,

@@ -28,3 +28,4 @@ export const downloadRequest = (str:any,name:string)=>{
   a.click();
   a.remove();
 }
+

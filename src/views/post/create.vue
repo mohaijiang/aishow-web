@@ -52,7 +52,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {CreatePostVO, PolkadotAiChanClient} from "@/components/polkadot/ai-model"
 import {ApiPromise, WsProvider} from "@polkadot/api";
 import {web3Accounts, web3Enable} from "@polkadot/extension-dapp";
-import { uploadFileToCloud } from '@/utils/deoss'
+import { uploadFile } from '@/utils/deoss'
 const router = useRouter()
 
 const fileList = ref<any>([]);
@@ -112,14 +112,14 @@ const handleDrop = (e: DragEvent) => {
   console.log("e:",e);
 }
 const uploadPost = async()=>{
-  console.log('uploadPost')
+  console.log('uploadPost',fileList.value)
   let images = []
   try {
     for(let i=0;i<fileList.value.length;i++){
-      const getPostImageUrl = await uploadFileToCloud(fileList.value[i],fileList.value[i].name)
+      const getPostImageUrl = await uploadFile(fileList.value[i],'',fileList.value[i].name)
       images[i] = {
-        image:getPostImageUrl.id,
-        imageLink:getPostImageUrl.link
+        image:getPostImageUrl,
+        imageLink:'d.cess.cloud/1233654345.png'
       }
       console.log('getPostImageUrl',getPostImageUrl,images)
     }
@@ -149,7 +149,7 @@ const connectCommonPolk = async()=>{
   console.log(allInjected)
   const allAccounts = await web3Accounts();
   const account = allAccounts[0].address
-  const wsProvider = new WsProvider('ws://172.16.31.103:9944');
+  const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
   const api = await ApiPromise.create({provider: wsProvider});
   return {
     account,

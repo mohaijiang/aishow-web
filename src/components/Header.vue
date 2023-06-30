@@ -43,7 +43,7 @@ const connectWallet = async() => {
   const walletAddr = allAccounts[0]?.address
   sessionStorage.setItem("walletAddress", walletAddr);
   walletAddress.value = walletAddr.substring(0,5)+ "..." +walletAddr.substring(walletAddr.length-4)
-  const wsProvider = new WsProvider('ws://172.16.31.103:9944');
+  const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
   const api = await ApiPromise.create({provider: wsProvider});
   console.log('api~~~~~~~',api)
   // 先把polka钱包账号存起来，防止后面需要使用到
