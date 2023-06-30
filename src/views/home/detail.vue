@@ -21,7 +21,7 @@
           <div v-for="(item,key) in cardList.images" :key="key">
             <div class="flex">
               <CarouselImage :cardInfo="item"></CarouselImage>
-              <CarouselImage :cardInfo="item"></CarouselImage>
+              <!-- <CarouselImage :cardInfo="item"></CarouselImage> -->
             </div>
           </div>
         </a-carousel>
@@ -79,17 +79,13 @@ const router = useRouter()
 const route = useRoute()
 
 const cardList = reactive<any>({});
-const modalList = reactive<any>([
-  { imageName: 'one1.jpeg' }, { imageName: 'one.jpeg' },
-  { imageName: 'two1.png' }, { imageName: 'two.jpeg' },
-  { imageName: 'three1.jpeg' }, { imageName: 'three.jpeg' },
-]);
+const modalList = reactive<any>([]);
 const modelHash = ref()
 const fileSize = ref()
 const goPostDetail = (item:any)=>{
   console.log('goPostDetail',item)
   // 需带上图片标识进入详情页
-  router.push('/postDetail')
+  router.push('/postDetail?hash='+item.hash+'&id='+item.id)
 }
 const downloadModelFile = async()=>{
   console.log('downloadModelFile')
@@ -127,25 +123,18 @@ const getModelDetail = async () => {
     message.error('Failed ',error)
   }
 }
-// const getPostList = async () => {
-  
-//   // 以下需要配置为全局
-//   const allInjected = await web3Enable('my cool dapp');
-//   console.log(allInjected)
-//   const allAccounts = await web3Accounts();
-//   const account = allAccounts[0].address
-//   const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
-//   const api = await ApiPromise.create({provider: wsProvider});
-//   // 以上需要配置为全局
-//   const client = new PolkadotAiChanClient(api,account)
-//   try {
-//     const res = await client.postList(route.query.hash)
-//     console.log("modalList res:", res);
-//     Object.assign(modalList,res);
-//   } catch (error:any) {
-//     message.error('Failed ',error)
-//   }
-// }
+const getPostList = async () => {
+  const { api, account } = await connectCommonPolk()
+  const client = new PolkadotAiChanClient(api,account)
+  try {
+    console.log("postList hash:", route.query.hash);
+    const res = await client.postList(route.query.hash)
+    console.log("modalList res:", res);
+    Object.assign(modalList,res);
+  } catch (error:any) {
+    message.error('Failed ',error)
+  }
+}
 const connectCommonPolk = async()=>{
   const allInjected = await web3Enable('my cool dapp');
   console.log(allInjected)
@@ -160,7 +149,7 @@ const connectCommonPolk = async()=>{
 }
 onMounted(() => {
   getModelDetail();
-  // getPostList();
+  getPostList();
 });
 </script>
 <style lang="less" scoped>
