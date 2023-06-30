@@ -162,6 +162,7 @@ export class PolkadotAiChanClient implements AiShowChain{
             this.api.tx.aiModel.createAiModel(
                 createModelVO.hash,
                 createModelVO.name,
+                createModelVO.filename,
                 createModelVO.link,
                 createModelVO.images.map(t => t.image),
                 createModelVO.images.map(t => t.imageLink),
@@ -383,7 +384,7 @@ export class PolkadotAiChanClient implements AiShowChain{
             downloadPrice: result.value.downloadPrice.toNumber(),
             comment: result.value.comment.toHuman(),
             createTime: result.value.createTime.toNumber(),
-            filename: "some-filename.zip",
+            filename: result.value.filename.toHuman(),
         }
 
         return model

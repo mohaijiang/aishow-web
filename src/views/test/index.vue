@@ -33,7 +33,7 @@ const createModel = async () => {
         size: 1000,
         // markdown 备注
         comment: `<p><span style=\\"color: rgb(36, 41, 47); background-color: rgb(244, 246, 248); font-size: 14px;\\">As the temperature rises and the days get longer, we know that summer has arrived. It's a season of sunshine, warmth, and endless possibilities. Whether it's spending lazy days by the beach, exploring new places, or simply enjoying the company of friends and family, summer brings us joy and relaxation</span></p >`,
-        filename: "filename",
+        filename: "filename.zip",
     }, undefined)
 
 
