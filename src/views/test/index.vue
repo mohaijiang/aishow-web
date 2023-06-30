@@ -18,9 +18,9 @@ const createModel = async () => {
     const client = new PolkadotAiChanClient(api, account)
 
     const result = await client.createModel({
-        name: "a2",
+        name: "a4",
         // 模型hash， 文件上传后返回的hash值
-        hash: "a2",
+        hash: "e00de11a566c6a8975252c5e045bc127568e3b522757a57890852cf8b8201b4a",
         // 模型下载链接
         link: "string",
         // 图片列表
@@ -32,13 +32,13 @@ const createModel = async () => {
         downloadPrice: 1000,
         size: 1000,
         // markdown 备注
-        comment: "comment",
+        comment: `<p><span style=\\"color: rgb(36, 41, 47); background-color: rgb(244, 246, 248); font-size: 14px;\\">As the temperature rises and the days get longer, we know that summer has arrived. It's a season of sunshine, warmth, and endless possibilities. Whether it's spending lazy days by the beach, exploring new places, or simply enjoying the company of friends and family, summer brings us joy and relaxation</span></p >`,
         filename: "filename",
     }, undefined)
 
 
     // const result = await client.createPost({
-    //     modelHash: "a2",
+    //     modelHash: "e00de11a566c6a8975252c5e045bc127568e3b522757a57890852cf8b8201b4a",
     //     uuid: "uuid",
     //     name: "some name",
     //     images: [{
@@ -48,10 +48,10 @@ const createModel = async () => {
     //     comment: "comment",
     // },undefined)
 
-    // const result = await client.nftCreateCollection("a2")
-    // const result = await client.nftMint("a2","uuid")
+    // const result = await client.nftCreateCollection("a4")
+    // const result = await client.nftMint("a4","uuid")
 
-    // const result = await client.postList("a2")
+    // const result = await client.postList("a4")
 
     // const result = await client.userNFT("5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY")
 
@@ -70,7 +70,7 @@ const createPost = async ()=> {
     const client = new PolkadotAiChanClient(api, account)
 
     const result = await client.createPost({
-        modelHash: "a2",
+        modelHash: "a4",
         uuid: "uuid",
         name: "some name",
         images: [{
@@ -118,7 +118,7 @@ const mint = async () => {
     const api = await ApiPromise.create({provider: wsProvider});
     const client = new PolkadotAiChanClient(api, account)
 
-    const result = await client.nftMint("a2","uuid","image", undefined)
+    const result = await client.nftMint("a4","uuid","image", undefined)
     console.log(result)
 }
 
