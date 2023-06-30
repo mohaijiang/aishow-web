@@ -306,16 +306,16 @@ export class PolkadotAiChanClient implements AiShowChain{
     }
 
     async postList(modelHash: string) {
-        const postsCodec = await this.api.query.aiModel.modelPost.entries(modelHash)
+        const postsCodec = await this.api.query.aiModel.modelPost(modelHash)
         if(postsCodec === undefined){
             throw new Error('storage value not found')
         }
 
-
         const result = []
-        for(let postCodec of postsCodec){
+        for(let postUUID of postsCodec.toHuman()){
             // const keys = postCodec[0].toHuman()
-            result.push(this.toCreatePostVO(postCodec[1].toHuman()))
+            const postCodec = await this.api.query.aiModel.aiPosts(postUUID)
+            result.push(this.toCreatePostVO(postCodec.toHuman()))
         }
 
         return  result
