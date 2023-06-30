@@ -83,8 +83,13 @@ export interface AiShowChain {
     postList(modelHash: string): Promise<CreatePostVO[]>
     // post 详情
     postDetail(modelHash: string, postUUID: string): Promise<CreatePostVO>
+    // 用户post
+    userPostList(address: string): Promise<CreatePostVO[]>
     // nft list
     nftList(): Promise<NFT[]>
+
+    // 判断是否需要创建collection
+    ifNeedCreateCollection(modelHash: string): Promise<boolean>
     // nft 创建collection
     nftCreateCollection(modelHash: string,callback: Callback): Promise<number>
     //nft mint
@@ -146,16 +151,45 @@ export class PolkadotAiChanClient implements AiShowChain{
 
     async createModel( createModelVO: CreateModelVO,callback: Callback ) {
         const injector = await web3FromAddress(this.sender)
-        const unsub = await this.api.tx.aiModel.createAiModel(
-            createModelVO.hash,
-            createModelVO.name,
-            createModelVO.link,
-            createModelVO.images.map(t => t.image),
-            createModelVO.images.map(t => t.imageLink),
-            createModelVO.downloadPrice,
-            createModelVO.size,
-            createModelVO.comment
-        ).signAndSend(this.sender, {signer: injector.signer}, (result) => {
+
+        const collectionIdCodec = await this.api.query.nfts.nextCollectionId()
+        let collectionId = 0
+        if(collectionIdCodec.isSome){
+            collectionId = collectionIdCodec.value.toNumber()
+        }
+
+        const txs = [
+            this.api.tx.aiModel.createAiModel(
+                createModelVO.hash,
+                createModelVO.name,
+                createModelVO.link,
+                createModelVO.images.map(t => t.image),
+                createModelVO.images.map(t => t.imageLink),
+                createModelVO.downloadPrice,
+                createModelVO.size,
+                createModelVO.comment
+            ),
+            this.api.tx.nfts.create(
+                {Id: this.sender},
+                {
+                    settings: `${collectionId}`,
+                    maxSupply: null,
+                    mintSettings: {
+                        defaultItemSettings: "0",
+                        endBlock: null,
+                        mintType: "Issuer",
+                        price: null,
+                        startBlock: null,
+                    }
+                },
+            ),
+            this.api.tx.nfts.setCollectionMetadata(
+                collectionId,createModelVO.hash
+            )
+        ]
+
+
+        const unsub = await this.api.tx.utility.batch(txs).signAndSend(this.sender, {signer: injector.signer}, (result) => {
             if (result.status.isInBlock) {
                 console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
                 if(result.dispatchError){
@@ -397,6 +431,17 @@ export class PolkadotAiChanClient implements AiShowChain{
         }
     }
 
+
+    async ifNeedCreateCollection(modelHash: string): Promise<boolean> {
+
+        try {
+            await this.nftGetCollectionId(modelHash)
+            return false
+        }catch (e){
+            return true
+        }
+    }
+
     async nftCreateCollection(modelHash: string,callback: Callback) {
         const injector = await web3FromAddress(this.sender)
         const collectionIdCodec = await this.api.query.nfts.nextCollectionId()
@@ -534,7 +579,6 @@ export class PolkadotAiChanClient implements AiShowChain{
     }
 
     async getNFT(collectionId: number, itemId: number): Promise<NFT>{
-        debugger
         const modelHashCodec = await this.api.query.nfts.collectionMetadataOf(collectionId)
         const modelHash = modelHashCodec.toHuman().data
         const postCodec = await this.api.query.nfts.itemMetadataOf(collectionId,itemId)
@@ -566,6 +610,20 @@ export class PolkadotAiChanClient implements AiShowChain{
         for(let modelHash of codec.toHuman()){
             const model = await this.modelDetail(modelHash)
             result.push(model)
+        }
+
+        return result
+    }
+
+    async userPostList(address: string): Promise<CreatePostVO[]> {
+
+        const codec = await this.api.query.aiModel.userPost(address)
+        const result = []
+
+        for(let postUUID of codec.toHuman()){
+            const postCodec = await this.api.query.aiModel.aiPosts(postUUID)
+            const post = this.toCreatePostVO(postCodec.toHuman())
+            result.push(post)
         }
 
         return result
