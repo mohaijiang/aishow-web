@@ -29,7 +29,7 @@ export function postAuth(data: AuthData): Promise<any> {
 
 
 export function uploadFile(fileData: any, authToken: string, fileName: string): Promise<any> {
-  const url = baseUrl.concat('/', fileName);
+  const url = baseUrl.concat('/');
   const config = {
     headers: {
       'Authorization': authToken,
