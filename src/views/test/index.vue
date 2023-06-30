@@ -13,7 +13,7 @@ const createModel = async () => {
     const allInjected = await web3Enable('my cool dapp');
     const allAccounts = await web3Accounts();
     const account = allAccounts[0].address
-    const wsProvider = new WsProvider('ws://127.0.0.1:9944');
+    const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
     const api = await ApiPromise.create({provider: wsProvider});
     const client = new PolkadotAiChanClient(api, account)
 
@@ -22,11 +22,11 @@ const createModel = async () => {
         // 模型hash， 文件上传后返回的hash值
         hash: "e00de11a566c6a8975252c5e045bc127568e3b522757a57890852cf8b8201b4a",
         // 模型下载链接
-        link: "string",
+        link: "https://img.zcool.cn/community/01dcd059117b12a801216a3e9c4fd5.jpg@1280w_1l_2o_100sh.jpg",
         // 图片列表
         images: [{
             image: "image",
-            imageLink: "imageLink",
+            imageLink: "https://img.zcool.cn/community/01dcd059117b12a801216a3e9c4fd5.jpg@1280w_1l_2o_100sh.jpg",
         }],
         // 下载价格
         downloadPrice: 1000,
@@ -65,7 +65,7 @@ const createPost = async ()=> {
     const allInjected = await web3Enable('my cool dapp');
     const allAccounts = await web3Accounts();
     const account = allAccounts[0].address
-    const wsProvider = new WsProvider('ws://127.0.0.1:9944');
+    const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
     const api = await ApiPromise.create({provider: wsProvider});
     const client = new PolkadotAiChanClient(api, account)
 
@@ -75,7 +75,7 @@ const createPost = async ()=> {
         name: "some name",
         images: [{
            image: "image",
-           imageLink: "imageLink",
+           imageLink: "https://img.zcool.cn/community/01dcd059117b12a801216a3e9c4fd5.jpg@1280w_1l_2o_100sh.jpg",
         }],
         comment: "comment",
     },undefined)
@@ -89,7 +89,7 @@ const userModelSelect = async () => {
     const allInjected = await web3Enable('my cool dapp');
     const allAccounts = await web3Accounts();
     const account = allAccounts[0].address
-    const wsProvider = new WsProvider('ws://127.0.0.1:9944');
+    const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
     const api = await ApiPromise.create({provider: wsProvider});
     const client = new PolkadotAiChanClient(api, account)
 
@@ -102,7 +102,7 @@ const modelList = async () => {
     const allInjected = await web3Enable('my cool dapp');
     const allAccounts = await web3Accounts();
     const account = allAccounts[0].address
-    const wsProvider = new WsProvider('ws://127.0.0.1:9944');
+    const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
     const api = await ApiPromise.create({provider: wsProvider});
     const client = new PolkadotAiChanClient(api, account)
 
@@ -114,7 +114,7 @@ const mint = async () => {
     const allInjected = await web3Enable('my cool dapp');
     const allAccounts = await web3Accounts();
     const account = allAccounts[0].address
-    const wsProvider = new WsProvider('ws://127.0.0.1:9944');
+    const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
     const api = await ApiPromise.create({provider: wsProvider});
     const client = new PolkadotAiChanClient(api, account)
 
@@ -127,11 +127,24 @@ const userPost = async ()=> {
     const allInjected = await web3Enable('my cool dapp');
     const allAccounts = await web3Accounts();
     const account = allAccounts[0].address
-    const wsProvider = new WsProvider('ws://127.0.0.1:9944');
+    const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
     const api = await ApiPromise.create({provider: wsProvider});
     const client = new PolkadotAiChanClient(api, account)
 
     const result = await client.userPostList(account)
+    console.log(result)
+}
+
+const postList = async () => {
+    const hash = "e00de11a566c6a8975252c5e045bc127568e3b522757a57890852cf8b8201b4a"
+    const allInjected = await web3Enable('my cool dapp');
+    const allAccounts = await web3Accounts();
+    const account = allAccounts[0].address
+    const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
+    const api = await ApiPromise.create({provider: wsProvider});
+    const client = new PolkadotAiChanClient(api, account)
+
+    const result = await client.postList(hash)
     console.log(result)
 }
 
@@ -162,6 +175,9 @@ const userPost = async ()=> {
 
           <p>
               <a-button type="primary" @click="userPost">userPost</a-button>
+          </p>
+          <p>
+              <a-button type="primary" @click="postList" >postList</a-button>
           </p>
       </a-card>
   </div>
