@@ -3,16 +3,19 @@
 import {PolkadotAiChanClient} from "@/components/polkadot/ai-model";
 import {ApiPromise, WsProvider} from "@polkadot/api";
 import {web3Accounts, web3Enable} from "@polkadot/extension-dapp";
+import {onMounted, reactive} from "vue";
 
 
 
 const createModel = async () => {
+
+
     const allInjected = await web3Enable('my cool dapp');
     const allAccounts = await web3Accounts();
     const account = allAccounts[0].address
     const wsProvider = new WsProvider('ws://127.0.0.1:9944');
     const api = await ApiPromise.create({provider: wsProvider});
-    const client = new PolkadotAiChanClient(api,account)
+    const client = new PolkadotAiChanClient(api, account)
 
     const result = await client.createModel({
         name: "a2",
@@ -29,7 +32,8 @@ const createModel = async () => {
         downloadPrice: 1000,
         size: 1000,
         // markdown 备注
-        comment: "comment"
+        comment: "comment",
+        filename: "filename",
     }, undefined)
 
 
@@ -56,13 +60,14 @@ const createModel = async () => {
 }
 
 const createPost = async ()=> {
+
+
     const allInjected = await web3Enable('my cool dapp');
     const allAccounts = await web3Accounts();
     const account = allAccounts[0].address
     const wsProvider = new WsProvider('ws://127.0.0.1:9944');
     const api = await ApiPromise.create({provider: wsProvider});
-    const client = new PolkadotAiChanClient(api,account)
-
+    const client = new PolkadotAiChanClient(api, account)
 
     const result = await client.createPost({
         modelHash: "a2",
@@ -79,16 +84,45 @@ const createPost = async ()=> {
 }
 
 const userModelSelect = async () => {
+
+
     const allInjected = await web3Enable('my cool dapp');
     const allAccounts = await web3Accounts();
     const account = allAccounts[0].address
     const wsProvider = new WsProvider('ws://127.0.0.1:9944');
     const api = await ApiPromise.create({provider: wsProvider});
-    const client = new PolkadotAiChanClient(api,account)
+    const client = new PolkadotAiChanClient(api, account)
 
     const result = await client.userModelSelect(account)
     console.log(result)
 }
+
+const modelList = async () => {
+
+    const allInjected = await web3Enable('my cool dapp');
+    const allAccounts = await web3Accounts();
+    const account = allAccounts[0].address
+    const wsProvider = new WsProvider('ws://127.0.0.1:9944');
+    const api = await ApiPromise.create({provider: wsProvider});
+    const client = new PolkadotAiChanClient(api, account)
+
+    const result = await client.modelList()
+    console.log(result)
+}
+
+const userPost = async ()=> {
+
+    const allInjected = await web3Enable('my cool dapp');
+    const allAccounts = await web3Accounts();
+    const account = allAccounts[0].address
+    const wsProvider = new WsProvider('ws://127.0.0.1:9944');
+    const api = await ApiPromise.create({provider: wsProvider});
+    const client = new PolkadotAiChanClient(api, account)
+
+    const result = await client.userPostList(account)
+    console.log(result)
+}
+
 </script>
 
 <template>
@@ -110,6 +144,13 @@ const userModelSelect = async () => {
               <a-button type="primary" @click="userModelSelect"> userModelSelect </a-button>
           </p>
 
+          <p>
+              <a-button type="primary" @click="modelList">modelList</a-button>
+          </p>
+
+          <p>
+              <a-button type="primary" @click="userPost">userPost</a-button>
+          </p>
       </a-card>
   </div>
 </template>
