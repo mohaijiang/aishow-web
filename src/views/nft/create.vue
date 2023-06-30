@@ -26,7 +26,7 @@
   <a-modal v-model:visible="imgVisible" >
     <template #footer>
       <a-button type="primary" @click="imgVisible=false">Cancel</a-button>
-      <a-button type="primary" class="!ml-8">Confirm</a-button>
+      <a-button type="primary" class="!ml-8" @click="getPostInfo">Confirm</a-button>
     </template>
     <div class="text-[20px] font-bold">Please select your image from your POST</div>
     <div>Title</div>
@@ -47,9 +47,13 @@
   </a-modal>
 </template>
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue';
+import { computed, reactive, ref, onMounted } from 'vue';
 import useAssets from "@/stores/useAssets";
 import { useRouter } from 'vue-router'
+import {ApiPromise, WsProvider} from "@polkadot/api";
+import {web3Accounts, web3Enable} from "@polkadot/extension-dapp";
+import { PolkadotAiChanClient } from "@/components/polkadot/ai-model"
+import { message } from 'ant-design-vue';
 const router = useRouter()
 const { getImageURL } = useAssets();
 
@@ -80,9 +84,39 @@ const cancelNft = ()=>{
   router.back()
 }
 const handleSubmit = async () => {
-  // await formRef.value.validate();
-  router.push('/nftDetail')
+  await formRef.value.validate();
+  const { api, account } = await connectCommonPolk()
+  const client = new PolkadotAiChanClient(api,account)
+  try {
+    // await client.nftMint()
+    router.push('/nftDetail')
+  } catch (error:any) {
+    message.error("Failed ",error)
+  }
 }
+// 取post信息
+const getPostInfo = ()=>{
+  console.log('取post信息')
+}
+const connectCommonPolk = async()=>{
+  const allInjected = await web3Enable('my cool dapp');
+  console.log(allInjected)
+  const allAccounts = await web3Accounts();
+  const account = allAccounts[0].address
+  const wsProvider = new WsProvider('ws://172.16.31.103:9944');
+  const api = await ApiPromise.create({provider: wsProvider});
+  return {
+    account,
+    api
+  }
+}
+// 获取用户post列表
+const getPostImg = ()=>{
+
+}
+onMounted(()=>{
+  getPostImg()
+})
 </script>
 <style lang="less" scoped>
 :deep(.ant-radio), :deep(.ant-radio-inner){

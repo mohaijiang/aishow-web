@@ -72,6 +72,7 @@ import { web3Accounts, web3Enable } from "@polkadot/extension-dapp";
 import {ApiPromise, WsProvider} from "@polkadot/api";
 import { message } from "ant-design-vue";
 import dayjs from 'dayjs';
+import { downloadFile } from '@/utils/index'
 
 const router = useRouter()
 const route = useRoute()
@@ -82,29 +83,34 @@ const modalList = reactive<any>([
   { imageName: 'two1.png' }, { imageName: 'two.jpeg' },
   { imageName: 'three1.jpeg' }, { imageName: 'three.jpeg' },
 ]);
+const modelHash = ref()
 const goPostDetail = (item:any)=>{
   console.log('goPostDetail',item)
   // 需带上图片标识进入详情页
   router.push('/postDetail')
 }
-const downloadImage = ()=>{
+const downloadImage = async()=>{
   console.log('downloadImage')
+  const { api, account } = await connectCommonPolk()
+  const client = new PolkadotAiChanClient(api,account)
+  try {
+    client.buyModel(modelHash.value,(info:any)=>{
+      console.log('download model',info)
+      downloadFile(cardList.link,cardList.filename)
+    })
+  } catch (error:any) {
+    message.error('Failed ',error)
+  }
 }
 const getModelDetail = async () => {
-  // 以下需要配置为全局
-  const allInjected = await web3Enable('my cool dapp');
-  console.log(allInjected)
-  const allAccounts = await web3Accounts();
-  const account = allAccounts[0].address
-  const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
-  const api = await ApiPromise.create({provider: wsProvider});
-  // 以上需要配置为全局
+  const { api, account } = await connectCommonPolk()
   const client = new PolkadotAiChanClient(api,account)
   try {
     console.log("hash:", route.query.hash);
     const res = await client.modelDetail(route.query.hash)
     console.log("res:", res);
     Object.assign(cardList,res);
+    modelHash.value = res.hash
   } catch (error:any) {
     message.error('Failed ',error)
   }
@@ -116,7 +122,7 @@ const getModelDetail = async () => {
 //   console.log(allInjected)
 //   const allAccounts = await web3Accounts();
 //   const account = allAccounts[0].address
-//   const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
+//   const wsProvider = new WsProvider('ws://172.16.31.103:9944');
 //   const api = await ApiPromise.create({provider: wsProvider});
 //   // 以上需要配置为全局
 //   const client = new PolkadotAiChanClient(api,account)
@@ -128,7 +134,18 @@ const getModelDetail = async () => {
 //     message.error('Failed ',error)
 //   }
 // }
-
+const connectCommonPolk = async()=>{
+  const allInjected = await web3Enable('my cool dapp');
+  console.log(allInjected)
+  const allAccounts = await web3Accounts();
+  const account = allAccounts[0].address
+  const wsProvider = new WsProvider('ws://172.16.31.103:9944');
+  const api = await ApiPromise.create({provider: wsProvider});
+  return {
+    account,
+    api
+  }
+}
 onMounted(() => {
   getModelDetail();
   // getPostList();

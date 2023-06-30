@@ -16,7 +16,9 @@ export interface CreateModelVO {
     // 模型大小
     size: number,
     // markdown 备注
-    comment: string
+    comment: string,
+    // 文件名
+    filename: string
 }
 
 export interface ModelVO extends CreateModelVO {
@@ -98,7 +100,7 @@ export interface AiShowChain {
     console.log(allInjected)
     const allAccounts = await web3Accounts();
     const account = allAccounts[0].address
-    const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
+    const wsProvider = new WsProvider('ws://172.16.31.103:9944');
     const api = await ApiPromise.create({provider: wsProvider});
     // 以上需要配置为全局
 

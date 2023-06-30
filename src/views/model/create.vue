@@ -107,7 +107,7 @@ const handleSubmit = async () => {
     console.log(allInjected)
     const allAccounts = await web3Accounts();
     const account = allAccounts[0].address
-    const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
+    const wsProvider = new WsProvider('ws://172.16.31.103:9944');
     const api = await ApiPromise.create({provider: wsProvider});
     // 以上需要配置为全局
     const client = new PolkadotAiChanClient(api,account)
@@ -178,7 +178,8 @@ const uploadFileList = async()=>{
     fileInfo.value = {
       hash:getFileUrl.id,
       link:getFileUrl.link,
-      size:fileSize
+      size:fileSize,
+      filename:getFileUrl.name
     }
   }catch(error:any){
     message.error('File upload encountered an issue, please try again')

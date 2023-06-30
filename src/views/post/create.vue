@@ -138,7 +138,8 @@ const getModelOption = async()=>{
   modelOption.value = res.map((item:any)=>{
     return {
       value:item.hash,
-      label:item.name
+      label:item.name,
+      // name:item.name
     }
   })
   console.log('model选项',modelOption.value)
@@ -148,7 +149,7 @@ const connectCommonPolk = async()=>{
   console.log(allInjected)
   const allAccounts = await web3Accounts();
   const account = allAccounts[0].address
-  const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
+  const wsProvider = new WsProvider('ws://172.16.31.103:9944');
   const api = await ApiPromise.create({provider: wsProvider});
   return {
     account,
