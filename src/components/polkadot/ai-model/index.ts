@@ -491,7 +491,7 @@ export class PolkadotAiChanClient implements AiShowChain{
         return collectionId
     }
 
-    async nftMint(modelHash: string, postId: string, uuid: string,callback: Callback): Promise<void> {
+    async nftMint(modelHash: string, postId: string, imageUuid: string,callback: Callback): Promise<void> {
         const collectionId = await this.nftGetCollectionId(modelHash)
         // 查询item 数量
         const collectionCodec = await this.api.query.nfts.collection(collectionId)
@@ -512,7 +512,7 @@ export class PolkadotAiChanClient implements AiShowChain{
             this.api.tx.nfts.setMetadata(
                 collectionId,
                 itemNum,
-                `${postId}/${uuid}`
+                `${postId}/${imageUuid}`
             )
         ]
 

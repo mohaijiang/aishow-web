@@ -110,6 +110,18 @@ const modelList = async () => {
     console.log(result)
 }
 
+const mint = async () => {
+    const allInjected = await web3Enable('my cool dapp');
+    const allAccounts = await web3Accounts();
+    const account = allAccounts[0].address
+    const wsProvider = new WsProvider('ws://127.0.0.1:9944');
+    const api = await ApiPromise.create({provider: wsProvider});
+    const client = new PolkadotAiChanClient(api, account)
+
+    const result = await client.nftMint("a2","uuid","image", undefined)
+    console.log(result)
+}
+
 const userPost = async ()=> {
 
     const allInjected = await web3Enable('my cool dapp');
@@ -137,7 +149,7 @@ const userPost = async ()=> {
               <a-button type="primary" @click="createPost">create post</a-button>
           </p>
           <p>
-              <a-button type="primary">mint</a-button>
+              <a-button type="primary" @click="mint">mint</a-button>
           </p>
 
           <p>
