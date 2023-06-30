@@ -85,6 +85,8 @@ const cancelNft = ()=>{
 }
 const handleSubmit = async () => {
   await formRef.value.validate();
+  localStorage.setItem('nftName',formData.name)
+  localStorage.setItem('nftDescription',formData.description)
   const { api, account } = await connectCommonPolk()
   const client = new PolkadotAiChanClient(api,account)
   try {
@@ -111,8 +113,14 @@ const connectCommonPolk = async()=>{
   }
 }
 // 获取用户post列表
-const getPostImg = ()=>{
-
+const getPostImg = async()=>{
+  const { api, account } = await connectCommonPolk()
+  const client = new PolkadotAiChanClient(api,account)
+  const res:any = await client.userPostList(account)
+  console.log('获取用户post列表',res)
+  res.map((item:any)=>{
+    item.images
+  })
 }
 onMounted(()=>{
   getPostImg()
