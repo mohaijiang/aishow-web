@@ -128,13 +128,8 @@ const nftDetail = async () => {
     const api = await ApiPromise.create({provider: wsProvider});
     const client = new PolkadotAiChanClient(api, account)
 
-    const nftList = await client.userNFT(account)
-    console.log(nftList)
-
-    for(let nft of nftList){
-        const detail = await client.nftDetail(nft.collectionId,nft.itemId)
-        console.log("detail: ", detail)
-    }
+    const detail = await client.nftDetail(0,1)
+    console.log("detail: ", detail)
 }
 
 const postList = async () => {
