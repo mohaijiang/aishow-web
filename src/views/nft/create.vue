@@ -71,6 +71,11 @@ const formData = reactive({
   name: '',
   description: ''
 });
+const nftParams = reactive({
+  modelHash:"68bf868cfeac09dcd13ce983562aef1eddacb739484fa1386aecd8d4d3668846",
+  postId:"b0372af4-efcb-441f-8bd0-b3a8776a3bf7",
+  uuid:"4618f07793a1212c97e426fc912f20ad9ac07f5a11c57d62c8bcdcc39d231019"
+})
 const formRules = computed(() => {
 
   const requiredRule = (message: string) => ({ required: true, trigger: 'change', message });
@@ -91,8 +96,10 @@ const handleSubmit = async () => {
   const { api, account } = await connectCommonPolk()
   const client = new PolkadotAiChanClient(api,account)
   try {
-    // await client.nftMint()
-    router.push('/nftDetail')
+    // modelHash: string,postId: string, uuid: string,
+    await client.nftMint(nftParams.modelHash,nftParams.postId,nftParams.uuid,(info:any)=>{
+      router.push(`/nftDetail?collectionId=${info.collectionId}&itemId=${info.itemId}`)
+    })
   } catch (error:any) {
     message.error("Failed ",error)
   }
