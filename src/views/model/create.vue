@@ -147,9 +147,10 @@ const uploadImageList = async()=>{
   try {
     for(let i=0;i<imageList.value.length;i++){
       const getImageUrl = await uploadFile(imageList.value[i],'',imageList.value[i].name)
+      // http://35.227.119.161:8081/45371a83c83734a8ccb8eeb1da3107d2582fde1ff7d0c31ad7b23c29936411aa/990.jpeg
       images[i] = {
         image:getImageUrl,
-        imageLink:'d.cess.cloud/1233654345.png'
+        imageLink:`http://35.227.119.161:8081/${getImageUrl}/${imageList.value[i].name}`
       }
       console.log('getImageUrl',getImageUrl,images)
     }

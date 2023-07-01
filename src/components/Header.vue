@@ -23,7 +23,8 @@
       </div>
       <div>
         <a-button v-if="!walletAddress" class="ml-8" type="primary" @click="connectWallet">Connect Wallet</a-button>
-        <a-button v-else ghost @click="goProfile">{{walletAddress}}</a-button>
+        <sapn v-if="walletAddress" class="inline-block h-[40px] px-2 leading-[32px] border-[#1971c2] border-solid rounded-lg text-[#1971c2]">{{walletAddress}}</sapn>
+        <img v-if="walletAddress" @click="goProfile" class="h-[40px] rounded-full cursor-pointer ml-5" src="../assets/icons/logo.png"/>
       </div>
     </div>
   </div>
