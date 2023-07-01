@@ -87,17 +87,15 @@ export interface AiShowChain {
     userPostList(address: string): Promise<CreatePostVO[]>
     // nft list
     nftList(): Promise<NFT[]>
-
     // 判断是否需要创建collection
     ifNeedCreateCollection(modelHash: string): Promise<boolean>
-    // nft 创建collection
-    nftCreateCollection(modelHash: string,callback: Callback): Promise<number>
     //nft mint
     nftMint(modelHash: string,postId: string, uuid: string,callback: Callback): Promise<void>
     // userNFT
     userNFT(address: string): Promise<NFT[]>
+    /// nftDetail
+    nftDetail(collectionId: number,itemId: number): Promise<NFT>
 }
-
 
 /*
     // 以下需要配置为全局
@@ -174,7 +172,7 @@ export class PolkadotAiChanClient implements AiShowChain{
                 this.api.tx.nfts.create(
                     {Id: this.sender},
                     {
-                        settings: `${collectionId}`,
+                        settings: 0,
                         maxSupply: null,
                         mintSettings: {
                             defaultItemSettings: "0",
@@ -190,15 +188,14 @@ export class PolkadotAiChanClient implements AiShowChain{
                 )
             ]
 
-
             const unsub = await this.api.tx.utility.batch(txs).signAndSend(this.sender, {signer: injector.signer}, (result) => {
                 if (result.status.isInBlock) {
                     console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
+                    this.substrateListener(result)
                     if (result.dispatchError) {
                         if (callback) {
                             callback({status: "error", id: "", error: result.dispatchError.toHuman()})
                         }
-                        this.substrateListener(result)
                         unsub()
                         return
                     }
@@ -307,7 +304,7 @@ export class PolkadotAiChanClient implements AiShowChain{
 
     async postList(modelHash: string) {
         const postsCodec = await this.api.query.aiModel.modelPost(modelHash)
-        if(postsCodec === undefined){
+        if(postsCodec.toHuman() === undefined || postsCodec.toHuman() == null){
             throw new Error('storage value not found')
         }
 
@@ -322,7 +319,7 @@ export class PolkadotAiChanClient implements AiShowChain{
     }
 
     async postDetail(modelHash: string, postUUID: string): Promise<CreatePostVO> {
-        const postCodec = await this.api.query.aiModel.modelPost(modelHash,postUUID)
+        const postCodec = await this.api.query.aiModel.aiPosts(postUUID)
         return this.toCreatePostVO(postCodec.toHuman())
     }
 
@@ -416,7 +413,7 @@ export class PolkadotAiChanClient implements AiShowChain{
 
     async getCreatePostVO(modelHash: string, uuid: string): Promise<CreatePostVO>{
 
-        const codec = await this.api.query.aiModel.modelPost(modelHash,uuid)
+        const codec = await this.api.query.aiModel.aiPosts(uuid)
 
         const vo = codec.toHuman()
         const imageNames = vo.images
@@ -448,19 +445,13 @@ export class PolkadotAiChanClient implements AiShowChain{
         }
     }
 
-    async nftCreateCollection(modelHash: string,callback: Callback) {
-        const injector = await web3FromAddress(this.sender)
-        const collectionIdCodec = await this.api.query.nfts.nextCollectionId()
-        let collectionId = 0
-        if(collectionIdCodec.isSome){
-            collectionId = collectionIdCodec.value.toNumber()
-        }
+    async nftCreateCollection(modelHash: string) {
 
         const txs = [
             this.api.tx.nfts.create(
             {Id: this.sender},
             {
-                settings: `${collectionId}`,
+                settings: 0,
                 maxSupply: null,
                 mintSettings: {
                     defaultItemSettings: "0",
@@ -476,28 +467,19 @@ export class PolkadotAiChanClient implements AiShowChain{
             )
         ]
 
-        const unsub =  await this.api.tx.utility.batch(txs).signAndSend(this.sender, {signer: injector.signer}, (result) => {
-            if (result.status.isInBlock) {
-                console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
-                if(result.dispatchError){
-                    if(callback) {
-                        callback({status: "error",id: "",error: result.dispatchError.toHuman()})
-                    }
-                    this.substrateListener(result)
-                    unsub()
-                    return
-                }
-                if(callback) {
-                    callback({status: "inBlock", id: `${collectionId}`,error: undefined})
-                }
-                unsub();
-            }
-        });
-
-        return collectionId
+        return txs
     }
 
     async nftMint(modelHash: string, postId: string, imageUuid: string,callback: Callback): Promise<void> {
+
+        debugger
+        let ifNeedCreateCollection = await  this.ifNeedCreateCollection(modelHash)
+        const txs  = []
+        if(ifNeedCreateCollection){
+           let createTxs = await this.nftCreateCollection(modelHash)
+            txs.push(...createTxs)
+        }
+
         const collectionId = await this.nftGetCollectionId(modelHash)
         // 查询item 数量
         const collectionCodec = await this.api.query.nfts.collection(collectionId)
@@ -508,19 +490,20 @@ export class PolkadotAiChanClient implements AiShowChain{
         const itemNum = parseInt(collection.items)
         const injector = await web3FromAddress(this.sender)
 
-        const txs = [
-            this.api.tx.nfts.mint(
-                collectionId,
-                itemNum,
-                {Id: this.sender},
-                null
-            ),
-            this.api.tx.nfts.setMetadata(
-                collectionId,
-                itemNum,
-                `${postId}/${imageUuid}`
-            )
-        ]
+
+
+        txs.push(this.api.tx.nfts.mint(
+            collectionId,
+            itemNum,
+            {Id: this.sender},
+            null
+        ))
+
+        txs.push(this.api.tx.nfts.setMetadata(
+            collectionId,
+            itemNum,
+            `${postId}/${imageUuid}`
+        ))
 
         const unsub =  await this.api.tx.utility.batch(txs)
             .signAndSend(this.sender, {signer: injector.signer}, (result) => {
@@ -543,6 +526,7 @@ export class PolkadotAiChanClient implements AiShowChain{
     }
 
     async nftGetCollectionId(modelHash: string): Promise<number> {
+        debugger
         const result = await this.api.query.nfts.collectionMetadataOf.entries()
 
         for(let item of result){
@@ -633,5 +617,9 @@ export class PolkadotAiChanClient implements AiShowChain{
         }
 
         return result
+    }
+
+    async nftDetail(collectionId: number, itemId: number): Promise<NFT> {
+        return await this.getNFT(collectionId,itemId)
     }
 }

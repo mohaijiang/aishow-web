@@ -4,23 +4,32 @@ import {PolkadotAiChanClient} from "@/components/polkadot/ai-model";
 import {ApiPromise, WsProvider} from "@polkadot/api";
 import {web3Accounts, web3Enable} from "@polkadot/extension-dapp";
 import {onMounted, reactive} from "vue";
+import {getUUID} from "ant-design-vue/es/vc-dialog/util";
 
+// const wsAddress = 'ws://127.0.0.1:9944'
+const wsAddress = 'wss://ws.aishow.hamsternet.io'
+const modelHash = "some-model-hash"
+const postUUID = "some-uuid-20230630"
+const imageHash = "some-image-hash"
 
+web3Enable('my cool dapp').then(() => {
+    console.log("enable success")
+})
 
 const createModel = async () => {
 
 
-    const allInjected = await web3Enable('my cool dapp');
     const allAccounts = await web3Accounts();
     const account = allAccounts[0].address
-    const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
+    const wsProvider = new WsProvider(wsAddress);
     const api = await ApiPromise.create({provider: wsProvider});
     const client = new PolkadotAiChanClient(api, account)
 
+
     const result = await client.createModel({
-        name: "a4",
+        name: modelHash,
         // 模型hash， 文件上传后返回的hash值
-        hash: "e00de11a566c6a8975252c5e045bc127568e3b522757a57890852cf8b8201b4a",
+        hash: modelHash,
         // 模型下载链接
         link: "https://img.zcool.cn/community/01dcd059117b12a801216a3e9c4fd5.jpg@1280w_1l_2o_100sh.jpg",
         // 图片列表
@@ -34,27 +43,9 @@ const createModel = async () => {
         // markdown 备注
         comment: `<p><span style=\\"color: rgb(36, 41, 47); background-color: rgb(244, 246, 248); font-size: 14px;\\">As the temperature rises and the days get longer, we know that summer has arrived. It's a season of sunshine, warmth, and endless possibilities. Whether it's spending lazy days by the beach, exploring new places, or simply enjoying the company of friends and family, summer brings us joy and relaxation</span></p >`,
         filename: "filename.zip",
-    }, undefined)
-
-
-    // const result = await client.createPost({
-    //     modelHash: "e00de11a566c6a8975252c5e045bc127568e3b522757a57890852cf8b8201b4a",
-    //     uuid: "uuid",
-    //     name: "some name",
-    //     images: [{
-    //        image: "image",
-    //        imageLink: "imageLink",
-    //     }],
-    //     comment: "comment",
-    // },undefined)
-
-    // const result = await client.nftCreateCollection("a4")
-    // const result = await client.nftMint("a4","uuid")
-
-    // const result = await client.postList("a4")
-
-    // const result = await client.userNFT("5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY")
-
+    }, data => {
+        console.log(data)
+    })
     console.log("modelDetail: ", result)
 
 }
@@ -62,19 +53,18 @@ const createModel = async () => {
 const createPost = async ()=> {
 
 
-    const allInjected = await web3Enable('my cool dapp');
     const allAccounts = await web3Accounts();
     const account = allAccounts[0].address
-    const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
+    const wsProvider = new WsProvider(wsAddress);
     const api = await ApiPromise.create({provider: wsProvider});
     const client = new PolkadotAiChanClient(api, account)
 
     const result = await client.createPost({
-        modelHash: "a4",
-        uuid: "uuid",
+        modelHash: modelHash,
+        uuid: postUUID,
         name: "some name",
         images: [{
-           image: "image",
+           image: imageHash,
            imageLink: "https://img.zcool.cn/community/01dcd059117b12a801216a3e9c4fd5.jpg@1280w_1l_2o_100sh.jpg",
         }],
         comment: "comment",
@@ -86,10 +76,9 @@ const createPost = async ()=> {
 const userModelSelect = async () => {
 
 
-    const allInjected = await web3Enable('my cool dapp');
     const allAccounts = await web3Accounts();
     const account = allAccounts[0].address
-    const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
+    const wsProvider = new WsProvider(wsAddress);
     const api = await ApiPromise.create({provider: wsProvider});
     const client = new PolkadotAiChanClient(api, account)
 
@@ -99,10 +88,9 @@ const userModelSelect = async () => {
 
 const modelList = async () => {
 
-    const allInjected = await web3Enable('my cool dapp');
     const allAccounts = await web3Accounts();
     const account = allAccounts[0].address
-    const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
+    const wsProvider = new WsProvider(wsAddress);
     const api = await ApiPromise.create({provider: wsProvider});
     const client = new PolkadotAiChanClient(api, account)
 
@@ -111,23 +99,21 @@ const modelList = async () => {
 }
 
 const mint = async () => {
-    const allInjected = await web3Enable('my cool dapp');
     const allAccounts = await web3Accounts();
     const account = allAccounts[0].address
-    const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
+    const wsProvider = new WsProvider(wsAddress);
     const api = await ApiPromise.create({provider: wsProvider});
     const client = new PolkadotAiChanClient(api, account)
 
-    const result = await client.nftMint("a4","uuid","image", undefined)
+    const result = await client.nftMint(modelHash,postUUID,imageHash, undefined)
     console.log(result)
 }
 
 const userPost = async ()=> {
 
-    const allInjected = await web3Enable('my cool dapp');
     const allAccounts = await web3Accounts();
     const account = allAccounts[0].address
-    const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
+    const wsProvider = new WsProvider(wsAddress);
     const api = await ApiPromise.create({provider: wsProvider});
     const client = new PolkadotAiChanClient(api, account)
 
@@ -135,16 +121,31 @@ const userPost = async ()=> {
     console.log(result)
 }
 
-const postList = async () => {
-    const hash = "e00de11a566c6a8975252c5e045bc127568e3b522757a57890852cf8b8201b4a"
-    const allInjected = await web3Enable('my cool dapp');
+const nftDetail = async () => {
     const allAccounts = await web3Accounts();
     const account = allAccounts[0].address
-    const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
+    const wsProvider = new WsProvider(wsAddress);
     const api = await ApiPromise.create({provider: wsProvider});
     const client = new PolkadotAiChanClient(api, account)
 
-    const result = await client.postList(hash)
+    const nftList = await client.userNFT(account)
+    console.log(nftList)
+
+    for(let nft of nftList){
+        const detail = await client.nftDetail(nft.collectionId,nft.itemId)
+        console.log("detail: ", detail)
+    }
+}
+
+const postList = async () => {
+
+    const allAccounts = await web3Accounts();
+    const account = allAccounts[0].address
+    const wsProvider = new WsProvider(wsAddress);
+    const api = await ApiPromise.create({provider: wsProvider});
+    const client = new PolkadotAiChanClient(api, account)
+
+    const result = await client.postList(modelHash)
     console.log(result)
 }
 
@@ -178,6 +179,10 @@ const postList = async () => {
           </p>
           <p>
               <a-button type="primary" @click="postList" >postList</a-button>
+          </p>
+
+          <p>
+              <a-button type="primary" @click="nftDetail">nftDetail</a-button>
           </p>
       </a-card>
   </div>

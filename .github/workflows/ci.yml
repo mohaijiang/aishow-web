@@ -1,0 +1,23 @@
+name: GitBook action
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - develop
+jobs:
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - run : |
+          docker build -t hamstershare/aishow-web:v3.0.0
+          docker tag hamstershare/aishow-web:v3.0.0 hamstershare/aishow-web:latest
+          docker push hamstershare/aishow-web:v3.0.0
+          docker push hamstershare/aishow-web:latest
