@@ -85,7 +85,7 @@ const fileSize = ref()
 const goPostDetail = (item:any)=>{
   console.log('goPostDetail',item)
   // 需带上图片标识进入详情页
-  router.push('/postDetail?hash='+item.hash+'&id='+item.id)
+  router.push('/postDetail?hash='+item.modelHash+'&id='+item.uuid)
 }
 const downloadModelFile = async()=>{
   console.log('downloadModelFile')
@@ -119,7 +119,8 @@ const getModelDetail = async () => {
     Object.assign(cardList,res);
     modelHash.value = res.hash
     fileSize.value = prettyBytes(cardList.size);
-  } catch (error:any) {
+  } catch (error: any) {
+    console.log("error:",error);
     message.error('Failed ',error)
   }
 }
