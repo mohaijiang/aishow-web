@@ -1,12 +1,12 @@
 <template>
   <div class="mb-4 card-img">
     <div class="top-div flex p-2 justify-between items-center">
-      <img src="@/assets/images/icon.jpeg" class="h-[40px] rounded-full" />
+      <img v-if="false" src="@/assets/images/icon.jpeg" class="h-[40px] rounded-full" />
       <div>
-        <div>Boxnoon</div>
-        <div class="text-css">an hour ago - Cross - post</div>
+        <div>{{ cardInfo.name }}</div>
+        <div v-if="false" class="text-css">an hour ago - Cross - post</div>
       </div>
-      <span class="btm-tips">
+      <span class="btm-tips" v-if="false">
         <img src="@/assets/icons/star.svg" class="h-[14px]" />
         <span class="ant-rate-text">5.0</span>
       </span>
@@ -23,8 +23,8 @@
             <right-circle-outlined />
           </div>
         </template>
-        <div>
-          <img :src="getImageURL(cardInfo.imageName)" class="w-full rounded-[4px]" />
+        <div v-for="(item,key) in cardInfo.images" :key="key">
+          <img :src="item.imageLink" class="w-full rounded-[4px]" />
         </div>
         <!-- <div>
           <img :src="getImageURL(cardInfo.imageName)" class="w-full rounded-[4px]" />
@@ -36,7 +36,7 @@
             <img v-if="false" src="@/assets/icons/more.svg" class="h-[28px]" />
           </div>
         </div>
-        <div class="absolute bottom-[6px] left-[6px] w-full">
+        <div v-if="false" class="absolute bottom-[6px] left-[6px] w-full">
           <div class="flex justify-between w-[96%]">
             <div class="card-btm p-2">
               <div class="flex items-center">

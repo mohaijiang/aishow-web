@@ -12,28 +12,21 @@
             <right-circle-outlined />
           </div>
         </template>
-        <div class="!flex justify-center">
-          <img src="@/assets/images/one.jpeg" class=" rounded-[4px]" />
-        </div>
-        <div class="!flex justify-center">
-          <img src="@/assets/images/one.jpeg" class=" rounded-[4px]" />
-        </div>
-        <div class="!flex justify-center">
-          <img src="@/assets/images/one.jpeg" class=" rounded-[4px]" />
+        <div class="!flex justify-center" v-for="(item, key) in postInfo.images" :key="key">
+          <img :src="item.imageLink" class=" rounded-[4px]" />
         </div>
       </a-carousel>
     </div>
     <div>
       <div class="flex">
-        <img src="@/assets/images/one.jpeg" class="w-[65px] h-[65px] rounded-full mr-4" />
+        <img v-if="false" :src="postInfo.images[0].imageLink" class="w-[65px] h-[65px] rounded-full mr-4" />
         <div class="font-bold">
-          <div class="text-[26px]">Hideroki</div>
-          <div>an hour ago</div>
+          <div class="text-[26px]">{{ postInfo.name }}</div>
+          <div v-if="false">an hour ago</div>
         </div>
       </div>
       <div class="text-[20px]">
-        <div class="mt-10">Model：majicMIX realistic</div>
-        <div class="mt-5">Details：nsfw，badhandv4，easynegative，插图，2d，绘画，卡通，素描，（最差质量：1.9），（低质量：1.9），（正常质量：1.9），低分辨率，解剖学不好，手不好，乳房阴道，（ (单色), ((灰阶)), 塌陷眼影, 多眉, (剪裁), 过饱和, 多余肢体, 缺失肢体, 变形手, 长脖子, 长身子, 不完美, (坏手), 签名, 水印, 用户名, 艺术家姓名, 连体手指, 变形手指, 难看的眼睛, 不完美的眼睛, 歪斜的眼睛, 不自然的脸, 不自然的身体, 错误, 不良形象, 不良照片</div>
+        <div class="mt-10" v-html="postInfo.comment"></div>
       </div>
     </div>
   </div>
@@ -44,10 +37,11 @@ import { PolkadotAiChanClient} from "@/components/polkadot/ai-model"
 import { web3Accounts, web3Enable } from "@polkadot/extension-dapp";
 import {ApiPromise, WsProvider} from "@polkadot/api";
 import { message } from 'ant-design-vue';
-import { onMounted } from 'vue';
+import { onMounted, reactive } from 'vue';
 import { useRoute } from "vue-router";
 
 const route = useRoute()
+const postInfo = reactive<any>({});
 
 const getPostDetail = async () => {
   const { api, account } = await connectCommonPolk()
@@ -57,7 +51,7 @@ const getPostDetail = async () => {
     console.log("post id:", route.query.id);
     const res = await client.postDetail(route.query.hash, route.query.id)
     console.log("res:", res);
-    // Object.assign(cardList,res);
+    Object.assign(postInfo,res);
   } catch (error:any) {
     message.error('Failed ',error)
   }
