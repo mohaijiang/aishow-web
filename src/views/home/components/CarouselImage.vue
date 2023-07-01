@@ -5,7 +5,7 @@
       <div class="absolute right-[2%] top-[2%] z-10">
         <img v-if="false" src="@/assets/icons/more.svg" class="h-[28px]" />
       </div>
-      <img :src="'https://' + cardInfo.imageLink" class="w-full rounded-[4px]" />
+      <img :src="cardInfo.imageLink" class="w-full rounded-[4px]" />
     </div>
   </div>
 </template>

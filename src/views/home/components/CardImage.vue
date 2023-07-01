@@ -1,7 +1,7 @@
 <template>
   <div class="mb-4 relative card-img  cursor-pointer">
-    <img :src="'https://'+cardInfo.images[0].imageLink" class="w-full rounded-[4px]" />
-    <!-- <img :src="getImageURL('https://'+cardInfo.images[0].imageLink)" class="w-full rounded-[4px]" /> -->
+    <img :src="cardInfo.images[0].imageLink" class="w-full rounded-[4px]" />
+    <!-- <img :src="getImageURL(+cardInfo.images[0].imageLink)" class="w-full rounded-[4px]" /> -->
     <div class="absolute top-0 w-full h-full">
       <div class="flex justify-between p-2">
         <div class="left-tips"> Checkpoint </div>
@@ -12,7 +12,7 @@
       <div class="absolute bottom-0 rounded-bl-[4px] rounded-br-[4px] w-full">
         <div class="flex justify-end p-2">
           <div class="rounded-img w-[38px]  rounded-full">
-            <img :src="'https://'+cardInfo.images[0].imageLink" class="w-[38px] h-[38px] rounded-full" />
+            <img :src="cardInfo.images[0].imageLink" class="w-[38px] h-[38px] rounded-full" />
           </div>
         </div>
         <div class="card-btm p-2">

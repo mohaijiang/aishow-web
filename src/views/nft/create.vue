@@ -2,10 +2,13 @@
   <div class="mx-[20%]">
     <div class="text-[30px] font-bold my-6">Mint your NFT</div>
     <a-form :model="formData" layout="vertical" ref="formRef" :rules="formRules">
-      <a-form-item label="Choose the image from your Post"  name="post">
+      <a-form-item v-if="!showImage" label="Choose the image from your Post"  name="post">
         <div @click="imgVisible=true" class="bg-[#25262b] rounded-[2px] w-[140px] h-[140px] cursor-pointer flex justify-center items-center">
           <img src="@/assets/icons/add-icon.svg" class="h-[20px] cursor-pointer" />
         </div>
+      </a-form-item>
+      <a-form-item v-else>
+        <img :src="showImage"/>
       </a-form-item>
       <a-form-item label="Name" name="name">
         <a-input v-model:value="formData.name" placeholder="Please enter Name" allow-clear autocomplete="off" />
@@ -37,7 +40,7 @@
           <div>
             <img :src="item.imageLink" class="w-full" />
             <div class="absolute bottom-[5px] w-full text-center">
-              <a-radio :value="key+1"></a-radio>
+              <a-radio :value="item"></a-radio>
             </div>
           </div>
         </div>
@@ -57,6 +60,7 @@ import { message } from 'ant-design-vue';
 const router = useRouter()
 const { getImageURL } = useAssets();
 const postImageArr = ref()
+const showImage = ref()
 
 const imgValue = ref();
 const imgVisible = ref(false);
@@ -72,9 +76,9 @@ const formData = reactive({
   description: ''
 });
 const nftParams = reactive({
-  modelHash:"68bf868cfeac09dcd13ce983562aef1eddacb739484fa1386aecd8d4d3668846",
-  postId:"b0372af4-efcb-441f-8bd0-b3a8776a3bf7",
-  uuid:"4618f07793a1212c97e426fc912f20ad9ac07f5a11c57d62c8bcdcc39d231019"
+  modelHash:'',
+  postId:'',
+  uuid:''
 })
 const formRules = computed(() => {
 
@@ -82,7 +86,7 @@ const formRules = computed(() => {
 
   return {
     name: [requiredRule('Please enter name!')],
-    // post: [requiredRule('Please choose a post!')],
+    post: [requiredRule('Please choose a post!')],
     description: [requiredRule('Please enter description!')],
   };
 });
@@ -106,7 +110,10 @@ const handleSubmit = async () => {
 }
 // 取post信息
 const getPostInfo = ()=>{
-  console.log('取post信息')
+  console.log('取post信息',imgValue.value)
+  nftParams.uuid = imgValue.value.image
+  showImage.value = imgValue.value.imageLink
+  imgVisible.value = false
 }
 const connectCommonPolk = async()=>{
   const allInjected = await web3Enable('my cool dapp');
@@ -125,6 +132,8 @@ const getPostImg = async()=>{
   const { api, account } = await connectCommonPolk()
   const client = new PolkadotAiChanClient(api,account)
   const res:any = await client.userPostList(account)
+  nftParams.modelHash = res[0].modelHash
+  nftParams.postId = res[0].uuid
   console.log('获取用户post列表',res)
   const tem = res.map((item:any)=>{
     return item.images
