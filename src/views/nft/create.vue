@@ -33,9 +33,9 @@
     <div class="mb-8">2023-06-20 15:34:56</div> -->
     <a-radio-group v-model:value="imgValue" name="radioGroup">
       <div class="grid grid-cols-3 gap-4">
-        <div class="relative" v-for="(item, key) in imgList" :key="key">
+        <div class="relative" v-for="(item, key) in postImageArr" :key="key">
           <div>
-            <img :src="getImageURL(item.imageName)" class="w-full" />
+            <img :src="item.imageLink" class="w-full" />
             <div class="absolute bottom-[5px] w-full text-center">
               <a-radio :value="key+1"></a-radio>
             </div>
@@ -56,8 +56,9 @@ import { PolkadotAiChanClient } from "@/components/polkadot/ai-model"
 import { message } from 'ant-design-vue';
 const router = useRouter()
 const { getImageURL } = useAssets();
+const postImageArr = ref()
 
-const imgValue = ref('1');
+const imgValue = ref();
 const imgVisible = ref(false);
 const imgList = reactive<any>([
   { imageName: 'one1.jpeg' }, { imageName: 'one.jpeg' },
@@ -118,9 +119,11 @@ const getPostImg = async()=>{
   const client = new PolkadotAiChanClient(api,account)
   const res:any = await client.userPostList(account)
   console.log('获取用户post列表',res)
-  res.map((item:any)=>{
-    item.images
+  const tem = res.map((item:any)=>{
+    return item.images
   })
+  postImageArr.value = tem.flat()
+  console.log('aaaaaaaaaaaaa',postImageArr.value)
 }
 onMounted(()=>{
   getPostImg()
