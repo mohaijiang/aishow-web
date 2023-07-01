@@ -337,6 +337,9 @@ export class PolkadotAiChanClient implements AiShowChain{
             // @ts-ignore
             const itemId = storageKey[1]
             const collectionCodec = await this.api.query.nfts.collectionMetadataOf(collectionId)
+            if(collectionCodec.toHuman() === null){
+                continue
+            }
             // @ts-ignore
             const modelHash = collectionCodec.toHuman().data
             // @ts-ignore
@@ -595,7 +598,11 @@ export class PolkadotAiChanClient implements AiShowChain{
     async userModelSelect(address: string): Promise<ModelVO[]> {
 
         const codec = await this.api.query.aiModel.userPaid(address)
-        console.log(codec.toHuman())
+
+        if(codec.toHuman() === null){
+            return []
+        }
+
         const result = []
         for(let modelHash of codec.toHuman()){
             const model = await this.modelDetail(modelHash)
@@ -609,6 +616,10 @@ export class PolkadotAiChanClient implements AiShowChain{
 
         const codec = await this.api.query.aiModel.userPost(address)
         const result = []
+
+        if(codec.toHuman() == null){
+            return []
+        }
 
         for(let postUUID of codec.toHuman()){
             const postCodec = await this.api.query.aiModel.aiPosts(postUUID)
