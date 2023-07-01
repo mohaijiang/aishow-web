@@ -61,7 +61,12 @@ export interface CallbackResult {
     error: any
 }
 
-export type Callback = ((result: CallbackResult)=> void )| undefined
+export interface NFTCallbackResult extends CallbackResult{
+    collectionId: number,
+    itemId: number
+}
+
+export type Callback = ((result: CallbackResult | NFTCallbackResult)=> void )| undefined
 
 export interface AiShowChain {
 
@@ -235,7 +240,7 @@ export class PolkadotAiChanClient implements AiShowChain{
                 }
                 unsub();
             }
-        });;
+        });
     }
 
     async buyModel(modelHash: string, callback: Callback){
@@ -493,8 +498,6 @@ export class PolkadotAiChanClient implements AiShowChain{
         const itemNum = parseInt(collection.items)
         const injector = await web3FromAddress(this.sender)
 
-
-
         txs.push(this.api.tx.nfts.mint(
             collectionId,
             itemNum,
@@ -514,14 +517,27 @@ export class PolkadotAiChanClient implements AiShowChain{
                     console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
                     if(result.dispatchError){
                         if(callback) {
-                            callback({status: "error",id: "",error: result.dispatchError.toHuman()})
+                            callback(
+                                {
+                                    status: "error",
+                                    id: "",
+                                    error: result.dispatchError.toHuman()
+                                }
+                            )
                         }
                         this.substrateListener(result)
                         unsub()
                         return
                     }
                     if(callback) {
-                        callback({status: "inBlock", id: `${itemNum}`,error: undefined})
+                        callback(
+                            {
+                                status: "inBlock",
+                                id: `${itemNum}`,
+                                error: undefined,
+                                collectionId: collectionId,
+                                itemId: itemNum
+                            })
                     }
                     unsub();
                 }
