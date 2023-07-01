@@ -285,8 +285,8 @@ export class PolkadotAiChanClient implements AiShowChain{
     async userModelList(address: string): Promise<ModelVO[]> {
         const modelHashCodec = await this.api.query.aiModel.userModels(address)
 
-        if(modelHashCodec === undefined){
-            throw new Error('storage value not found')
+        if(modelHashCodec.toHuman() === null){
+            return []
         }
 
         // @ts-ignore
