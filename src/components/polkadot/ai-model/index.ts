@@ -480,7 +480,6 @@ export class PolkadotAiChanClient implements AiShowChain{
 
     async nftMint(modelHash: string, postId: string, imageUuid: string,callback: Callback): Promise<void> {
 
-        debugger
         let ifNeedCreateCollection = await  this.ifNeedCreateCollection(modelHash)
         const txs  = []
         if(ifNeedCreateCollection){
@@ -544,8 +543,7 @@ export class PolkadotAiChanClient implements AiShowChain{
             });
     }
 
-    async nftGetCollectionId(modelHash: string): Promise<number> {
-        debugger
+    async nftGetCollectionId(modelHash: string): Promise<number> {       
         const result = await this.api.query.nfts.collectionMetadataOf.entries()
 
         for(let item of result){

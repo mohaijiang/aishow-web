@@ -82,7 +82,7 @@ const formRules = computed(() => {
 
   return {
     name: [requiredRule('Please enter name!')],
-    post: [requiredRule('Please choose a post!')],
+    // post: [requiredRule('Please choose a post!')],
     description: [requiredRule('Please enter description!')],
   };
 });
