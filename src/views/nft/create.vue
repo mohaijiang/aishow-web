@@ -8,7 +8,7 @@
         </div>
       </a-form-item>
       <a-form-item v-else>
-        <img :src="showImage"/>
+        <img :src="showImage" class="w-[140px] h-[140px]"/>
       </a-form-item>
       <a-form-item label="Name" name="name">
         <a-input v-model:value="formData.name" placeholder="Please enter Name" allow-clear autocomplete="off" />
@@ -37,10 +37,12 @@
     <a-radio-group v-model:value="imgValue" name="radioGroup">
       <div class="grid grid-cols-3 gap-4">
         <div class="relative" v-for="(item, key) in postImageArr" :key="key">
-          <div>
-            <img :src="item.imageLink" class="w-full" />
-            <div class="absolute bottom-[5px] w-full text-center">
-              <a-radio :value="item"></a-radio>
+          <div v-for="(i,k) in item.images" :key="k">
+            <div>
+              <img :src="i.imageLink" class="w-full" />
+              <div class="absolute bottom-[5px] w-full text-center" @click="selectImage(item)">
+                <a-radio :value="i"></a-radio>
+              </div>
             </div>
           </div>
         </div>
@@ -64,11 +66,6 @@ const showImage = ref()
 
 const imgValue = ref();
 const imgVisible = ref(false);
-const imgList = reactive<any>([
-  { imageName: 'one1.jpeg' }, { imageName: 'one.jpeg' },
-  { imageName: 'two1.png' }, { imageName: 'two.jpeg' },
-  { imageName: 'three1.jpeg' }, { imageName: 'three.jpeg' },
-]);
 const formRef = ref();
 const formData = reactive({
   post: '',
@@ -132,14 +129,14 @@ const getPostImg = async()=>{
   const { api, account } = await connectCommonPolk()
   const client = new PolkadotAiChanClient(api,account)
   const res:any = await client.userPostList(account)
-  nftParams.modelHash = res[0].modelHash
-  nftParams.postId = res[0].uuid
-  console.log('获取用户post列表',res)
-  const tem = res.map((item:any)=>{
-    return item.images
-  })
-  postImageArr.value = tem.flat()
+  postImageArr.value = res
   console.log('aaaaaaaaaaaaa',postImageArr.value)
+}
+// 获取用户选中的图片
+const selectImage = (item:any)=>{
+  console.log('selectImage',item)
+  nftParams.modelHash =item.modelHash
+  nftParams.postId = item.uuid
 }
 onMounted(()=>{
   getPostImg()
