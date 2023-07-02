@@ -23,10 +23,11 @@
   </div>
 </template>
 <script setup lang="ts">
+import { toRefs } from "vue";
 import CardImage from "./CardImage.vue";
 import { useRouter } from 'vue-router'
 const router = useRouter()
-defineProps({
+const props = defineProps({
   cardList:{
     type: Array,
     required: true
@@ -36,10 +37,18 @@ defineProps({
     required: true
   }
 })
+const { cardType } = toRefs(props);
+
 const goDetail = (item:any)=>{
-  console.log('goDetail',item)
-  // 需带上图片标识进入详情页
-  router.push('/detail?hash='+item.hash)
+  console.log('goDetail', item)
+  if (cardType.value === 'nft') {
+    router.push(`/nftDetail?collectionId=${item.collectionId}&itemId=${item.itemId}`)
+  } else if (cardType.value === 'posts') {
+    router.push(`/postDetail?hash=${item.modelHash}&id=${item.uuid}`)
+  } else {
+    // 需带上图片标识进入详情页
+    router.push('/detail?hash='+item.hash)
+  }
 }
 </script>
 <style lang="less" scoped>
