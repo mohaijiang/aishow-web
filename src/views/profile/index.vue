@@ -31,7 +31,7 @@ const router = useRouter()
 const modelList = reactive<any>([]);
 const postList = reactive<any>([]);
 const nftList = reactive<any>([])
-const activeKey = ref('3');
+const activeKey = ref('1');
 const goCreateNFT = ()=>{
   router.push('/nftCreate')
 }
