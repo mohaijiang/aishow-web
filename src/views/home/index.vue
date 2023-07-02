@@ -1,5 +1,5 @@
 <template>
-  <ImageList :cardList="cardList"></ImageList>
+  <ImageList cardType="home" :cardList="cardList"></ImageList>
 </template>
 <script setup lang="ts">
 import { onMounted, reactive } from "vue";

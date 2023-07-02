@@ -2,22 +2,22 @@
   <div class="grid grid-cols-4 gap-4">
     <div>
       <div v-for="(item,key) in cardList" :key="key" @click="goDetail(item)">
-        <CardImage :cardInfo="item" v-if="key % 4 === 0"></CardImage>
+        <CardImage :cardType="cardType" :cardInfo="item" v-if="key % 4 === 0"></CardImage>
       </div>
     </div>
     <div>
       <div v-for="(item,key) in cardList" :key="key" @click="goDetail(item)">
-        <CardImage :cardInfo="item" v-if="key % 4 === 1"></CardImage>
+        <CardImage :cardType="cardType" :cardInfo="item" v-if="key % 4 === 1"></CardImage>
       </div>
     </div>
     <div>
       <div v-for="(item,key) in cardList" :key="key" @click="goDetail(item)">
-        <CardImage :cardInfo="item" v-if="key % 4 === 2"></CardImage>
+        <CardImage :cardType="cardType" :cardInfo="item" v-if="key % 4 === 2"></CardImage>
       </div>
     </div>
     <div>
       <div v-for="(item,key) in cardList" :key="key" @click="goDetail(item)">
-        <CardImage :cardInfo="item" v-if="key % 4 === 3"></CardImage>
+        <CardImage :cardType="cardType" :cardInfo="item" v-if="key % 4 === 3"></CardImage>
       </div>
     </div>
   </div>
@@ -29,6 +29,10 @@ const router = useRouter()
 defineProps({
   cardList:{
     type: Array,
+    required: true
+  },
+  cardType: {
+    type: String,
     required: true
   }
 })
