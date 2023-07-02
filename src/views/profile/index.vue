@@ -8,13 +8,13 @@
   </div>
   <a-tabs v-model:activeKey="activeKey" centered @change="handleTabChange">
     <a-tab-pane key="1" tab="Posts">
-      <ImageList :cardList="cardList"></ImageList>
+      <ImageList cardType="posts" :cardList="postList"></ImageList>
     </a-tab-pane>
     <a-tab-pane key="2" tab="Model">
-      <ImageList :cardList="cardList"></ImageList>
+      <ImageList cardType="model" :cardList="modelList"></ImageList>
     </a-tab-pane>
     <a-tab-pane key="3" tab="NFT">
-      <ImageList :cardList="cardList"></ImageList>
+      <ImageList cardType="nft" :cardList="nftList"></ImageList>
     </a-tab-pane>
   </a-tabs>
 </template>
@@ -28,37 +28,75 @@ import { message } from "ant-design-vue";
 import { useRouter } from 'vue-router';
 const router = useRouter()
 
-const cardList = reactive<any>([]);
-const activeKey = ref('2');
+const modelList = reactive<any>([]);
+const postList = reactive<any>([]);
+const nftList = reactive<any>([])
+const activeKey = ref('1');
 const goCreateNFT = ()=>{
   router.push('/nftCreate')
 }
-const handleTabChange = (val:string)=>{
+const handleTabChange = (val: string) => {
+  if (val === '1') {
+    getPostList();
+  } else if(val === '2') {
+    getModelList();
+  } else if (val === '3') {
+    getNFTList();
+  }
   console.log('handleTabChange',val)
 }
+const getPostList = async () => {
+  const { api, account } = await connectCommonPolk()
+  const client = new PolkadotAiChanClient(api,account)
+  try {
+    //5GHMXJA4EX42bg27atoGvhWu3jKv4ugEJf2N3RxktpBh3qkt
+    const res = await client.userPostList('5GHMXJA4EX42bg27atoGvhWu3jKv4ugEJf2N3RxktpBh3qkt')
+    console.log("postList res:", res);
+    Object.assign(postList,res);
+  } catch (error:any) {
+    message.error('Failed ',error)
+  }
+}
 const getModelList = async () => {
-  
-  // 以下需要配置为全局
+  const { api, account } = await connectCommonPolk()
+  const client = new PolkadotAiChanClient(api,account)
+  try {
+    //5GHMXJA4EX42bg27atoGvhWu3jKv4ugEJf2N3RxktpBh3qkt
+    const res = await client.userModelList('5GHMXJA4EX42bg27atoGvhWu3jKv4ugEJf2N3RxktpBh3qkt')
+    console.log("modelList res:", res);
+    Object.assign(modelList,res);
+  } catch (error:any) {
+    message.error('Failed ',error)
+  }
+}
+const getNFTList = async () => {
+  const { api, account } = await connectCommonPolk()
+  const client = new PolkadotAiChanClient(api,account)
+  try {
+    //5GHMXJA4EX42bg27atoGvhWu3jKv4ugEJf2N3RxktpBh3qkt
+    const res = await client.userNFT('5GHMXJA4EX42bg27atoGvhWu3jKv4ugEJf2N3RxktpBh3qkt')
+    console.log("nftList res:", res);
+    Object.assign(nftList,res);
+  } catch (error:any) {
+    message.error('Failed ',error)
+  }
+}
+const connectCommonPolk = async()=>{
   const allInjected = await web3Enable('my cool dapp');
   console.log(allInjected)
   const allAccounts = await web3Accounts();
   const account = allAccounts[0].address
   const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
   const api = await ApiPromise.create({provider: wsProvider});
-  // 以上需要配置为全局
-  const client = new PolkadotAiChanClient(api,account)
-  try {
-    const res = await client.userModelList(account)
-    console.log("cardList res:", res);
-    Object.assign(cardList,res);
-  } catch (error:any) {
-    message.error('Failed ',error)
+  return {
+    account,
+    api
   }
 }
 
 onMounted(()=>{
   handleTabChange(activeKey.value);
-  getModelList();
+  
 })
 </script>
 <style lang="less" scoped>
