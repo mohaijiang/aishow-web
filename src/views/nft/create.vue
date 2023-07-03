@@ -23,7 +23,7 @@
     </a-form>
     <div class="mt-8 text-center">
       <a-button type="primary" class="mr-10 w-[120px]" @click="cancelNft">Cancel</a-button>
-      <a-button type="primary" @click="handleSubmit" class="w-[120px]">Mint</a-button>
+      <a-button type="primary" @click="handleSubmit" class="w-[120px]" :loading="loading">Mint</a-button>
     </div>
   </div>
   <a-modal v-model:visible="imgVisible" >
@@ -61,6 +61,7 @@ import { message } from 'ant-design-vue';
 const router = useRouter()
 const postImageArr = ref()
 const showImage = ref()
+const loading = ref(false)
 
 const imgValue = ref();
 const imgVisible = ref(false);
@@ -87,15 +88,18 @@ const cancelNft = ()=>{
 }
 const handleSubmit = async () => {
   await formRef.value.validate();
+  loading.value = true
   console.log('nftParams',nftParams)
   const { api, account } = await connectCommonPolk()
   const client = new PolkadotAiChanClient(api,account)
   try {
     await client.nftMint(nftParams,(info:any)=>{
       router.push(`/nftDetail?collectionId=${info.collectionId}&itemId=${info.itemId}`)
+      loading.value = false
     })
   } catch (error:any) {
     message.error("Failed ",error)
+    loading.value = false
   }
 }
 // 取post信息

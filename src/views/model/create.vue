@@ -61,7 +61,7 @@
     </a-form>
     <div class="mt-8 text-center">
       <a-button type="primary" class="mr-10 w-[120px]" @click="cancelUploadModal">Cancel</a-button>
-      <a-button type="primary" @click="handleSubmit" class="w-[120px]">Submit</a-button>
+      <a-button type="primary" @click="handleSubmit" class="w-[120px]" :loading="loading">Submit</a-button>
     </div>
   </div>
 </template>
@@ -81,6 +81,7 @@ const imageList = ref<any>([]);
 const formRef = ref();
 const fileInfo = ref()
 const imageInfo = ref()
+const loading = ref(false)
 const formData = reactive({
   price:'',
   name: '',
@@ -101,6 +102,7 @@ const cancelUploadModal = () =>{
 }
 const handleSubmit = async () => {
     await formRef.value.validate();
+    loading.value = true
     // 以下需要配置为全局
     const allInjected = await web3Enable('my cool dapp');
     console.log(allInjected)
@@ -125,9 +127,11 @@ const handleSubmit = async () => {
       await client.createModel(model,(info:any) => {
         console.log('status~~~~~~',info)
         router.push(`/detail?hash=${info.id}`)
+        loading.value = false
       })
     } catch (error:any) {
       message.error('Failed ',error)
+      loading.value = false
     }
     
 }

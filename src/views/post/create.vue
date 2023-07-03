@@ -39,7 +39,7 @@
     </a-form>
     <div class="mt-8 text-center">
       <a-button type="primary" class="mr-10 w-[120px]" @click="cancelPost">Cancel</a-button>
-      <a-button type="primary" @click="handleSubmit" class="w-[120px]">Post</a-button>
+      <a-button type="primary" @click="handleSubmit" class="w-[120px]" :loading="loading">Post</a-button>
     </div>
   </div>
 </template>
@@ -56,6 +56,7 @@ import { uploadFile } from '@/utils/deoss'
 const router = useRouter()
 
 const fileList = ref<any>([]);
+const loading = ref(false)
 const formRef = ref();
 const formData = reactive({
   model:null,
@@ -79,6 +80,7 @@ const cancelPost = ()=>{
 }
 const handleSubmit = async () => {
   await formRef.value.validate();
+  loading.value = true
   let uuid = uuidv4()
   console.log('uuid',uuid)
   const { api, account } = await connectCommonPolk()
@@ -100,9 +102,11 @@ const handleSubmit = async () => {
     await client.createPost(createPostParams,(info:any) => {
       console.log('createPost info',info)
       router.push(`/postDetail?hash=${info.id}&id=${uuid}`)
+      loading.value = false
     })
   } catch (error:any) {
     message.error('Failed ',error)
+    loading.value = false
   }
 }
 const handleChange = (info: UploadChangeParam) => { 
