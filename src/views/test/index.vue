@@ -151,7 +151,7 @@ const setAttribute = async () => {
     const api = await ApiPromise.create({provider: wsProvider});
     const client = new PolkadotAiChanClient(api, account)
 
-    const result = await client.setAttribute(0,1,"filename","filename")
+    const result = await client.setAttribute(1,0,"filename","somefilevalue",undefined)
     console.log(result)
 }
 

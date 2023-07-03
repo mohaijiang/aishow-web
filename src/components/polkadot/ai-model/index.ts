@@ -526,6 +526,13 @@ export class PolkadotAiChanClient implements AiShowChain{
             `${nft.postId}/${nft.uuid}`
         ))
 
+        txs.push(this.api.tx.nfts.setAttribute(
+            collectionId,itemNum,"ItemOwner","name",nft.name
+        ))
+        txs.push(this.api.tx.nfts.setAttribute(
+            collectionId,itemNum,"ItemOwner","name",nft.name
+        ))
+
         const unsub =  await this.api.tx.utility.batch(txs)
             .signAndSend(this.sender, {signer: injector.signer}, (result) => {
                 if (result.status.isInBlock) {
@@ -670,7 +677,7 @@ export class PolkadotAiChanClient implements AiShowChain{
 
         const injector = await web3FromAddress(this.sender)
         const unsub =  await this.api.tx.nfts.setAttribute(
-            collectionId,itemId,"",key,value
+            collectionId,itemId,"ItemOwner",key,value
         ).signAndSend(this.sender, {signer: injector.signer}, (result) => {
             if (result.status.isInBlock) {
                 console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
