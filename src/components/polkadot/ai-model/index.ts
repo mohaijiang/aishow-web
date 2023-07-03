@@ -314,7 +314,7 @@ export class PolkadotAiChanClient implements AiShowChain{
         let result: ModelVO[] = []
 
         for(let hash of modelHashList){
-            const model: CreateModelVO = await this.modelDetail(hash)
+            const model = await this.modelDetail(hash)
             result.push(model)
         }
 
@@ -469,31 +469,6 @@ export class PolkadotAiChanClient implements AiShowChain{
         }
     }
 
-    async nftCreateCollection(modelHash: string) {
-
-        const txs = [
-            this.api.tx.nfts.create(
-            {Id: this.sender},
-            {
-                settings: 0,
-                maxSupply: null,
-                mintSettings: {
-                    defaultItemSettings: "0",
-                    endBlock: null,
-                    mintType: "Issuer",
-                    price: null,
-                    startBlock: null,
-                }
-            },
-        ),
-            this.api.tx.nfts.setCollectionMetadata(
-                collectionId,modelHash
-            )
-        ]
-
-        return txs
-    }
-
     async nftMint(nft: NFTCreateVO,callback: Callback): Promise<void> {
 
         let ifNeedCreateCollection = await  this.ifNeedCreateCollection(nft.modelHash)
@@ -530,7 +505,7 @@ export class PolkadotAiChanClient implements AiShowChain{
             collectionId,itemNum,"ItemOwner","name",nft.name
         ))
         txs.push(this.api.tx.nfts.setAttribute(
-            collectionId,itemNum,"ItemOwner","name",nft.name
+            collectionId,itemNum,"ItemOwner","description",nft.description
         ))
 
         const unsub =  await this.api.tx.utility.batch(txs)
@@ -623,14 +598,25 @@ export class PolkadotAiChanClient implements AiShowChain{
             throw new Error("stroage value error")
         }
 
+        const nameCodec = await this.api.query.nfts.attribute(collectionId,itemId,"ItemOwner","name")
+        const descriptionCodec = await this.api.query.nfts.attribute(collectionId,itemId,"ItemOwner","name")
+        let nameValue = ""
+        let descriptionValue = ""
+        if(nameCodec.toHuman() && nameCodec.toHuman() instanceof Array){
+            nameValue = nameCodec.toHuman()[0]
+        }
+        if(descriptionCodec.toHuman() && descriptionCodec.toHuman() instanceof Array){
+            descriptionValue = descriptionCodec.toHuman()[0]
+        }
+
         return {
             collectionId: collectionId,
             itemId: itemId,
             post: post,
             itemUuid: mintedImage.image,
             itemLink: mintedImage.imageLink,
-            name: "nft name",
-            description: "nft description",
+            name: nameValue,
+            description: descriptionValue,
         }
     }
 
