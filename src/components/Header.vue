@@ -2,7 +2,8 @@
   <div class="top-0 px-[32px] bg-[#000000] z-10 fixed h-[64px] w-full border-b">
     <div class="flex justify-between items-center h-full">
       <div class="text-[30px] font-bold">
-        <span class="text-red-600 cursor-pointer" @click="goHome">AI</span><span class="cursor-pointer mr-[10px]" @click="goHome">SHOW</span>
+        <!-- <span class="text-red-600 cursor-pointer" @click="goHome">AI</span><span class="cursor-pointer mr-[10px]" @click="goHome">SHOW</span> -->
+        <img @click="goHome" src="@/assets/icons/AiSHOWLOGO.png" class="h-[20px] mr-[10px] cursor-pointer" />
         <a-dropdown :trigger="['click']">
           <a class="ant-dropdown-link" @click.prevent>
             <img src="@/assets/icons/add.svg" class="h-[20px]" />
@@ -16,7 +17,7 @@
                 Post images
               </a-menu-item>
               <!-- <a-menu-divider /> -->
-              <a-menu-item key="3" @click="goWriteAnArticle">Write an article</a-menu-item>
+              <a-menu-item key="3" @click="goWriteAnArticle">Mint a NFT</a-menu-item>
             </a-menu>
           </template>
         </a-dropdown>
@@ -24,7 +25,7 @@
       <div>
         <a-button v-if="!walletAddress" class="ml-8" type="primary" @click="connectWallet">Connect Wallet</a-button>
         <sapn v-if="walletAddress" class="inline-block h-[40px] px-2 leading-[32px] border-[#1971c2] border-solid rounded-lg text-[#1971c2]">{{walletAddress}}</sapn>
-        <img v-if="walletAddress" @click="goProfile" class="h-[40px] rounded-full cursor-pointer ml-5" src="../assets/icons/logo.png"/>
+        <img v-if="walletAddress" @click="goProfile" src="@/assets/images/icon.jpeg" class="h-[40px] rounded-full cursor-pointer ml-5" />
       </div>
     </div>
   </div>

@@ -53,14 +53,12 @@
 </template>
 <script setup lang="ts">
 import { computed, reactive, ref, onMounted } from 'vue';
-import useAssets from "@/stores/useAssets";
 import { useRouter } from 'vue-router'
 import {ApiPromise, WsProvider} from "@polkadot/api";
 import {web3Accounts, web3Enable} from "@polkadot/extension-dapp";
 import { PolkadotAiChanClient } from "@/components/polkadot/ai-model"
 import { message } from 'ant-design-vue';
 const router = useRouter()
-const { getImageURL } = useAssets();
 const postImageArr = ref()
 const showImage = ref()
 
