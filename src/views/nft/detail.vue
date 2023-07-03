@@ -29,10 +29,6 @@ const name = ref()
 const description = ref()
 const hash = ref()
 const image = ref()
-const getLocalStorageInfo = ()=>{
-  name.value = localStorage.getItem('nftName') || ''
-  description.value = localStorage.getItem('nftDescription') || ''
-}
 const getNftDetail = async()=>{
   const collectionId:any = route.query.collectionId
   const itemId:any = route.query.itemId
@@ -47,9 +43,10 @@ const getNftDetail = async()=>{
   console.log('getNftDetail',res)
   hash.value = res.itemUuid
   image.value = res.itemLink
+  name.value = res.name
+  description.value = res.description
 }
 onMounted(()=>{
-  getLocalStorageInfo()
   getNftDetail()
 })
 </script>

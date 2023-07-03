@@ -1,7 +1,7 @@
 <template>
   <div class="mx-[20%]">
     <div class="text-[30px] font-bold my-6">Mint your NFT</div>
-    <a-form :model="formData" layout="vertical" ref="formRef" :rules="formRules">
+    <a-form :model="nftParams" layout="vertical" ref="formRef" :rules="formRules">
       <a-form-item v-if="!showImage" label="Choose the image from your Post"  name="post">
         <div @click="imgVisible=true" class="bg-[#25262b] rounded-[2px] w-[140px] h-[140px] cursor-pointer flex justify-center items-center">
           <img src="@/assets/icons/add-icon.svg" class="h-[20px] cursor-pointer" />
@@ -11,14 +11,14 @@
         <img :src="showImage" class="w-[140px] h-[140px]"/>
       </a-form-item>
       <a-form-item label="Name" name="name">
-        <a-input v-model:value="formData.name" placeholder="Please enter Name" allow-clear autocomplete="off" />
+        <a-input v-model:value="nftParams.name" placeholder="Please enter Name" allow-clear autocomplete="off" />
       </a-form-item>
       <!-- <a-form-item label="Tags" name="name">
-        <a-input v-model:value="formData.name" placeholder="Please enter Name" allow-clear autocomplete="off" />
+        <a-input v-model:value="nftParams.name" placeholder="Please enter Name" allow-clear autocomplete="off" />
       </a-form-item> -->
       <a-form-item label="Description" name="description">
         <div>The description will be included on the item's detail page underneath its image.</div>
-        <a-textarea v-model:value="formData.description" placeholder="" allow-clear :auto-size="{ minRows: 5, maxRows: 15 }" />
+        <a-textarea v-model:value="nftParams.description" placeholder="" allow-clear :auto-size="{ minRows: 5, maxRows: 15 }" />
       </a-form-item>
     </a-form>
     <div class="mt-8 text-center">
@@ -56,7 +56,7 @@ import { computed, reactive, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router'
 import {ApiPromise, WsProvider} from "@polkadot/api";
 import {web3Accounts, web3Enable} from "@polkadot/extension-dapp";
-import { PolkadotAiChanClient } from "@/components/polkadot/ai-model"
+import { PolkadotAiChanClient, NFTCreateVO } from "@/components/polkadot/ai-model"
 import { message } from 'ant-design-vue';
 const router = useRouter()
 const postImageArr = ref()
@@ -65,15 +65,12 @@ const showImage = ref()
 const imgValue = ref();
 const imgVisible = ref(false);
 const formRef = ref();
-const formData = reactive({
-  post: '',
-  name: '',
-  description: ''
-});
-const nftParams = reactive({
+const nftParams = reactive<NFTCreateVO>({
   modelHash:'',
   postId:'',
-  uuid:''
+  uuid:'',
+  name:'',
+  description:''
 })
 const formRules = computed(() => {
 
@@ -90,13 +87,11 @@ const cancelNft = ()=>{
 }
 const handleSubmit = async () => {
   await formRef.value.validate();
-  localStorage.setItem('nftName',formData.name)
-  localStorage.setItem('nftDescription',formData.description)
+  console.log('nftParams',nftParams)
   const { api, account } = await connectCommonPolk()
   const client = new PolkadotAiChanClient(api,account)
   try {
-    // modelHash: string,postId: string, uuid: string,
-    await client.nftMint(nftParams.modelHash,nftParams.postId,nftParams.uuid,(info:any)=>{
+    await client.nftMint(nftParams,(info:any)=>{
       router.push(`/nftDetail?collectionId=${info.collectionId}&itemId=${info.itemId}`)
     })
   } catch (error:any) {
