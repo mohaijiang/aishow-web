@@ -7,13 +7,16 @@
       <div class="flex justify-between">
         <div class="font-bold">
           <div class="text-[26px]">{{name}}</div>
-          <!-- <div>Owned by <label class="text-[#1971c2]">C15A4D</label></div> -->
+          <!-- <div>Owned by <label class="text-[#1971c2]"></label></div> -->
         </div>
         <a-button type="primary" class=" w-[120px]" @click="showTransferModal=true" :loading="loading">Trasfer</a-button>
       </div>
       <div class="text-[20px]">
         <div class="mt-10 text-[20px] font-bold">Description：{{description}}</div>
         <div class="mt-5 text-[20px] font-bold">Hash：{{hash}}</div>
+        <div class="mt-5 text-[20px] font-bold">CollectionId{{collectionId}}</div>
+        <div class="mt-5 text-[20px] font-bold">ItemId{{itemId}}</div>
+        <div class="mt-5 text-[20px] font-bold">Owner{{owner}}</div>
       </div>
     </div>
   </div>
@@ -38,6 +41,7 @@ const name = ref()
 const description = ref()
 const hash = ref()
 const image = ref()
+const owner = ref()
 const loading = ref(false)
 const userWalletAddress = ref('')
 const showTransferModal = ref(false)
@@ -52,6 +56,7 @@ const getNftDetail = async()=>{
   image.value = res.itemLink
   name.value = res.name
   description.value = res.description
+  owner.value = res.owner
 }
 // 交易nft
 const trasferNft = async()=>{
