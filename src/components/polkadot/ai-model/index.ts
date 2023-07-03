@@ -111,6 +111,9 @@ export interface AiShowChain {
     userNFT(address: string): Promise<NFT[]>
     /// nftDetail
     nftDetail(collectionId: number,itemId: number): Promise<NFT>
+    // transfer
+    nftTransfer(collectionId: number, itemId: number,dest: string,callback: Callback): Promise<void>
+
 }
 
 /*
@@ -661,5 +664,55 @@ export class PolkadotAiChanClient implements AiShowChain{
 
     async nftDetail(collectionId: number, itemId: number): Promise<NFT> {
         return await this.getNFT(collectionId,itemId)
+    }
+
+    async setAttribute(collectionId: number, itemId: number, key: string , value: string,callback: Callback ){
+
+        const injector = await web3FromAddress(this.sender)
+        const unsub =  await this.api.tx.nfts.setAttribute(
+            collectionId,itemId,"",key,value
+        ).signAndSend(this.sender, {signer: injector.signer}, (result) => {
+            if (result.status.isInBlock) {
+                console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
+                if(result.dispatchError){
+                    if(callback) {
+                        callback({status: "error",id: "",error: result.dispatchError.toHuman()})
+                    }
+                    this.substrateListener(result)
+                    unsub()
+                    return
+                }
+                if(callback) {
+                    callback({status: "inBlock", id: `${itemId}`,error: undefined})
+                }
+                unsub();
+            }
+        });
+
+        const codec = await this.api.query.nfts.attribute(0,1,"CollectionOwner","name")
+        console.log(codec)
+    }
+
+    async nftTransfer(collectionId: number, itemId: number, dest: string, callback: Callback): Promise<void> {
+        const injector = await web3FromAddress(this.sender)
+        const unsub =  await this.api.tx.nfts.transfer(
+            collectionId,itemId,dest
+        ).signAndSend(this.sender, {signer: injector.signer}, (result) => {
+            if (result.status.isInBlock) {
+                console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
+                if(result.dispatchError){
+                    if(callback) {
+                        callback({status: "error",id: "",error: result.dispatchError.toHuman()})
+                    }
+                    this.substrateListener(result)
+                    unsub()
+                    return
+                }
+                if(callback) {
+                    callback({status: "inBlock", id: `${itemId}`,error: undefined})
+                }
+                unsub();
+            }
+        });
     }
 }

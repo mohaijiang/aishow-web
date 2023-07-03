@@ -144,6 +144,17 @@ const postList = async () => {
     console.log(result)
 }
 
+const setAttribute = async () => {
+    const allAccounts = await web3Accounts();
+    const account = allAccounts[0].address
+    const wsProvider = new WsProvider("ws://127.0.0.1:9944");
+    const api = await ApiPromise.create({provider: wsProvider});
+    const client = new PolkadotAiChanClient(api, account)
+
+    const result = await client.setAttribute(0,1,"filename","filename")
+    console.log(result)
+}
+
 </script>
 
 <template>
@@ -178,6 +189,10 @@ const postList = async () => {
 
           <p>
               <a-button type="primary" @click="nftDetail">nftDetail</a-button>
+          </p>
+
+          <p>
+              <a-button type="primary" @click="setAttribute">setAttribute</a-button>
           </p>
       </a-card>
   </div>
