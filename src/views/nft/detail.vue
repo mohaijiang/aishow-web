@@ -14,9 +14,9 @@
       <div class="text-[20px]">
         <div class="mt-10 text-[20px] font-bold">Description：{{description}}</div>
         <div class="mt-5 text-[20px] font-bold">Hash：{{hash}}</div>
-        <div class="mt-5 text-[20px] font-bold">CollectionId{{collectionId}}</div>
-        <div class="mt-5 text-[20px] font-bold">ItemId{{itemId}}</div>
-        <div class="mt-5 text-[20px] font-bold">Owner{{owner}}</div>
+        <div class="mt-5 text-[20px] font-bold">CollectionId：{{collectionId}}</div>
+        <div class="mt-5 text-[20px] font-bold">ItemId：{{itemId}}</div>
+        <div class="mt-5 text-[20px] font-bold">Owner：{{owner}}</div>
       </div>
     </div>
   </div>
