@@ -54,6 +54,7 @@ export interface NFT {
     itemLink: string,
     name: string,
     description: string,
+    owner: string
 }
 
 export interface NFTCreateVO {
