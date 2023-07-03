@@ -126,7 +126,11 @@ const handleSubmit = async () => {
     try {
       await client.createModel(model,(info:any) => {
         console.log('status~~~~~~',info)
-        router.push(`/detail?hash=${info.id}`)
+        if(info.status === "inBlock") {
+          router.push(`/detail?hash=${info.id}`)
+        }else if(info.status === "error"){
+          message.error(info.error)
+        }
         loading.value = false
       })
     } catch (error:any) {

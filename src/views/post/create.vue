@@ -101,7 +101,11 @@ const handleSubmit = async () => {
   try {
     await client.createPost(createPostParams,(info:any) => {
       console.log('createPost info',info)
-      router.push(`/postDetail?hash=${info.id}&id=${uuid}`)
+      if(info.status === "inBlock") {
+        router.push(`/postDetail?hash=${info.id}&id=${uuid}`)
+      }else if(info.status === "error"){
+        message.error(info.error)
+      }
       loading.value = false
     })
   } catch (error:any) {

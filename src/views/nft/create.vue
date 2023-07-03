@@ -94,7 +94,11 @@ const handleSubmit = async () => {
   const client = new PolkadotAiChanClient(api,account)
   try {
     await client.nftMint(nftParams,(info:any)=>{
-      router.push(`/nftDetail?collectionId=${info.collectionId}&itemId=${info.itemId}`)
+      if(info.status === "inBlock") {
+        router.push(`/nftDetail?collectionId=${info.collectionId}&itemId=${info.itemId}`)
+      }else if(info.status === "error"){
+        message.error(info.error)
+      }
       loading.value = false
     })
   } catch (error:any) {
