@@ -349,6 +349,12 @@ export class PolkadotAiChanClient implements AiShowChain{
             if(collectionCodec.toHuman() === null){
                 continue
             }
+
+            const itemCodec = await this.api.query.nfts.item(collectionId,itemId)
+            if(itemCodec.toHuman() === null){
+                continue
+            }
+
             // @ts-ignore
             const modelHash = collectionCodec.toHuman().data
             // @ts-ignore
@@ -368,6 +374,7 @@ export class PolkadotAiChanClient implements AiShowChain{
                 itemLink: mintedImage.imageLink,
                 name: "nft name",
                 description: "nft description",
+                owner: itemCodec.toHuman().owner,
             })
         }
         return result
@@ -586,6 +593,12 @@ export class PolkadotAiChanClient implements AiShowChain{
             descriptionValue = descriptionCodec.toHuman()[0]
         }
 
+        const itemCodec = await this.api.query.nfts.item(collectionId,itemId)
+        let owner = ""
+        if(itemCodec.toHuman() != null){
+            owner = itemCodec.toHuman().owner
+        }
+
         return {
             collectionId: collectionId,
             itemId: itemId,
@@ -594,6 +607,7 @@ export class PolkadotAiChanClient implements AiShowChain{
             itemLink: mintedImage.imageLink,
             name: nameValue,
             description: descriptionValue,
+            owner: owner
         }
     }
 
