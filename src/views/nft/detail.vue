@@ -31,7 +31,7 @@ import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import {ApiPromise, WsProvider} from "@polkadot/api";
 import {web3Accounts, web3Enable} from "@polkadot/extension-dapp";
-import { PolkadotAiChanClient } from "@/components/polkadot/ai-model"
+import {CallbackResult, PolkadotAiChanClient} from "@/components/polkadot/ai-model"
 import { message } from 'ant-design-vue';
 const route = useRoute()
 const name = ref()
@@ -65,8 +65,12 @@ const trasferNft = async()=>{
   const client = new PolkadotAiChanClient(api,account)
   console.log('交易nft参数',collectionId,itemId,userWalletAddress.value)
   try {
-    client.nftTransfer(collectionId,itemId,userWalletAddress.value,(info:any)=>{
-      message.success('Transfer success')
+    client.nftTransfer(collectionId,itemId,userWalletAddress.value,(result:CallbackResult)=>{
+        if(result.status === "inBlock") {
+            message.success('Transfer success')
+        }else if(result.status === "error"){
+            message.error(result.error)
+        }
       loading.value = false
     })
   } catch (error:any) {

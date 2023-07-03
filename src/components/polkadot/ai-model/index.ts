@@ -142,7 +142,7 @@ export class PolkadotAiChanClient implements AiShowChain{
         this.sender = sender
     }
 
-    substrateListener = ({ status, events }) => {
+    substrateListener = ({ status, events },callback: Callback) => {
         if (status.isInBlock || status.isFinalized) {
             events
                 // find/filter for failed events
@@ -158,9 +158,16 @@ export class PolkadotAiChanClient implements AiShowChain{
                         const { docs, method, section } = decoded;
 
                         console.log(`${section}.${method}: ${docs.join(' ')}`);
+                        const errMsg = `${section}.${method}: ${docs.join(' ')}`
+                        if(callback){
+                            callback({status: "error",id: "",error: errMsg})
+                        }
                     } else {
                         // Other, CannotLookup, BadOrigin, no extra info
                         console.log(error.toString());
+                        if(callback){
+                            callback({status: "error",id: "",error: error.toString()})
+                        }
                     }
                 });
         }
@@ -210,15 +217,9 @@ export class PolkadotAiChanClient implements AiShowChain{
             const unsub = await this.api.tx.utility.batch(txs).signAndSend(this.sender, {signer: injector.signer}, (result) => {
                 if (result.status.isInBlock) {
                     console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
-                    this.substrateListener(result)
                     if (result.dispatchError) {
-                        if (callback) {
-                            callback({status: "error", id: "", error: result.dispatchError.toHuman()})
-                        }
-                        unsub()
-                        return
-                    }
-                    if (callback) {
+                        this.substrateListener(result, callback)
+                    } else if (callback) {
                         callback({status: "inBlock", id: createModelVO.hash, error: undefined})
                     }
                     unsub();
@@ -241,16 +242,10 @@ export class PolkadotAiChanClient implements AiShowChain{
         ).signAndSend(this.sender, {signer: injector.signer}, (result) => {
             if (result.status.isInBlock) {
                 console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
-                if(result.dispatchError){
-                    if(callback) {
-                        callback({status: "error",id: "",error: result.dispatchError.toHuman()})
-                    }
-                    this.substrateListener(result)
-                    unsub()
-                    return
-                }
-                if(callback) {
-                    callback({status: "inBlock", id: createPostVO.uuid,error: undefined})
+                if (result.dispatchError) {
+                    this.substrateListener(result, callback)
+                } else if (callback) {
+                    callback({status: "inBlock", id: createPostVO.uuid, error: undefined})
                 }
                 unsub();
             }
@@ -264,16 +259,10 @@ export class PolkadotAiChanClient implements AiShowChain{
         ).signAndSend(this.sender, {signer: injector.signer}, (result) => {
             if (result.status.isInBlock) {
                 console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
-                if(result.dispatchError){
-                    if(callback) {
-                        callback({status: "error",id: "",error: result.dispatchError.toHuman()})
-                    }
-                    this.substrateListener(result)
-                    unsub()
-                    return
-                }
-                if(callback) {
-                    callback({status: "inBlock", id: modelHash,error: undefined})
+                if (result.dispatchError) {
+                    this.substrateListener(result, callback)
+                } else if (callback) {
+                    callback({status: "inBlock", id: modelHash, error: undefined})
                 }
                 unsub();
             }
@@ -512,29 +501,16 @@ export class PolkadotAiChanClient implements AiShowChain{
             .signAndSend(this.sender, {signer: injector.signer}, (result) => {
                 if (result.status.isInBlock) {
                     console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
-                    if(result.dispatchError){
-                        if(callback) {
-                            callback(
-                                {
-                                    status: "error",
-                                    id: "",
-                                    error: result.dispatchError.toHuman()
-                                }
-                            )
-                        }
-                        this.substrateListener(result)
-                        unsub()
-                        return
-                    }
-                    if(callback) {
-                        callback(
-                            {
-                                status: "inBlock",
-                                id: `${itemNum}`,
-                                error: undefined,
-                                collectionId: collectionId,
-                                itemId: itemNum
-                            })
+                    if (result.dispatchError) {
+                        this.substrateListener(result, callback)
+                    } else if (callback) {
+                        callback({
+                            status: "inBlock",
+                            id: `${itemNum}`,
+                            error: undefined,
+                            collectionId: collectionId,
+                            itemId: itemNum
+                        })
                     }
                     unsub();
                 }
@@ -667,16 +643,10 @@ export class PolkadotAiChanClient implements AiShowChain{
         ).signAndSend(this.sender, {signer: injector.signer}, (result) => {
             if (result.status.isInBlock) {
                 console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
-                if(result.dispatchError){
-                    if(callback) {
-                        callback({status: "error",id: "",error: result.dispatchError.toHuman()})
-                    }
-                    this.substrateListener(result)
-                    unsub()
-                    return
-                }
-                if(callback) {
-                    callback({status: "inBlock", id: `${itemId}`,error: undefined})
+                if (result.dispatchError) {
+                    this.substrateListener(result, callback)
+                } else if (callback) {
+                    callback({status: "inBlock", id: `${itemId}`, error: undefined})
                 }
                 unsub();
             }
@@ -693,16 +663,10 @@ export class PolkadotAiChanClient implements AiShowChain{
         ).signAndSend(this.sender, {signer: injector.signer}, (result) => {
             if (result.status.isInBlock) {
                 console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
-                if(result.dispatchError){
-                    if(callback) {
-                        callback({status: "error",id: "",error: result.dispatchError.toHuman()})
-                    }
-                    this.substrateListener(result)
-                    unsub()
-                    return
-                }
-                if(callback) {
-                    callback({status: "inBlock", id: `${itemId}`,error: undefined})
+                if (result.dispatchError) {
+                    this.substrateListener(result, callback)
+                } else if (callback) {
+                    callback({status: "inBlock", id: `${itemId}`, error: undefined})
                 }
                 unsub();
             }
