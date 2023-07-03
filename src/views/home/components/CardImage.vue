@@ -5,7 +5,7 @@
     <!-- <img :src="getImageURL(+cardInfo.images[0].imageLink)" class="w-full rounded-[4px]" /> -->
     <div v-if="cardType !== 'nft'" class="absolute top-0 w-full h-full">
       <div class="flex justify-between p-2">
-        <div class="left-tips"> Checkpoint </div>
+        <!-- <div class="left-tips"> Checkpoint </div> -->
         <div>
           <img v-if="false" src="@/assets/icons/more.svg" class="h-[28px]" />
         </div>
