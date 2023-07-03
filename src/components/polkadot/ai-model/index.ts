@@ -52,7 +52,18 @@ export interface NFT {
     post: CreatePostVO,
     itemUuid: string,
     itemLink: string,
+    name: string,
+    description: string,
 }
+
+export interface NFTCreateVO {
+    modelHash: string,
+    postId: string,
+    uuid: string,
+    name: string,
+    description: string,
+}
+
 
 export interface CallbackResult {
     // inblock | error
@@ -95,7 +106,7 @@ export interface AiShowChain {
     // 判断是否需要创建collection
     ifNeedCreateCollection(modelHash: string): Promise<boolean>
     //nft mint
-    nftMint(modelHash: string,postId: string, uuid: string,callback: Callback): Promise<void>
+    nftMint(nft: NFTCreateVO,callback: Callback): Promise<void>
     // userNFT
     userNFT(address: string): Promise<NFT[]>
     /// nftDetail
@@ -361,7 +372,9 @@ export class PolkadotAiChanClient implements AiShowChain{
                 itemId: itemId,
                 post: post,
                 itemUuid: mintedImage.image,
-                itemLink: mintedImage.imageLink
+                itemLink: mintedImage.imageLink,
+                name: "nft name",
+                description: "nft description",
             })
         }
         return result
@@ -478,16 +491,16 @@ export class PolkadotAiChanClient implements AiShowChain{
         return txs
     }
 
-    async nftMint(modelHash: string, postId: string, imageUuid: string,callback: Callback): Promise<void> {
+    async nftMint(nft: NFTCreateVO,callback: Callback): Promise<void> {
 
-        let ifNeedCreateCollection = await  this.ifNeedCreateCollection(modelHash)
+        let ifNeedCreateCollection = await  this.ifNeedCreateCollection(nft.modelHash)
         const txs  = []
         if(ifNeedCreateCollection){
-           let createTxs = await this.nftCreateCollection(modelHash)
+           let createTxs = await this.nftCreateCollection(nft.modelHash)
             txs.push(...createTxs)
         }
 
-        const collectionId = await this.nftGetCollectionId(modelHash)
+        const collectionId = await this.nftGetCollectionId(nft.modelHash)
         // 查询item 数量
         const collectionCodec = await this.api.query.nfts.collection(collectionId)
         if(collectionCodec === undefined){
@@ -507,7 +520,7 @@ export class PolkadotAiChanClient implements AiShowChain{
         txs.push(this.api.tx.nfts.setMetadata(
             collectionId,
             itemNum,
-            `${postId}/${imageUuid}`
+            `${nft.postId}/${nft.uuid}`
         ))
 
         const unsub =  await this.api.tx.utility.batch(txs)
@@ -543,7 +556,7 @@ export class PolkadotAiChanClient implements AiShowChain{
             });
     }
 
-    async nftGetCollectionId(modelHash: string): Promise<number> {       
+    async nftGetCollectionId(modelHash: string): Promise<number> {
         const result = await this.api.query.nfts.collectionMetadataOf.entries()
 
         for(let item of result){
@@ -605,7 +618,9 @@ export class PolkadotAiChanClient implements AiShowChain{
             itemId: itemId,
             post: post,
             itemUuid: mintedImage.image,
-            itemLink: mintedImage.imageLink
+            itemLink: mintedImage.imageLink,
+            name: "nft name",
+            description: "nft description",
         }
     }
 
