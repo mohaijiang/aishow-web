@@ -20,7 +20,7 @@
             Attach up to 5 files
           </p>
         </a-upload-dragger>
-        <a-button :disabled="fileList.length ? false : true" type="primary" class="w-full mt-4" @click="uploadPost">Start Upload</a-button>
+        <a-button :disabled="fileList.length ? false : true" type="primary" class="w-full mt-4" @click="uploadPost" :loading="uploadLoading">Start Upload</a-button>
       </a-form-item>
       <a-form-item label="Choose the model you use" name="model">
         <a-select :options="modelOption" v-model:value="formData.model" placeholder="Choose a model" allow-clear  autocomplete="off">
@@ -57,6 +57,7 @@ const router = useRouter()
 
 const fileList = ref<any>([]);
 const loading = ref(false)
+const uploadLoading = ref(false)
 const formRef = ref();
 const formData = reactive({
   model:null,
@@ -122,6 +123,7 @@ const handleDrop = (e: DragEvent) => {
 const uploadPost = async()=>{
   console.log('uploadPost',fileList.value)
   let images = []
+  uploadLoading.value = true
   try {
     for(let i=0;i<fileList.value.length;i++){
       const getPostImageUrl = await uploadFile(fileList.value[i],'',fileList.value[i].name)
@@ -133,10 +135,12 @@ const uploadPost = async()=>{
       console.log('getPostImageUrl',getPostImageUrl,images)
     }
     postImageInfo.value = images
+    uploadLoading.value = false
     console.log(1111111111,postImageInfo.value)
   } catch (error:any) {
     postImageInfo.value = images
     message.error('Image upload encountered an issue, please try again')
+    uploadLoading.value = false
   }
 }
 // model选项

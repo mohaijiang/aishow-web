@@ -20,7 +20,7 @@
             Attach up to 1 files. Accepted file types: .ckpt, .pt, .safetensors, .bin, .zip, .yaml, .yml, .onnx
           </p>
         </a-upload-dragger>
-        <a-button :disabled="fileList.length ? false : true" type="primary" class="w-full mt-4" @click="uploadFileList">Start Upload</a-button>
+        <a-button :disabled="fileList.length ? false : true" type="primary" class="w-full mt-4" @click="uploadFileList" :loading="fileLoading">Start Upload</a-button>
       </a-form-item>
       <a-form-item label="Upload modele image" name="picName">
         <div>The image is used to show the effect of the model generation example</div>
@@ -42,7 +42,7 @@
             Attach up to 5 files
           </p>
         </a-upload-dragger>
-        <a-button :disabled="imageList.length ? false : true" type="primary" class="w-full mt-4" @click="uploadImageList">Start Upload</a-button>
+        <a-button :disabled="imageList.length ? false : true" type="primary" class="w-full mt-4" @click="uploadImageList" :loading="imageLoading">Start Upload</a-button>
       </a-form-item>
       <a-form-item label="Set a price" name="price">
         <div>The image is used to show the effect of the model generation example</div>
@@ -82,6 +82,8 @@ const formRef = ref();
 const fileInfo = ref()
 const imageInfo = ref()
 const loading = ref(false)
+const fileLoading = ref(false)
+const imageLoading = ref(false)
 const formData = reactive({
   price:'',
   name: '',
@@ -151,6 +153,7 @@ const handleDrop = (e: DragEvent) => {
 // 点击上传图片回调
 const uploadImageList = async()=>{
   console.log('点击上传图片回调',imageList.value.length,imageList.value)
+  imageLoading.value = true
   let images = []
   try {
     for(let i=0;i<imageList.value.length;i++){
@@ -163,9 +166,11 @@ const uploadImageList = async()=>{
       console.log('getImageUrl',getImageUrl,images)
     }
     imageInfo.value = images
+    imageLoading.value = false
   } catch (error:any) {
     imageInfo.value = images
     message.error('Image upload encountered an issue, please try again')
+    imageLoading.value = false
   }
 }
 const handleFileChange = async(info: UploadChangeParam)=>{
@@ -181,6 +186,7 @@ const handleFileDrop = (e: DragEvent) => {
 const uploadFileList = async()=>{
   console.log('点击上传文件回调',fileList.value)
   try{
+    fileLoading.value = true
     const fileHash = await uploadFile(fileList.value[0],'',fileList.value[0].name)
     const getFileUrl = fileList.value[0]
     console.log('getFileUrl',getFileUrl,'fileSize')
@@ -190,9 +196,11 @@ const uploadFileList = async()=>{
       size:fileList.value[0].size,
       filename:getFileUrl.name
     }
+    fileLoading.value = false
     console.log('11111111111111111',fileInfo.value)
   }catch(error:any){
     message.error('File upload encountered an issue, please try again')
+    fileLoading.value = false
   }
 }
 </script>
