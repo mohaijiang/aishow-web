@@ -32,7 +32,6 @@ const modelList = reactive<any>([]);
 const postList = reactive<any>([]);
 const nftList = reactive<any>([])
 const activeKey = ref('1');
-const walletAddress = sessionStorage.getItem('walletAddress')
 const goCreateNFT = ()=>{
   router.push('/nftCreate')
 }
@@ -51,7 +50,7 @@ const getPostList = async () => {
   const client = new PolkadotAiChanClient(api,account)
   try {
     //5GHMXJA4EX42bg27atoGvhWu3jKv4ugEJf2N3RxktpBh3qkt
-    const res = await client.userPostList(walletAddress)
+    const res = await client.userPostList(account)
     console.log("postList res:", res);
     Object.assign(postList,res);
   } catch (error:any) {
@@ -63,7 +62,7 @@ const getModelList = async () => {
   const client = new PolkadotAiChanClient(api,account)
   try {
     //5GHMXJA4EX42bg27atoGvhWu3jKv4ugEJf2N3RxktpBh3qkt
-    const res = await client.userModelList(walletAddress)
+    const res = await client.userModelList(account)
     console.log("modelList res:", res);
     Object.assign(modelList,res);
   } catch (error:any) {
@@ -75,7 +74,7 @@ const getNFTList = async () => {
   const client = new PolkadotAiChanClient(api,account)
   try {
     //5GHMXJA4EX42bg27atoGvhWu3jKv4ugEJf2N3RxktpBh3qkt
-    const res = await client.userNFT(walletAddress)
+    const res = await client.userNFT(account)
     console.log("nftList res:", res);
     Object.assign(nftList,res);
   } catch (error:any) {
