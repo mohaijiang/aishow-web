@@ -1,6 +1,15 @@
-# Vue 3 + TypeScript + Vite
+# AISHOW 
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## Vision
+
+Become the most popular AI model sharing and creation platform in the web3 era.
+
+## Introduction
+
+With the hype of Chat GPT, people have realized the capabilities and wide range of applications of AI. However, as an advanced production tool, AI needs a more suitable production relationship to better promote the development of productivity. We believe that the blockchain provides just such a production relationship, so a decentralized AI model sharing and creation platform AIShow was born.
+In AIShow, users can publish their own AI models. Creators can create based on their favorite models, and at the same time mint their creative works as NFTs in the market. All data uses distributed storage, we will integrate with Chat GPT, introduce evolvable NFT technology, let users train the best companion models and endow them with evolvable digital images.
+Users are not only builders and users, but also beneficiaries. AIShow uses incentive mechanisms and behavior mining. All behaviors that contribute to the platform, such as publishing AI models, creating works, model training, liking and commenting, will be rewarded.
+Due to the constraints of low TPS, difficult upgrades, and insufficient composability of blockchain applications, taking into account comprehensively, we will use Pokka parallel chain to realize the construction of AIShow platform, and store data on CESS.
 
 ## Recommended IDE Setup
 
