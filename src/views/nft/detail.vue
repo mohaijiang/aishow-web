@@ -9,7 +9,7 @@
           <div class="text-[26px]">{{name}}</div>
           <!-- <div>Owned by <label class="text-[#1971c2]"></label></div> -->
         </div>
-        <a-button type="primary" class=" w-[120px]" @click="showTransferModal=true" :loading="loading">Trasfer</a-button>
+        <a-button type="primary" class=" w-[120px]" @click="showTransferModal=true" :loading="loading">Transfer</a-button>
       </div>
       <div class="text-[20px]">
         <div class="mt-10 text-[20px] font-bold">Description：{{description}}</div>
