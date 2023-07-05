@@ -1,13 +1,9 @@
 <script setup lang="ts">
-
-import {PolkadotAiChanClient} from "@/components/polkadot/ai-model";
-import {ApiPromise, WsProvider} from "@polkadot/api";
-import {web3Accounts, web3Enable} from "@polkadot/extension-dapp";
-import {onMounted, reactive} from "vue";
-import {getUUID} from "ant-design-vue/es/vc-dialog/util";
-
+import {web3Enable} from "@polkadot/extension-dapp";
+import { getCurrentInstance } from "vue";
+const { proxy } = getCurrentInstance();
 // const wsAddress = 'ws://127.0.0.1:9944'
-const wsAddress = 'wss://ws.aishow.hamsternet.io'
+// const wsAddress = 'wss://ws.aishow.hamsternet.io'
 const modelHash = "some-model-hash"
 const postUUID = "some-uuid-20230630"
 const imageHash = "some-image-hash"
@@ -18,15 +14,7 @@ web3Enable('my cool dapp').then(() => {
 
 const createModel = async () => {
 
-
-    const allAccounts = await web3Accounts();
-    const account = allAccounts[0].address
-    const wsProvider = new WsProvider(wsAddress);
-    const api = await ApiPromise.create({provider: wsProvider});
-    const client = new PolkadotAiChanClient(api, account)
-
-
-    const result = await client.createModel({
+    const result = await proxy.client.createModel({
         name: modelHash,
         // 模型hash， 文件上传后返回的hash值
         hash: modelHash,
@@ -52,14 +40,7 @@ const createModel = async () => {
 
 const createPost = async ()=> {
 
-
-    const allAccounts = await web3Accounts();
-    const account = allAccounts[0].address
-    const wsProvider = new WsProvider(wsAddress);
-    const api = await ApiPromise.create({provider: wsProvider});
-    const client = new PolkadotAiChanClient(api, account)
-
-    const result = await client.createPost({
+    const result = await proxy.client.createPost({
         modelHash: modelHash,
         uuid: postUUID,
         name: "some name",
@@ -75,83 +56,41 @@ const createPost = async ()=> {
 
 const userModelSelect = async () => {
 
-
-    const allAccounts = await web3Accounts();
-    const account = allAccounts[0].address
-    const wsProvider = new WsProvider(wsAddress);
-    const api = await ApiPromise.create({provider: wsProvider});
-    const client = new PolkadotAiChanClient(api, account)
-
-    const result = await client.userModelSelect(account)
+    const result = await proxy.client.userModelSelect(proxy.account)
     console.log(result)
 }
 
 const modelList = async () => {
 
-    const allAccounts = await web3Accounts();
-    const account = allAccounts[0].address
-    const wsProvider = new WsProvider(wsAddress);
-    const api = await ApiPromise.create({provider: wsProvider});
-    const client = new PolkadotAiChanClient(api, account)
-
-    const result = await client.modelList()
+    const result = await proxy.client.modelList()
     console.log(result)
 }
 
 const mint = async () => {
-    const allAccounts = await web3Accounts();
-    const account = allAccounts[0].address
-    const wsProvider = new WsProvider(wsAddress);
-    const api = await ApiPromise.create({provider: wsProvider});
-    const client = new PolkadotAiChanClient(api, account)
-
-    const result = await client.nftMint(modelHash,postUUID,imageHash, undefined)
+    
+    const result = await proxy.client.nftMint(modelHash,postUUID,imageHash, undefined)
     console.log(result)
 }
 
 const userPost = async ()=> {
 
-    const allAccounts = await web3Accounts();
-    const account = allAccounts[0].address
-    const wsProvider = new WsProvider(wsAddress);
-    const api = await ApiPromise.create({provider: wsProvider});
-    const client = new PolkadotAiChanClient(api, account)
-
-    const result = await client.userPostList(account)
+    const result = await proxy.client.userPostList(proxy.account)
     console.log(result)
 }
 
 const nftDetail = async () => {
-    const allAccounts = await web3Accounts();
-    const account = allAccounts[0].address
-    const wsProvider = new WsProvider(wsAddress);
-    const api = await ApiPromise.create({provider: wsProvider});
-    const client = new PolkadotAiChanClient(api, account)
-
-    const detail = await client.nftDetail(0,1)
+    const detail = await proxy.client.nftDetail(0,1)
     console.log("detail: ", detail)
 }
 
 const postList = async () => {
-
-    const allAccounts = await web3Accounts();
-    const account = allAccounts[0].address
-    const wsProvider = new WsProvider(wsAddress);
-    const api = await ApiPromise.create({provider: wsProvider});
-    const client = new PolkadotAiChanClient(api, account)
-
-    const result = await client.postList(modelHash)
+    const result = await proxy.client.postList(modelHash)
     console.log(result)
 }
 
 const setAttribute = async () => {
-    const allAccounts = await web3Accounts();
-    const account = allAccounts[0].address
-    const wsProvider = new WsProvider("ws://127.0.0.1:9944");
-    const api = await ApiPromise.create({provider: wsProvider});
-    const client = new PolkadotAiChanClient(api, account)
-
-    const result = await client.setAttribute(1,0,"filename","somefilevalue",undefined)
+  
+    const result = await proxy.client.setAttribute(1,0,"filename","somefilevalue",undefined)
     console.log(result)
 }
 

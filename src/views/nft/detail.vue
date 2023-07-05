@@ -30,12 +30,11 @@
   </a-modal>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, getCurrentInstance } from 'vue';
 import { useRoute } from 'vue-router';
-import {ApiPromise, WsProvider} from "@polkadot/api";
-import {web3Accounts, web3Enable} from "@polkadot/extension-dapp";
-import {CallbackResult, PolkadotAiChanClient} from "@/components/polkadot/ai-model"
+import {CallbackResult} from "@/components/polkadot/ai-model"
 import { message } from 'ant-design-vue';
+const { proxy } = getCurrentInstance();
 const route = useRoute()
 const name = ref()
 const description = ref()
@@ -48,9 +47,7 @@ const showTransferModal = ref(false)
 const collectionId:any = route.query.collectionId
 const itemId:any = route.query.itemId
 const getNftDetail = async()=>{
-  const { api, account } = await connectCommonPolk()
-  const client = new PolkadotAiChanClient(api,account)
-  const res = await client.nftDetail(collectionId,itemId)
+  const res = await proxy.client.nftDetail(collectionId,itemId)
   console.log('getNftDetail',res)
   hash.value = res.itemUuid
   image.value = res.itemLink
@@ -66,11 +63,9 @@ const trasferNft = async()=>{
   }
   showTransferModal.value = false
   loading.value = true
-  const { api, account } = await connectCommonPolk()
-  const client = new PolkadotAiChanClient(api,account)
   console.log('交易nft参数',collectionId,itemId,userWalletAddress.value)
   try {
-    client.nftTransfer(collectionId,itemId,userWalletAddress.value,(result:CallbackResult)=>{
+    proxy.client.nftTransfer(collectionId,itemId,userWalletAddress.value,(result:CallbackResult)=>{
         if(result.status === "inBlock") {
             message.success('Transfer success')
         }else if(result.status === "error"){
@@ -81,18 +76,6 @@ const trasferNft = async()=>{
   } catch (error:any) {
     message.error("Failed ",error)
     loading.value = false
-  }
-}
-const connectCommonPolk = async()=>{
-  const allInjected = await web3Enable('my cool dapp');
-  console.log(allInjected)
-  const allAccounts = await web3Accounts();
-  const account = allAccounts[0].address
-  const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
-  const api = await ApiPromise.create({provider: wsProvider});
-  return {
-    account,
-    api
   }
 }
 onMounted(()=>{

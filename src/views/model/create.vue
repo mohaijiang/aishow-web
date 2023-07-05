@@ -66,14 +66,13 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue';
+import { computed, reactive, ref, getCurrentInstance } from 'vue';
 import { message, type UploadChangeParam } from 'ant-design-vue';
 import Wangeditor from '@/components/Wangeditor.vue';
-import {CreateModelVO, PolkadotAiChanClient} from "@/components/polkadot/ai-model"
-import {ApiPromise, WsProvider} from "@polkadot/api";
-import {web3Accounts, web3Enable} from "@polkadot/extension-dapp";
+import {CreateModelVO} from "@/components/polkadot/ai-model"
 import { useRouter } from 'vue-router';
 import { uploadFile } from '@/utils/deoss'
+const { proxy } = getCurrentInstance();
 
 const router = useRouter();
 const fileList = ref<any>([]);
@@ -105,15 +104,7 @@ const cancelUploadModal = () =>{
 const handleSubmit = async () => {
     await formRef.value.validate();
     loading.value = true
-    // 以下需要配置为全局
-    const allInjected = await web3Enable('my cool dapp');
-    console.log(allInjected)
-    const allAccounts = await web3Accounts();
-    const account = allAccounts[0].address
-    const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
-    const api = await ApiPromise.create({provider: wsProvider});
-    // 以上需要配置为全局
-    const client = new PolkadotAiChanClient(api,account)
+    
     const model: CreateModelVO =  {
         hash: fileInfo.value.hash,
         name: formData.name,
@@ -126,7 +117,7 @@ const handleSubmit = async () => {
     }
     console.log(11111111111,model,JSON.stringify(model))
     try {
-      await client.createModel(model,(info:any) => {
+      await proxy.client.createModel(model,(info:any) => {
         console.log('status~~~~~~',info)
         if(info.status === "inBlock") {
           router.push(`/detail?hash=${info.id}`)
