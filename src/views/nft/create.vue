@@ -52,12 +52,11 @@
   </a-modal>
 </template>
 <script setup lang="ts">
-import { computed, reactive, ref, onMounted } from 'vue';
+import { computed, reactive, ref, onMounted, getCurrentInstance } from 'vue';
 import { useRouter } from 'vue-router'
-import {ApiPromise, WsProvider} from "@polkadot/api";
-import {web3Accounts, web3Enable} from "@polkadot/extension-dapp";
-import { PolkadotAiChanClient, NFTCreateVO } from "@/components/polkadot/ai-model"
+import { NFTCreateVO } from "@/components/polkadot/ai-model"
 import { message } from 'ant-design-vue';
+const { proxy } = getCurrentInstance();
 const router = useRouter()
 const postImageArr = ref()
 const showImage = ref()
@@ -90,10 +89,8 @@ const handleSubmit = async () => {
   await formRef.value.validate();
   loading.value = true
   console.log('nftParams',nftParams)
-  const { api, account } = await connectCommonPolk()
-  const client = new PolkadotAiChanClient(api,account)
   try {
-    await client.nftMint(nftParams,(info:any)=>{
+    await proxy.client.nftMint(nftParams,(info:any)=>{
       if(info.status === "inBlock") {
         router.push(`/nftDetail?collectionId=${info.collectionId}&itemId=${info.itemId}`)
       }else if(info.status === "error"){
@@ -113,23 +110,10 @@ const getPostInfo = ()=>{
   showImage.value = imgValue.value.imageLink
   imgVisible.value = false
 }
-const connectCommonPolk = async()=>{
-  const allInjected = await web3Enable('my cool dapp');
-  console.log(allInjected)
-  const allAccounts = await web3Accounts();
-  const account = allAccounts[0].address
-  const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
-  const api = await ApiPromise.create({provider: wsProvider});
-  return {
-    account,
-    api
-  }
-}
 // 获取用户post列表
-const getPostImg = async()=>{
-  const { api, account } = await connectCommonPolk()
-  const client = new PolkadotAiChanClient(api,account)
-  const res:any = await client.userPostList(account)
+const getPostImg = async () => {
+  
+  const res:any = await proxy.client.userPostList(proxy.account)
   postImageArr.value = res
   console.log('aaaaaaaaaaaaa',postImageArr.value)
 }

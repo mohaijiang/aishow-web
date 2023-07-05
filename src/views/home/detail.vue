@@ -65,15 +65,13 @@
 import { LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons-vue';
 import CarouselImage from './components/CarouselImage.vue';
 import ModalImage from "./components/ModalImage.vue";
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, getCurrentInstance } from 'vue';
 import { useRouter, useRoute } from "vue-router";
-import { PolkadotAiChanClient} from "@/components/polkadot/ai-model"
-import { web3Accounts, web3Enable } from "@polkadot/extension-dapp";
-import {ApiPromise, WsProvider} from "@polkadot/api";
 import { message } from "ant-design-vue";
 import dayjs from 'dayjs';
 import { downloadFileFN } from '@/utils/deoss/index'
 import prettyBytes from 'pretty-bytes';
+const { proxy } = getCurrentInstance();
 
 const router = useRouter()
 const route = useRoute()
@@ -89,10 +87,8 @@ const goPostDetail = (item:any)=>{
 }
 const downloadModelFile = async()=>{
   console.log('downloadModelFile')
-  const { api, account } = await connectCommonPolk()
-  const client = new PolkadotAiChanClient(api,account)
   try {
-    client.buyModel(modelHash.value,async(info:any)=>{
+    proxy.client.buyModel(modelHash.value,async(info:any)=>{
       console.log('download model',info)
       const blob:any = await downloadFileFN(cardList.hash)
       console.log('blob~~~~~',blob)
@@ -110,11 +106,9 @@ const downloadModelFile = async()=>{
   }
 }
 const getModelDetail = async () => {
-  const { api, account } = await connectCommonPolk()
-  const client = new PolkadotAiChanClient(api,account)
   try {
     console.log("hash:", route.query.hash);
-    const res = await client.modelDetail(route.query.hash)
+    const res = await proxy.client.modelDetail(route.query.hash)
     console.log("res:", res);
     Object.assign(cardList,res);
     modelHash.value = res.hash
@@ -125,27 +119,13 @@ const getModelDetail = async () => {
   }
 }
 const getPostList = async () => {
-  const { api, account } = await connectCommonPolk()
-  const client = new PolkadotAiChanClient(api,account)
   try {
     console.log("postList hash:", route.query.hash);
-    const res = await client.postList(route.query.hash)
+    const res = await proxy.client.postList(route.query.hash)
     console.log("modalList res:", res);
     Object.assign(modalList,res);
   } catch (error:any) {
     message.error('Failed ',error)
-  }
-}
-const connectCommonPolk = async()=>{
-  const allInjected = await web3Enable('my cool dapp');
-  console.log(allInjected)
-  const allAccounts = await web3Accounts();
-  const account = allAccounts[0].address
-  const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
-  const api = await ApiPromise.create({provider: wsProvider});
-  return {
-    account,
-    api
   }
 }
 onMounted(() => {

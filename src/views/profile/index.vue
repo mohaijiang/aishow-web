@@ -19,14 +19,12 @@
   </a-tabs>
 </template>
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
+import { getCurrentInstance, onMounted, reactive, ref } from 'vue';
 import ImageList from "../home/components/ImageList.vue";
-import { PolkadotAiChanClient} from "@/components/polkadot/ai-model"
-import { web3Accounts, web3Enable } from "@polkadot/extension-dapp";
-import {ApiPromise, WsProvider} from "@polkadot/api";
 import { message } from "ant-design-vue";
 import { useRouter } from 'vue-router';
 const router = useRouter()
+const { proxy } = getCurrentInstance();
 
 const modelList = reactive<any>([]);
 const postList = reactive<any>([]);
@@ -46,11 +44,9 @@ const handleTabChange = (val: string) => {
   console.log('handleTabChange',val)
 }
 const getPostList = async () => {
-  const { api, account } = await connectCommonPolk()
-  const client = new PolkadotAiChanClient(api,account)
+  
   try {
-    //5GHMXJA4EX42bg27atoGvhWu3jKv4ugEJf2N3RxktpBh3qkt
-    const res = await client.userPostList(account)
+    const res = await proxy.client.userPostList(proxy.account)
     console.log("postList res:", res);
     Object.assign(postList,res);
   } catch (error:any) {
@@ -58,11 +54,9 @@ const getPostList = async () => {
   }
 }
 const getModelList = async () => {
-  const { api, account } = await connectCommonPolk()
-  const client = new PolkadotAiChanClient(api,account)
+  
   try {
-    //5GHMXJA4EX42bg27atoGvhWu3jKv4ugEJf2N3RxktpBh3qkt
-    const res = await client.userModelList(account)
+    const res = await proxy.client.userModelList(proxy.account)
     console.log("modelList res:", res);
     Object.assign(modelList,res);
   } catch (error:any) {
@@ -70,27 +64,12 @@ const getModelList = async () => {
   }
 }
 const getNFTList = async () => {
-  const { api, account } = await connectCommonPolk()
-  const client = new PolkadotAiChanClient(api,account)
   try {
-    //5GHMXJA4EX42bg27atoGvhWu3jKv4ugEJf2N3RxktpBh3qkt
-    const res = await client.userNFT(account)
+    const res = await proxy.client.userNFT(proxy.account)
     console.log("nftList res:", res);
     Object.assign(nftList,res);
   } catch (error:any) {
     message.error('Failed ',error)
-  }
-}
-const connectCommonPolk = async()=>{
-  const allInjected = await web3Enable('my cool dapp');
-  console.log(allInjected)
-  const allAccounts = await web3Accounts();
-  const account = allAccounts[0].address
-  const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
-  const api = await ApiPromise.create({provider: wsProvider});
-  return {
-    account,
-    api
   }
 }
 

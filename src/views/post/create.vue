@@ -44,16 +44,15 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, reactive, ref, onMounted } from 'vue';
+import { computed, reactive, ref, onMounted , getCurrentInstance } from 'vue';
 import { message, type UploadChangeParam } from 'ant-design-vue';
 import Wangeditor from '@/components/Wangeditor.vue';
 import { useRouter } from 'vue-router';
 import { v4 as uuidv4 } from 'uuid';
-import {CreatePostVO, PolkadotAiChanClient} from "@/components/polkadot/ai-model"
-import {ApiPromise, WsProvider} from "@polkadot/api";
-import {web3Accounts, web3Enable} from "@polkadot/extension-dapp";
+import {CreatePostVO} from "@/components/polkadot/ai-model"
 import { uploadFile } from '@/utils/deoss'
 const router = useRouter()
+const { proxy } = getCurrentInstance();
 
 const fileList = ref<any>([]);
 const loading = ref(false)
@@ -84,8 +83,6 @@ const handleSubmit = async () => {
   loading.value = true
   let uuid = uuidv4()
   console.log('uuid',uuid)
-  const { api, account } = await connectCommonPolk()
-  const client = new PolkadotAiChanClient(api,account)
   const createPostParams:CreatePostVO = {
     // 模型hash
     modelHash: formData.model,
@@ -100,7 +97,7 @@ const handleSubmit = async () => {
   }
   console.log('createPostParams',createPostParams)
   try {
-    await client.createPost(createPostParams,(info:any) => {
+    await proxy.client.createPost(createPostParams,(info:any) => {
       console.log('createPost info',info)
       if(info.status === "inBlock") {
         router.push(`/postDetail?hash=${info.id}&id=${uuid}`)
@@ -145,9 +142,7 @@ const uploadPost = async()=>{
 }
 // model选项
 const getModelOption = async()=>{
-  const { api, account } = await connectCommonPolk()
-  const client = new PolkadotAiChanClient(api,account)
-  const res = await client.userModelList(account)
+  const res = await proxy.client.userModelList(proxy.account)
   modelOption.value = res.map((item:any)=>{
     return {
       value:item.hash,
@@ -156,18 +151,6 @@ const getModelOption = async()=>{
     }
   })
   console.log('model选项',modelOption.value)
-}
-const connectCommonPolk = async()=>{
-  const allInjected = await web3Enable('my cool dapp');
-  console.log(allInjected)
-  const allAccounts = await web3Accounts();
-  const account = allAccounts[0].address
-  const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
-  const api = await ApiPromise.create({provider: wsProvider});
-  return {
-    account,
-    api
-  }
 }
 onMounted(()=>{
   getModelOption()
