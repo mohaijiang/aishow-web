@@ -3,6 +3,7 @@ import { resolve } from 'path';
 import vue from '@vitejs/plugin-vue'
 import Components from "unplugin-vue-components/vite";
 import { AntDesignVueResolver } from "unplugin-vue-components/resolvers";
+import topLevelAwait from 'vite-plugin-top-level-await'
 function pathResolve(dir: string): string {
   return resolve(process.cwd(), '.', dir)
 };
@@ -12,6 +13,10 @@ export default defineConfig({
     vue(),
     Components({
       resolvers: [AntDesignVueResolver()],
+    }),
+    topLevelAwait({
+      promiseExportName: '__tla',
+      promiseImportName: i => `__tla_${i}`
     })
   ],
   resolve: {
