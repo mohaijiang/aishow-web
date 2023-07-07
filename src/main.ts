@@ -18,10 +18,13 @@ const allAccounts = await web3Accounts();
 const account = allAccounts[0].address
 const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
 const api = await ApiPromise.create({ provider: wsProvider });
+console.log('11111111111111111111',api)
+// api.disconnect()
 
 const client = new PolkadotAiChanClient(api, account)
 app.config.globalProperties.client = client;
 app.config.globalProperties.account = account;
+app.config.globalProperties.PolkdotApi = api;
 
 app.use(router);
 app.use(Antd);

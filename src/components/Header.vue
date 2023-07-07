@@ -51,28 +51,22 @@
   </a-modal>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue' 
+import { onMounted, ref, getCurrentInstance } from 'vue' 
 import { useRouter } from 'vue-router';
-import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
+const { proxy } = getCurrentInstance();
 const router = useRouter()
 const visibleDisconnect = ref(false);
 const walletAddress = ref('')
 const connectWallet = async() => {
-  const extensions = await web3Enable("my cool dapp");
-  console.log('extensions',extensions);
-  const allAccounts = await web3Accounts();
-  console.log('allAccounts',allAccounts);
-  const walletAddr = allAccounts[0]?.address
+  const walletAddr = proxy.account
   sessionStorage.setItem("walletAddress", walletAddr);
-  walletAddress.value = walletAddr.substring(0,5)+ "..." +walletAddr.substring(walletAddr.length-4)
-  
-  // 先把polka钱包账号存起来，防止后面需要使用到
-  sessionStorage.setItem("account", JSON.stringify(walletAddr));
-  sessionStorage.setItem("allAccounts", JSON.stringify(allAccounts));
-  // sessionStorage.setItem("api", JSON.stringify(api));
+  if (walletAddr !== undefined && walletAddr !== '') {
+    walletAddress.value = walletAddr.substring(0,5)+ "..." +walletAddr.substring(walletAddr.length-4)
+  }
 }
 const disconnect = () => {
-   
+  walletAddress.value = ''
+  visibleDisconnect.value = false
 }
 const goUploadModal = ()=>{
   router.push('/modelCreate')
