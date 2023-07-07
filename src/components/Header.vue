@@ -24,17 +24,38 @@
       </div>
       <div>
         <a-button v-if="!walletAddress" class="ml-8" type="primary" @click="connectWallet">Connect Wallet</a-button>
-        <sapn v-if="walletAddress" class="inline-block h-[40px] px-2 leading-[32px] border-[#1971c2] border-solid rounded-lg text-[#1971c2]">{{walletAddress}}</sapn>
+        <!-- <sapn v-if="walletAddress" class="inline-block h-[40px] px-2 leading-[32px] border-[#1971c2] border-solid rounded-lg text-[#1971c2]">{{walletAddress}}</sapn> -->
+        <a-dropdown v-if="walletAddress">
+          <div class="inline-block h-[40px] px-2 leading-[32px] border-[#1971c2] border-solid rounded-lg text-[#1971c2]">{{ walletAddress }}</div>
+          <template #overlay>
+            <a-menu>
+              <a-menu-item @click="visibleDisconnect = true">
+                <a href="javascript:;" class="flex items-center">
+                  <img src="@/assets/icons/disconnect.svg" class="h-[16px] mr-2" />
+                  Disconnect
+                </a>
+              </a-menu-item>
+            </a-menu>
+          </template>
+        </a-dropdown>
         <img v-if="walletAddress" @click="goProfile" src="@/assets/images/icon.jpeg" class="h-[40px] rounded-full cursor-pointer ml-5" />
       </div>
     </div>
   </div>
+  <a-modal v-model:visible="visibleDisconnect" :footer="null" :closable="false">
+    <div class="text-[24px] font-bold mb-4">Confirm disconnect wallets?</div>
+    <div class="text-center">
+      <a-button type="primary" @click="(visibleDisconnect = false)" ghost>No</a-button>
+      <a-button class="ml-4" type="primary" @click="disconnect">Yes</a-button>
+    </div>
+  </a-modal>
 </template>
 <script setup lang="ts">
 import { onMounted, ref } from 'vue' 
 import { useRouter } from 'vue-router';
 import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
 const router = useRouter()
+const visibleDisconnect = ref(false);
 const walletAddress = ref('')
 const connectWallet = async() => {
   const extensions = await web3Enable("my cool dapp");
@@ -49,6 +70,9 @@ const connectWallet = async() => {
   sessionStorage.setItem("account", JSON.stringify(walletAddr));
   sessionStorage.setItem("allAccounts", JSON.stringify(allAccounts));
   // sessionStorage.setItem("api", JSON.stringify(api));
+}
+const disconnect = () => {
+   
 }
 const goUploadModal = ()=>{
   router.push('/modelCreate')
@@ -76,5 +100,9 @@ onMounted(() => {
 });
 </script>
 <style lang="less" scoped>
-
+:deep(.ant-dropdown-menu){
+  border-radius: 16px !important;
+  background-color: #25262b;
+  border: 1px solid #373a40;
+}
 </style>
