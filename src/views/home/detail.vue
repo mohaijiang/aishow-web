@@ -29,8 +29,9 @@
       <div>
         <div class="text-[26px] font-bold text-[#1971c2]">Price:{{ cardList.downloadPrice }} AIST</div>
         <a-button class="w-full mb-[20px]" type="primary" @click="downloadModelFile">Download（<span>{{fileSize}}</span>）</a-button>
-        <div class="overflow-y-auto">
-          <div v-html="cardList.comment"></div>
+        <div>FileId：{{ cardList.hash }}</div>
+        <div class="overflow-y-auto mt-10">
+          Description：<div v-html="cardList.comment"></div>
           <!-- <pre><label class="text-[#1971c2]">View more</label></pre> -->
         </div>
       </div>

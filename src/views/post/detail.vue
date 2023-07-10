@@ -25,8 +25,9 @@
           <div v-if="false">an hour ago</div>
         </div>
       </div>
-      <div class="text-[20px]">
-        <div class="mt-10" v-html="postInfo.comment"></div>
+      <div class="mt-10 text-[20px]">FileId：{{ postInfo.uuid }}</div>
+      <div class="text-[20px] mt-10">
+        Description：<div v-html="postInfo.comment"></div>
       </div>
     </div>
   </div>
