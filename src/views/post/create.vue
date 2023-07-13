@@ -111,7 +111,7 @@ const handleSubmit = async () => {
     loading.value = false
   }
 }
-const handleChange = (info: UploadChangeParam) => { 
+const handleChange = (info: UploadChangeParam) => {
   console.log("info:",info);
 }
 const handleDrop = (e: DragEvent) => {
@@ -142,7 +142,7 @@ const uploadPost = async()=>{
 }
 // model选项
 const getModelOption = async()=>{
-  const res = await proxy.client.userModelList(proxy.account)
+  const res = await proxy.client.userModelSelect(proxy.account)
   modelOption.value = res.map((item:any)=>{
     return {
       value:item.hash,

@@ -38,7 +38,7 @@
     </div>
     <a-divider class="bg-[#fff] text-[26px] font-bold">This model works</a-divider>
     <div class="model-bg grid grid-cols-4 gap-4">
-      
+
       <div>
         <div v-for="(item,key) in modalList" :key="key" @click="goPostDetail(item)">
           <ModalImage :cardInfo="item" v-if="key % 4 === 0"></ModalImage>
@@ -88,24 +88,42 @@ const goPostDetail = (item:any)=>{
 }
 const downloadModelFile = async()=>{
   console.log('downloadModelFile')
+
   try {
-    proxy.client.buyModel(modelHash.value,async(info:any)=>{
-      console.log('download model',info)
-      const blob:any = await downloadFileFN(cardList.hash)
-      console.log('blob~~~~~',blob)
-      let downloadElement = document.createElement("a");
-      let href = window.URL.createObjectURL(blob);
-      downloadElement.href = href;
-      downloadElement.download = cardList.filename;
-      document.body.appendChild(downloadElement);
-      downloadElement.click();
-      document.body.removeChild(downloadElement);
-      window.URL.revokeObjectURL(href);
-    })
+      const res = await proxy.client.userModelSelect(proxy.account)
+      const paid = res.some(t => t.hash === modelHash.value)
+
+      if(!paid){
+          proxy.client.buyModel(modelHash.value,async(info:any)=>{
+              if(info.status === "inBlock") {
+                  await download()
+              }else if(info.status === "error"){
+                  message.error(info.error)
+              }
+          })
+      }else {
+          await download()
+      }
+
   } catch (error:any) {
     message.error('Failed ',error)
   }
 }
+
+const download = async () => {
+    const blob:any = await downloadFileFN(cardList.hash)
+    console.log('blob~~~~~',blob)
+    let downloadElement = document.createElement("a");
+    let href = window.URL.createObjectURL(blob);
+    downloadElement.href = href;
+    downloadElement.download = cardList.filename;
+    document.body.appendChild(downloadElement);
+    downloadElement.click();
+    document.body.removeChild(downloadElement);
+    window.URL.revokeObjectURL(href);
+}
+
+
 const getModelDetail = async () => {
   try {
     console.log("hash:", route.query.hash);
