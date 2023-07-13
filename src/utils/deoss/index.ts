@@ -8,7 +8,7 @@ export interface AuthData {
 }
 
 const baseUrl = 'http://35.227.119.161:8080'
-const defaultBucketName = 'hamster-guo'
+const defaultBucketName = 'ai-show'
 const deShareUrl = 'https://d.cess.cloud/'
 const defaultToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50IjoiY1hna0tNMkRYYXZHM20yOHNjR3E2N0U5VnJpZmFwV0ZZaUhTVUx2cjNBaXV2dlZxdiIsImV4cCI6MTY5MDM1NTU1OCwibmJmIjoxNjg3NzYzNDk4fQ.1BWfkaHUV-q3prCaRY9Nyqipmq-a5-p9ywEqMQc39yQ'
 
