@@ -72,6 +72,7 @@ const connectWallet = async() => {
 const disconnect = () => {
   walletAddress.value = ''
   visibleDisconnect.value = false
+  sessionStorage.removeItem('walletAddress')
 }
 const goUploadModal = ()=>{
   if(walletAddress.value.trim()!=''){
