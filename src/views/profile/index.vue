@@ -25,6 +25,7 @@ import { message } from "ant-design-vue";
 import { useRouter } from 'vue-router';
 const router = useRouter()
 const { proxy } = getCurrentInstance();
+const walletAddress = localStorage.getItem('walletAddr')
 
 const modelList = reactive<any>([]);
 const postList = reactive<any>([]);
@@ -46,7 +47,7 @@ const handleTabChange = (val: string) => {
 const getPostList = async () => {
   
   try {
-    const res = await proxy.client.userPostList(proxy.account)
+    const res = await proxy.client.userPostList(walletAddress)
     console.log("postList res:", res);
     Object.assign(postList,res);
   } catch (error:any) {
@@ -56,7 +57,7 @@ const getPostList = async () => {
 const getModelList = async () => {
   
   try {
-    const res = await proxy.client.userModelList(proxy.account)
+    const res = await proxy.client.userModelList(walletAddress)
     console.log("modelList res:", res);
     Object.assign(modelList,res);
   } catch (error:any) {
@@ -65,7 +66,7 @@ const getModelList = async () => {
 }
 const getNFTList = async () => {
   try {
-    const res = await proxy.client.userNFT(proxy.account)
+    const res = await proxy.client.userNFT(walletAddress)
     console.log("nftList res:", res);
     Object.assign(nftList,res);
   } catch (error:any) {

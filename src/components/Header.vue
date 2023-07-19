@@ -53,12 +53,16 @@
 <script setup lang="ts">
 import { onMounted, ref, getCurrentInstance } from 'vue' 
 import { useRouter } from 'vue-router';
+import { web3Accounts, web3Enable } from "@polkadot/extension-dapp";
 const { proxy } = getCurrentInstance();
 const router = useRouter()
 const visibleDisconnect = ref(false);
 const walletAddress = ref('')
 const connectWallet = async() => {
-  const walletAddr = proxy.account
+  const allInjected = await web3Enable('my cool dapp');
+  const allAccounts = await web3Accounts();
+  const walletAddr = allAccounts[0].address
+  proxy.client.setSender(walletAddr)
   sessionStorage.setItem("walletAddress", walletAddr);
   if (walletAddr !== undefined && walletAddr !== '') {
     walletAddress.value = walletAddr.substring(0,5)+ "..." +walletAddr.substring(walletAddr.length-4)
