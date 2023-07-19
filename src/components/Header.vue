@@ -54,6 +54,7 @@
 import { onMounted, ref, getCurrentInstance } from 'vue' 
 import { useRouter } from 'vue-router';
 import { web3Accounts, web3Enable } from "@polkadot/extension-dapp";
+import { message } from 'ant-design-vue';
 const { proxy } = getCurrentInstance();
 const router = useRouter()
 const visibleDisconnect = ref(false);
@@ -61,11 +62,11 @@ const walletAddress = ref('')
 const connectWallet = async() => {
   const allInjected = await web3Enable('my cool dapp');
   const allAccounts = await web3Accounts();
-  const walletAddr = allAccounts[0].address
-  proxy.client.setSender(walletAddr)
-  sessionStorage.setItem("walletAddress", walletAddr);
-  if (walletAddr !== undefined && walletAddr !== '') {
-    walletAddress.value = walletAddr.substring(0,5)+ "..." +walletAddr.substring(walletAddr.length-4)
+  walletAddress.value = allAccounts[0].address
+  proxy.client.setSender(walletAddress.value)
+  sessionStorage.setItem("walletAddress", walletAddress.value);
+  if (walletAddress.value !== undefined && walletAddress.value !== '') {
+    walletAddress.value = walletAddress.value.substring(0,5)+ "..." +walletAddress.value.substring(walletAddress.value.length-4)
   }
 }
 const disconnect = () => {
@@ -73,16 +74,28 @@ const disconnect = () => {
   visibleDisconnect.value = false
 }
 const goUploadModal = ()=>{
-  router.push('/modelCreate')
-  console.log('goUploadModal')
+  if(walletAddress.value.trim()!=''){
+    router.push('/modelCreate')
+    console.log('goUploadModal')
+  }else{
+    message.error('Please connect wallet first!')
+  } 
 }
 const goPostImages = ()=>{
-  console.log('goPostImages')
-  router.push('/postCreate')
+  if(walletAddress.value.trim()!=''){
+    console.log('goPostImages')
+    router.push('/postCreate')
+  }else{
+    message.error('Please connect wallet first!')
+  } 
 }
 const goWriteAnArticle = ()=>{
-  console.log('goWriteAnArticle')
-  router.push('/nftCreate')
+  if(walletAddress.value.trim()!=''){
+    console.log('goWriteAnArticle')
+    router.push('/nftCreate')
+  }else{
+    message.error('Please connect wallet first!')
+  } 
 }
 const goHome = ()=>{
   router.push('/')
@@ -94,6 +107,7 @@ onMounted(() => {
   const walletAddr = sessionStorage.getItem("walletAddress") || ''
   if (walletAddr !== undefined && walletAddr !== '') {
     walletAddress.value = walletAddr.substring(0,5)+ "..." +walletAddr.substring(walletAddr.length-4)
+    proxy.client.setSender(walletAddr)
   }
 });
 </script>

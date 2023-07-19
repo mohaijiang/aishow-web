@@ -25,7 +25,7 @@ import { message } from "ant-design-vue";
 import { useRouter } from 'vue-router';
 const router = useRouter()
 const { proxy } = getCurrentInstance();
-const walletAddress = localStorage.getItem('walletAddr')
+const walletAddress = sessionStorage.getItem('walletAddr')
 
 const modelList = reactive<any>([]);
 const postList = reactive<any>([]);

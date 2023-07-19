@@ -65,6 +65,7 @@ const formData = reactive({
 });
 const postImageInfo = ref()
 const modelOption = ref()
+const walletAddress = sessionStorage.getItem('walletAddr')
 const formRules = computed(() => {
 
   const requiredRule = (message: string) => ({ required: true, trigger: 'change', message });
@@ -142,7 +143,7 @@ const uploadPost = async()=>{
 }
 // model选项
 const getModelOption = async()=>{
-  const res = await proxy.client.userModelSelect(proxy.account)
+  const res = await proxy.client.userModelSelect(walletAddress)
   modelOption.value = res.map((item:any)=>{
     return {
       value:item.hash,

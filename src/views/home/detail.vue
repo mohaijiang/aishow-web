@@ -81,6 +81,7 @@ const cardList = reactive<any>({});
 const modalList = reactive<any>([]);
 const modelHash = ref()
 const fileSize = ref()
+const walletAddress = sessionStorage.getItem('walletAddr')
 const goPostDetail = (item:any)=>{
   console.log('goPostDetail',item)
   // 需带上图片标识进入详情页
@@ -90,7 +91,7 @@ const downloadModelFile = async()=>{
   console.log('downloadModelFile')
 
   try {
-      const res = await proxy.client.userModelSelect(proxy.account)
+      const res = await proxy.client.userModelSelect(walletAddress)
       const paid = res.some(t => t.hash === modelHash.value)
 
       if(!paid){

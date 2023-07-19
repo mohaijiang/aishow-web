@@ -61,6 +61,7 @@ const router = useRouter()
 const postImageArr = ref()
 const showImage = ref()
 const loading = ref(false)
+const walletAddress = sessionStorage.getItem('walletAddr')
 
 const imgValue = ref();
 const imgVisible = ref(false);
@@ -113,7 +114,7 @@ const getPostInfo = ()=>{
 // 获取用户post列表
 const getPostImg = async () => {
   
-  const res:any = await proxy.client.userPostList(proxy.account)
+  const res:any = await proxy.client.userPostList(walletAddress)
   postImageArr.value = res
   console.log('aaaaaaaaaaaaa',postImageArr.value)
 }
