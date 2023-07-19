@@ -61,7 +61,7 @@ const router = useRouter()
 const postImageArr = ref()
 const showImage = ref()
 const loading = ref(false)
-const walletAddress = sessionStorage.getItem('walletAddr')
+const walletAddress = sessionStorage.getItem('walletAddress')
 
 const imgValue = ref();
 const imgVisible = ref(false);

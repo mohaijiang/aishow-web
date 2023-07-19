@@ -65,7 +65,7 @@ const formData = reactive({
 });
 const postImageInfo = ref()
 const modelOption = ref()
-const walletAddress = sessionStorage.getItem('walletAddr')
+const walletAddress = sessionStorage.getItem('walletAddress')
 const formRules = computed(() => {
 
   const requiredRule = (message: string) => ({ required: true, trigger: 'change', message });
@@ -151,7 +151,7 @@ const getModelOption = async()=>{
       // name:item.name
     }
   })
-  console.log('model选项',modelOption.value)
+  console.log(walletAddress,'model选项',modelOption.value)
 }
 onMounted(()=>{
   getModelOption()

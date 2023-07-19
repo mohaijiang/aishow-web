@@ -81,7 +81,7 @@ const cardList = reactive<any>({});
 const modalList = reactive<any>([]);
 const modelHash = ref()
 const fileSize = ref()
-const walletAddress = sessionStorage.getItem('walletAddr')
+const walletAddress = sessionStorage.getItem('walletAddress')
 const goPostDetail = (item:any)=>{
   console.log('goPostDetail',item)
   // 需带上图片标识进入详情页
@@ -101,6 +101,8 @@ const downloadModelFile = async()=>{
               }else if(info.status === "error"){
                   message.error(info.error)
               }
+          }).catch((error:any)=>{
+            message.error("Need connect polkadot wallet")
           })
       }else {
           await download()
