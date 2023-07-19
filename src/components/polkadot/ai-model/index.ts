@@ -136,10 +136,13 @@ export class PolkadotAiChanClient implements AiShowChain{
 
     private api: ApiPromise
 
-    private readonly sender: string
+    private sender: string
 
-    constructor(api: ApiPromise,sender: string) {
+    constructor(api: ApiPromise) {
         this.api = api
+    }
+
+    setSender(sender: string){
         this.sender = sender
     }
 
@@ -175,6 +178,10 @@ export class PolkadotAiChanClient implements AiShowChain{
     }
 
     async createModel( createModelVO: CreateModelVO,callback: Callback ) {
+        if(!this.sender){
+            throw new Error("need connect polkadot wallet")
+        }
+
         const injector = await web3FromAddress(this.sender)
 
         const collectionIdCodec = await this.api.query.nfts.nextCollectionId()
@@ -232,6 +239,10 @@ export class PolkadotAiChanClient implements AiShowChain{
     }
 
     async createPost(createPostVO: CreatePostVO, callback: Callback) {
+        if(!this.sender){
+            throw new Error("need connect polkadot wallet")
+        }
+
         const injector = await web3FromAddress(this.sender)
         const unsub = await this.api.tx.aiModel.createAiImage(
             createPostVO.modelHash,
@@ -254,6 +265,10 @@ export class PolkadotAiChanClient implements AiShowChain{
     }
 
     async buyModel(modelHash: string, callback: Callback){
+        if(!this.sender){
+            throw new Error("need connect polkadot wallet")
+        }
+
         const injector = await web3FromAddress(this.sender)
         const unsub =  await this.api.tx.aiModel.buyModel(
             modelHash
@@ -467,7 +482,9 @@ export class PolkadotAiChanClient implements AiShowChain{
     }
 
     async nftMint(nft: NFTCreateVO,callback: Callback): Promise<void> {
-
+        if(!this.sender){
+            throw new Error("need connect polkadot wallet")
+        }
         let ifNeedCreateCollection = await  this.ifNeedCreateCollection(nft.modelHash)
         const txs  = []
         if(ifNeedCreateCollection){
@@ -651,6 +668,9 @@ export class PolkadotAiChanClient implements AiShowChain{
     }
 
     async setAttribute(collectionId: number, itemId: number, key: string , value: string,callback: Callback ){
+        if(!this.sender){
+            throw new Error("need connect polkadot wallet")
+        }
 
         const injector = await web3FromAddress(this.sender)
         const unsub =  await this.api.tx.nfts.setAttribute(
@@ -672,6 +692,9 @@ export class PolkadotAiChanClient implements AiShowChain{
     }
 
     async nftTransfer(collectionId: number, itemId: number, dest: string, callback: Callback): Promise<void> {
+        if(!this.sender){
+            throw new Error("need connect polkadot wallet")
+        }
         const injector = await web3FromAddress(this.sender)
         const unsub =  await this.api.tx.nfts.transfer(
             collectionId,itemId,dest
