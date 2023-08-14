@@ -24,7 +24,7 @@
           </div>
         </template>
         <div v-for="(item,key) in cardInfo.images" :key="key">
-          <img :src="item.imageLink" class="w-full rounded-[4px]" />
+          <img :src="replaceUrl(item.imageLink)" class="w-full rounded-[4px]" />
         </div>
         <!-- <div>
           <img :src="getImageURL(cardInfo.imageName)" class="w-full rounded-[4px]" />
@@ -70,6 +70,7 @@
 import useAssets from "@/stores/useAssets";
 import { LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons-vue';
 import { ref } from "vue";
+import  { replaceUrl }  from "@/utils/index";
 
 defineProps({
   cardInfo:{

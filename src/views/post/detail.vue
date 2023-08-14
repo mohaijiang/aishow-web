@@ -13,13 +13,13 @@
           </div>
         </template>
         <div class="!flex justify-center" v-for="(item, key) in postInfo.images" :key="key">
-          <img :src="item.imageLink" class=" rounded-[4px]" />
+          <img :src="replaceUrl(item.imageLink)" class=" rounded-[4px]" />
         </div>
       </a-carousel>
     </div>
     <div>
       <div class="flex">
-        <img v-if="false" :src="postInfo.images[0].imageLink" class="w-[65px] h-[65px] rounded-full mr-4" />
+        <img v-if="false" :src="replaceUrl(postInfo.images[0].imageLink)" class="w-[65px] h-[65px] rounded-full mr-4" />
         <div class="font-bold">
           <div class="text-[26px]">{{ postInfo.name }}</div>
           <div v-if="false">an hour ago</div>
@@ -39,6 +39,7 @@ import {ApiPromise, WsProvider} from "@polkadot/api";
 import { message } from 'ant-design-vue';
 import { onMounted, reactive } from 'vue';
 import { useRoute } from "vue-router";
+import  { replaceUrl }  from "@/utils/index";
 
 const route = useRoute()
 const postInfo = reactive<any>({});

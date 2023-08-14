@@ -1,7 +1,7 @@
 <template>
   <div class="mb-4 relative card-img  cursor-pointer">
-    <img v-if="cardType === 'nft'" :src="cardInfo.itemLink" class="w-full rounded-[4px]" />
-    <img v-else :src="cardInfo.images[0].imageLink" class="w-full rounded-[4px]" />
+    <img v-if="cardType === 'nft'" :src="itemLink(cardInfo.itemLink)" class="w-full rounded-[4px]" />
+    <img v-else :src="replaceUrl(cardInfo.images[0].imageLink)" class="w-full rounded-[4px]" />
     <!-- <img :src="getImageURL(+cardInfo.images[0].imageLink)" class="w-full rounded-[4px]" /> -->
     <div v-if="cardType !== 'nft'" class="absolute top-0 w-full h-full">
       <div class="flex justify-between p-2">
@@ -13,7 +13,7 @@
       <div class="absolute bottom-0 rounded-bl-[4px] rounded-br-[4px] w-full">
         <div class="flex justify-end p-2">
           <div class="rounded-img w-[38px]  rounded-full">
-            <img :src="cardInfo.images[0].imageLink" class="w-[38px] h-[38px] rounded-full" />
+            <img :src="replaceUrl(cardInfo.images[0].imageLink)" class="w-[38px] h-[38px] rounded-full" />
           </div>
         </div>
         <div class="card-btm p-2">
@@ -45,6 +45,7 @@
 </template>
 <script setup lang="ts">
 import useAssets from "@/stores/useAssets";
+import  { replaceUrl }  from "@/utils/index";
 
 defineProps({
   cardInfo:{
@@ -57,6 +58,12 @@ defineProps({
   }
 })
 const { getImageURL } = useAssets();
+
+const itemLink = (url:string) => {
+  console.log("dddddd")
+  console.log(url)
+  return url
+}
 </script>
 <style lang="less" scoped>
 .card-img{

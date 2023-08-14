@@ -28,4 +28,13 @@ export const downloadRequest = (str:any,name:string)=>{
   a.click();
   a.remove();
 }
+export const imageUrl = 'http://34.139.126.73'
+
+export const replaceUrl = (url: string) => {
+    if (url.includes("http://35.227.119.161")) {
+        const newUrl = url.replace("http://35.227.119.161",imageUrl)
+        return newUrl
+    }
+    return url
+}
 
