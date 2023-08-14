@@ -132,7 +132,7 @@ const uploadPost = async()=>{
       // http://35.227.119.161:8081/45371a83c83734a8ccb8eeb1da3107d2582fde1ff7d0c31ad7b23c29936411aa/990.jpeg
       images[i] = {
         image:getPostImageUrl,
-        imageLink:`${ imageUrl This model works}:8081/${getPostImageUrl}/${fileList.value[i].name}`
+        imageLink:`${ imageUrl }:8081/${getPostImageUrl}/${fileList.value[i].name}`
       }
       console.log('getPostImageUrl',getPostImageUrl,images)
     }
