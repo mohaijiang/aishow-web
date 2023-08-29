@@ -1,5 +1,5 @@
-import { ApiPromise } from '@polkadot/api';
-import {web3FromAddress} from "@polkadot/extension-dapp";
+import {ApiPromise} from '@polkadot/api';
+import {web3Accounts, web3FromAddress} from "@polkadot/extension-dapp";
 
 export interface CreateModelVO {
 
@@ -136,11 +136,24 @@ export class PolkadotAiChanClient implements AiShowChain{
 
     private api: ApiPromise
 
-    private readonly sender: string
+    private sender: string
 
-    constructor(api: ApiPromise,sender: string) {
+    constructor(api: ApiPromise) {
         this.api = api
-        this.sender = sender
+        this.sender = ""
+    }
+
+   async authorize(){
+        if(this.sender === "") {
+            const allAccounts = await web3Accounts();
+            if(allAccounts.length > 0) {
+                this.sender = allAccounts[0].address
+            }else {
+                throw new Error("unauthorize")
+            }
+        }else {
+            throw new Error("unauthorize")
+        }
     }
 
     substrateListener = ({ status, events },callback: Callback) => {
@@ -175,6 +188,8 @@ export class PolkadotAiChanClient implements AiShowChain{
     }
 
     async createModel( createModelVO: CreateModelVO,callback: Callback ) {
+
+        await this.authorize()
         const injector = await web3FromAddress(this.sender)
 
         const collectionIdCodec = await this.api.query.nfts.nextCollectionId()
@@ -232,6 +247,7 @@ export class PolkadotAiChanClient implements AiShowChain{
     }
 
     async createPost(createPostVO: CreatePostVO, callback: Callback) {
+        await this.authorize()
         const injector = await web3FromAddress(this.sender)
         const unsub = await this.api.tx.aiModel.createAiImage(
             createPostVO.modelHash,
@@ -254,6 +270,7 @@ export class PolkadotAiChanClient implements AiShowChain{
     }
 
     async buyModel(modelHash: string, callback: Callback){
+        await this.authorize()
         const injector = await web3FromAddress(this.sender)
         const unsub =  await this.api.tx.aiModel.buyModel(
             modelHash
@@ -467,13 +484,9 @@ export class PolkadotAiChanClient implements AiShowChain{
     }
 
     async nftMint(nft: NFTCreateVO,callback: Callback): Promise<void> {
-
+        await this.authorize()
         let ifNeedCreateCollection = await  this.ifNeedCreateCollection(nft.modelHash)
         const txs  = []
-        if(ifNeedCreateCollection){
-           let createTxs = await this.nftCreateCollection(nft.modelHash)
-            txs.push(...createTxs)
-        }
 
         const collectionId = await this.nftGetCollectionId(nft.modelHash)
         // 查询item 数量
@@ -651,7 +664,7 @@ export class PolkadotAiChanClient implements AiShowChain{
     }
 
     async setAttribute(collectionId: number, itemId: number, key: string , value: string,callback: Callback ){
-
+        await this.authorize()
         const injector = await web3FromAddress(this.sender)
         const unsub =  await this.api.tx.nfts.setAttribute(
             collectionId,itemId,"ItemOwner",key,value
@@ -672,6 +685,7 @@ export class PolkadotAiChanClient implements AiShowChain{
     }
 
     async nftTransfer(collectionId: number, itemId: number, dest: string, callback: Callback): Promise<void> {
+        await this.authorize()
         const injector = await web3FromAddress(this.sender)
         const unsub =  await this.api.tx.nfts.transfer(
             collectionId,itemId,dest
