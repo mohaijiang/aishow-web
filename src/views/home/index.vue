@@ -12,16 +12,15 @@ import { message } from "ant-design-vue";
 const cardList = reactive<any>([]);
 
 const getList = async () => {
-  
+
   // 以下需要配置为全局
   const allInjected = await web3Enable('my cool dapp');
   console.log(allInjected)
-  const allAccounts = await web3Accounts();
-  const account = allAccounts[0].address
+
   const wsProvider = new WsProvider('wss://ws.aishow.hamsternet.io');
   const api = await ApiPromise.create({provider: wsProvider});
   // 以上需要配置为全局
-  const client = new PolkadotAiChanClient(api,account)
+  const client = new PolkadotAiChanClient(api)
   try {
     const res = await client.modelList()
     console.log("res:", res);
