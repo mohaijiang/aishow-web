@@ -6,11 +6,10 @@ export interface AuthData {
   message: string,
   signature: number[]
 }
-
 const baseUrl = 'http://34.139.126.73:8080'
 const defaultBucketName = 'hamster-guo'
 const deShareUrl = 'https://d.cess.cloud/'
-const defaultToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50IjoiY1hna0tNMkRYYXZHM20yOHNjR3E2N0U5VnJpZmFwV0ZZaUhTVUx2cjNBaXV2dlZxdiIsImV4cCI6MTY5MDM1NTU1OCwibmJmIjoxNjg3NzYzNDk4fQ.1BWfkaHUV-q3prCaRY9Nyqipmq-a5-p9ywEqMQc39yQ'
+const defaultToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50IjoiY1hna0tNMkRYYXZHM20yOHNjR3E2N0U5VnJpZmFwV0ZZaUhTVUx2cjNBaXV2dlZxdiIsImV4cCI6MTY5NzI3MDY1MSwibmJmIjoxNjk0Njc4NTkxfQ.Frm1saazXKvqkkw1NH79ohdFM-B_8KmO0f9Rn1uNf74'
 
 export function postAuth(data: AuthData): Promise<any> {
   const url = baseUrl.concat('/auth');
